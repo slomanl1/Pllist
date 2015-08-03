@@ -14,11 +14,13 @@ if(file.exists('D:/PNMTALL')){
     vname=paste('D:\\',substr(volz[1],23,100),'.txt',sep='')
     print(paste('VNAME =',vname))
     sfname=paste(substr(vname,1,nchar(vname)-4),'.RData',sep='')
-    shell('dir D:\\ /S/B/OD > zz.txt')
+    shell('dir D:\\PNMTALL /S/B/OD > zz.txt')
+    shell('dir C:\\PNMTALL /S/B/OD >> zz.txt')   
     zz1=readLines('zz.txt')
     zz=zz1[which(grepl('.',zz1,fixed=TRUE)&!grepl('RECYCLE|txt|RData|RPDN',zz1))]
     if(!file.exists(sfname)){
-      shell('getm D: > allmetadata.txt')
+      shell('getm D:\\PNMTALL > allmetadata.txt')
+      shell('getm C:\\PNMTALL >> allmetadata.txt')
       am1=readLines('allmetadata.txt')
       am2=am1[1:length(am1)-1] # remove last line (RPDN.lnk)
       am=am2[!grepl('Ingredients|Pantry',am2)]
@@ -32,8 +34,8 @@ if(file.exists('D:/PNMTALL')){
       if(length(dts)==length(dto))
         dmissing=zz[!dto %in% dts] # add records with new date to dmissing
       xmissing=zz[!basename(zz) %in% basename(am[ttl])]
-      missing=unique(c(dmissing,xmissing))
-
+      missing1=unique(c(dmissing,xmissing))
+      missing=normalizePath(missing1, winslash = "/")
       extras=am[ttl][!basename(am[ttl]) %in% basename(zz)]
       dts=dto # replace old dates
       
@@ -54,7 +56,7 @@ if(file.exists('D:/PNMTALL')){
         } 
       }
       if(length(missing)>0){
-        missing=paste('D:\\',substr(missing,4,nchar(missing)),sep='')
+#        missing=paste('D:\\',substr(missing,4,nchar(missing)),sep='')
         print(paste('Added ',missing))
 
         for (i in 1:length(missing)){
