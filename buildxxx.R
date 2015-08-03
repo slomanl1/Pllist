@@ -5,7 +5,7 @@ source("~/Local.R")
 
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
 
-source('~/Pllist/combiner.R')
+source('~/Pllist/pllist.git/combiner.R')
 setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
 allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'),dir(pattern='*.flv'))
 
@@ -66,9 +66,9 @@ xx <- bitOr(xx,2^(length(wpls)+1))
 setwd("~/")
 save(xx,lsst,wpls,file='xxxx.RData')
 print('MAKEUNIQUE')
-source('~/Pllist/makeunique.R')
+source('~/Pllist/pllist.git/makeunique.R')
 print('ORDERALL')
-source('~/Pllist/orderallwpl.R')
+source('~/Pllist/pllist.git/orderallwpl.R')
 
 
 } else print('CANNOT OPEN FLK')
