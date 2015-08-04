@@ -1,6 +1,7 @@
 setwd('~/')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
+source('~/pllist/pllist.git/testplots.r')
 guiAdd("myGUI")
 volz='z'
 voly='y'
@@ -139,6 +140,7 @@ if (!length(liner)) { # The user clicked the 'cancel' button
   cat("OK, No Files Selected\n")
   break
 }
+while(TRUE){
 if(length(liner)>0)
   if(nchar(liner)>0)
   {
@@ -154,8 +156,9 @@ if(length(liner)>0)
       ttls[ttls<0]=500
       fnames1=substr(pnoln,24,ttls-2)
       fnames=sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
+      testplots(fnames)
       fns=select.list(fnames,graphics = TRUE,multiple = TRUE,preselect=fnames,title=liner)
-      #source('testplots.R')
+
     }
     if(length(fns)>0){
       writeLines(fns,'fns.m3u') # Write playlist
@@ -166,8 +169,9 @@ if(length(liner)>0)
     }else{
       print('Non Found')
       emsg='NotFound'
+      break
       }
     }
 }
-
+}
 #explorer /select,d:\PNMTALL\CF-ACM\
