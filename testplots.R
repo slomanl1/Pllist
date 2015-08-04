@@ -7,7 +7,7 @@ options(guiToolkit = "RGtk2")                     # avoid question if more than 
 #   galert("Hello world", parent=h$obj)
 # })
 testplots = function(fnames) {
-  w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 600)
+  w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 800,parent=c(0,0))
   gp <- ggroup(horizontal = FALSE, container = w)
   tab <- gtable(
     fnames, container = gp, expand = TRUE,multiple = TRUE,
