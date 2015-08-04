@@ -11,8 +11,10 @@ testplots = function(fnames) {
   gp <- ggroup(horizontal = FALSE, container = w)
   tab <- gtable(
     fnames, container = gp, expand = TRUE,multiple = TRUE,
-    handler = function(h,...)
-      print(svalue(h$obj))
+    handler = function(h,...){
+    ssv=svalue(h$obj)
+    save(ssv,file='hobj.RData')
+    }
   )
   addHandlerRightclick(
     tab, handler = function(h,...) {
@@ -30,4 +32,9 @@ testplots = function(fnames) {
     "dismiss", container = bg, handler = function(h,...)
       dispose(w)
   )
+  addHandlerDestroy(
+    tab, handler = function(h,...) {
+      ssv=NULL
+      save(ssv,file='hobj.RData') # empty file to signal done to main
+    })
 }
