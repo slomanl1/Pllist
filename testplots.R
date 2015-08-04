@@ -7,13 +7,17 @@ options(guiToolkit = "RGtk2")                     # avoid question if more than 
 #   galert("Hello world", parent=h$obj)
 # })
 testplots = function(fnames) {
-  w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 800,parent=c(0,0))
+  if(.GlobalEnv$tpexist)
+    return
+  .GlobalEnv$avail = FALSE
+  w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 800,parent = c(0,0))
   gp <- ggroup(horizontal = FALSE, container = w)
   tab <- gtable(
     fnames, container = gp, expand = TRUE,multiple = TRUE,
-    handler = function(h,...){
-    ssv=svalue(h$obj)
-    save(ssv,file='hobj.RData')
+    handler = function(h,...) {
+      print(svalue(h$obj))
+      .GlobalEnv$ssv = svalue(h$obj)
+      .GlobalEnv$avail = TRUE
     }
   )
   addHandlerRightclick(
@@ -29,12 +33,18 @@ testplots = function(fnames) {
   bg <- ggroup(container = gp)
   addSpring(bg)
   gbutton(
-    "dismiss", container = bg, handler = function(h,...)
+    "dismiss", container = bg, handler = function(h,...) {
+      .GlobalEnv$tpexist <- FALSE
+      .GlobalEnv$avail = TRUE
       dispose(w)
+    }
   )
   addHandlerDestroy(
     tab, handler = function(h,...) {
-      ssv=NULL
-      save(ssv,file='hobj.RData') # empty file to signal done to main
-    })
+      .GlobalEnv$ssv = NULL
+      .GlobalEnv$avail = TRUE
+      .GlobalEnv$tpexist <- FALSE
+    }
+  )
+  .GlobalEnv$tpexist <- TRUE
 }

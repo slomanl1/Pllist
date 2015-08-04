@@ -163,19 +163,12 @@ while (TRUE) {
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,24,ttls - 2)
           fnames = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
-          unlink('hobj.RData')
-          if (!tpexist) {
-            testplots(fnames)
-            tpexist = TRUE
-          }
-          while (!file.exists('hobj.RData')) {
-          };
-          load('hobj.Rdata')
+          testplots(fnames)
+          while (!avail) {};# testplots returns ssv global
           fns = ssv
-          #fns=select.list(fnames,graphics = TRUE,multiple = TRUE,preselect=fnames,title=liner)
-          
+          avail = FALSE
         }
-        if (length(fns) > 0) {
+        if (length(fns) > 0) { # null HAS LENGTH 0
           writeLines(fns,'fns.m3u') # Write playlist
           load('headfoot.RData')
           writeLines(as.character(c(
@@ -186,7 +179,6 @@ while (TRUE) {
         }else{
           print('Non Found')
           emsg = 'NotFound'
-          tpexist = FALSE
           break
         }
       }
