@@ -149,12 +149,13 @@ while (TRUE) {
       if (nchar(liner) > 0)
       {
         dflt = liner
-        srct=unlist(strsplit(liner,' '))
-        anttl=an[ttl]
+        srct=unlist(strsplit(toupper(liner),' '))
+        anttl=subset(an[ttl],!grepl('.lnk',an[ttl],fixed=TRUE))
+        anttlu=toupper(anttl)
         pnoln=NA
         allc=NA
         for (i in 1:length(srct))
-          allc=c(allc,which(grepl(srct[i],anttl,ignore.case = TRUE)))
+          allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
         pnoln=anttl[as.integer(names(which(table(allc)==length(srct))))]
         fns = NULL
         if (!is.na(pnoln[1])) {
