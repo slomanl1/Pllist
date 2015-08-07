@@ -96,7 +96,6 @@ if (file.exists('D:/PNMTALL')) {
       }
     }
     save(am,an,ttl,dff,dts,file = sfname)
-    writeLines(an[ttl],vname)
   }
 }
 
@@ -139,7 +138,7 @@ dflt = ''
 emsg = 'OK'
 while (TRUE) {
   liner <-
-    dlgInput(paste("Enter pno search Criteria \n",emsg),default = dflt)$res;
+    dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
   if (!length(liner)) {
     # The user clicked the 'cancel' button
     cat("OK, No Files Selected\n")
@@ -150,18 +149,20 @@ while (TRUE) {
       if (nchar(liner) > 0)
       {
         dflt = liner
-        cmd = paste('shell("pno ',liner,'>CAPTUREPNO.TXT")')
-        suppressWarnings(eval(parse(text = cmd)))
-        pnoln1 = readLines('capturepno.txt')
-        unlink('capturepno.txt')
-        pnoln = pnoln1[4:length(pnoln1)]
+        srct=unlist(strsplit(liner,' '))
+        anttl=an[ttl]
+        pnoln=NA
+        allc=NA
+        for (i in 1:length(srct))
+          allc=c(allc,which(grepl(srct[i],anttl,ignore.case = TRUE)))
+        pnoln=anttl[as.integer(names(which(table(allc)==length(srct))))]
         fns = NULL
         if (!is.na(pnoln[1])) {
           ttls = unlist(regexpr(
             'Comment|Title|Sub Title|File Path|Ingredients',pnoln
           ))
           ttls[ttls < 0] = 500
-          fnames1 = substr(pnoln,24,ttls - 2)
+          fnames1 = substr(pnoln,10,ttls - 2)
           fnames = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
           testplots(fnames)
           while (!avail) {};# testplots returns ssv global
