@@ -26,16 +26,24 @@ testplots = function(fnames) {
         if (length(svalue(h$obj)) > 0) {
           msgg = an[ttl][which(grepl(basename(as.character(svalue(h$obj))),an[ttl],fixed = TRUE))]
           msgg = substr(msgg,10,255)
-          nmsgg=dlgInput('Edit filename',default = msgg)$res
-          if(length(nmsgg)>0){
-            if(nmsgg!=msgg){
-              if(file.rename(msgg,nmsgg))
-                print("file rename successful")
-              else
-                print("RENAME FAILED")}
+          svalue(w) <- as.character(msgg)
+          ofn=as.character(svalue(h$obj)[1])
+          dirnm=dirname(ofn)
+          nfn=dlgInput('Edit filename',default = basename(ofn))$res
+          msgBox(msgg)
+          
+          if(length(nfn)>0){
+            nfn=paste(dirnm,nfn,sep='/')
+            if(nfn!=ofn){
+              if(file.rename(ofn,nfn)){
+                an[ttl][which(grepl(basename(as.character(svalue(h$obj))),
+                          an[ttl],fixed = TRUE))][1]=nfn
+                print(paste("file rename successful",ofn,nfn))
+              }else{
+                print(paste("file rename FAILED",ofn,nfn))}
+                }
           }
-          else
-            msgBox(msgg)
+
         }
       }
     )
