@@ -137,8 +137,7 @@ if (sub('Z','Y',volz[1]) == voly[1])
 dflt = ''
 emsg = 'OK'
 while (TRUE) {
-  liner <-
-    dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
+  liner <- dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
   if (!length(liner)) {
     # The user clicked the 'cancel' button
     cat("OK, No Files Selected\n")
