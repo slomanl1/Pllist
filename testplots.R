@@ -7,7 +7,9 @@ options(guiToolkit = "RGtk2")                     # avoid question if more than 
 #   galert("Hello world", parent=h$obj)
 # })
 testplots = function(fnames) {
-  get_list_content <- function (fnx) data.frame(fnx,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
+  idxs=NULL # indices of fnames in an[ttl]
+  for(x in 1:len(fnames)) idxs=c(idxs,which(grepl(fnames[x],an[ttl],fixed=TRUE)))
+  
   if (!.GlobalEnv$tpexist) {
     .GlobalEnv$avail = FALSE
     .GlobalEnv$renamed = FALSE
@@ -39,15 +41,19 @@ testplots = function(fnames) {
             if(nfn!=ofn){
               if(file.rename(ofn,nfn)){
                 print(paste("file rename successful",ofn,nfn))
-                idxs=which(grepl(basename(as.character(svalue(h$obj))),
+                idx=which(grepl(basename(as.character(svalue(h$obj))),
                             an[ttl],fixed = TRUE))
-                an[ttl][idxs][1]=paste("========",nfn) # replace with new filename
+                an[ttl][idx]=paste("========",nfn) # replace with new filename
                 .GlobalEnv$renamed = TRUE
                 save(an,file='AN.RData')
-                fnx1 = substr(an[ttl][idxs],10,1000)
-                print(paste('fnx1=',fnx1))
-                print(get_list_content(fnx1))
-                tab[] <- get_list_content(fnx1)
+                fnx1 = an[ttl][idxs]
+                ttls = unlist(regexpr(
+                  'Comment|Title|Sub Title|File Path|Ingredients|Album',fnx1))
+                ttls[ttls < 0] = 500
+                fnx= substr(fnx1,10,ttls - 2)
+                print(paste('fnx=',fnx))
+                print(get_list_content(fnx))
+                tab[] <- get_list_content(fnx)
 
               }else{
                 print(paste("file rename FAILED",ofn,nfn))}
