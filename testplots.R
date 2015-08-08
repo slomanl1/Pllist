@@ -7,14 +7,15 @@ options(guiToolkit = "RGtk2")                     # avoid question if more than 
 #   galert("Hello world", parent=h$obj)
 # })
 testplots = function(fnames) {
+  get_list_content <- function (fnx) data.frame(fnx,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
   if (!.GlobalEnv$tpexist) {
     .GlobalEnv$avail = FALSE
-    fndf=data.frame(fnames,cdts=as.character(file.mtime(fnames)))
+    .GlobalEnv$renamed = FALSE
+    .GlobalEnv$ssv = NULL
     
     w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 1024,parent = c(0,0))
     gp <- ggroup(horizontal = FALSE, container = w)
-    tab <- gtable(
-      fndf, container = gp, expand = TRUE,multiple = TRUE,
+    tab <- gtable(get_list_content(fnames), container = gp, expand = TRUE,multiple = TRUE,
       handler = function(h,...) {
         print(svalue(h$obj))
         .GlobalEnv$ssv = as.character(svalue(h$obj))
@@ -29,16 +30,25 @@ testplots = function(fnames) {
           svalue(w) <- as.character(msgg)
           ofn=as.character(svalue(h$obj)[1])
           dirnm=dirname(ofn)
-          nfn=dlgInput('Edit filename',default = basename(ofn))$res
-          msgBox(msgg)
-          
+          nfn=NULL
+          if(okCancelBox(paste(substr(msgg,1,230),'Edit Filename ?')))
+            nfn=dlgInput('Edit filename',default = basename(ofn))$res
+
           if(length(nfn)>0){
             nfn=paste(dirnm,nfn,sep='/')
             if(nfn!=ofn){
               if(file.rename(ofn,nfn)){
-                an[ttl][which(grepl(basename(as.character(svalue(h$obj))),
-                          an[ttl],fixed = TRUE))][1]=nfn
                 print(paste("file rename successful",ofn,nfn))
+                idxs=which(grepl(basename(as.character(svalue(h$obj))),
+                            an[ttl],fixed = TRUE))
+                an[ttl][idxs][1]=paste("========",nfn) # replace with new filename
+                .GlobalEnv$renamed = TRUE
+                save(an,file='AN.RData')
+                fnx1 = substr(an[ttl][idxs],10,1000)
+                print(paste('fnx1=',fnx1))
+                print(get_list_content(fnx1))
+                tab[] <- get_list_content(fnx1)
+
               }else{
                 print(paste("file rename FAILED",ofn,nfn))}
                 }
