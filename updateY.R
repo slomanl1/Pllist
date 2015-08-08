@@ -6,6 +6,8 @@ guiAdd("myGUI")
 volz = 'z'
 voly = 'y'
 tpexist = FALSE
+get_list_content <- function (fnx) data.frame(fnx,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
+
 
 if (file.exists('D:/PNMTALL')) {
   shell('dir D: | findstr Volume > volz.txt')
@@ -155,19 +157,22 @@ while (TRUE) {
         allc=NA
         for (i in 1:length(srct))
           allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
-        pnoln=anttl[as.integer(names(which(table(allc)==length(srct))))]
+        pnoln=anttl[as.integer(names(which(table(allc)==length(srct))))] # how many match criteria?
         fns = NULL
         if (!is.na(pnoln[1])) {
           ttls = unlist(regexpr(
-            'Comment|Title|Sub Title|File Path|Ingredients',pnoln
+            'Comment|Title|Sub Title|File Path|Ingredients|Album',pnoln
           ))
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,10,ttls - 2)
           fnames = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
           testplots(fnames)
-          while (!avail) {};# testplots returns ssv global
+          while (!avail & !renamed) {};# testplots returns ssv global
           fns = ssv
           avail = FALSE
+          if(renamed){
+            renamed = FALSE
+            load('AN.RData')} # an[ttl] has been changed by testplots GUI
         }
         if (length(fns) > 0) { # null HAS LENGTH 0
           writeLines(fns,'fns.m3u') # Write playlist
