@@ -2,6 +2,7 @@ setwd('~/')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 source('~/pllist/pllist.git/testplots.r')
+len=function(x) length(x)
 guiAdd("myGUI")
 volz = 'z'
 voly = 'y'
@@ -27,7 +28,7 @@ if (file.exists('D:/PNMTALL')) {
       shell('getm D:\\PNMTALL > allmetadata.txt')
       shell('getm C:\\PNMTALL >> allmetadata.txt')
       am1 = readLines('allmetadata.txt')
-      am2 = am1[1:length(am1) - 1] # remove last line (RPDN.lnk)
+      am2 = am1[1:len(am1) - 1] # remove last line (RPDN.lnk)
       am = am2[!grepl('Ingredients|Pantry',am2)]
       ttl = which(substr(am,1,1) == '=')
       dts = file.mtime(zz) # file dates
@@ -36,7 +37,7 @@ if (file.exists('D:/PNMTALL')) {
       load(sfname)
       dto = file.mtime(zz) # new file dates
       dmissing = NULL
-      if (length(dts) == length(dto))
+      if (len(dts) == len(dto))
         dmissing = zz[!dto %in% dts] # add records with new date to dmissing
       xmissing = zz[!basename(zz) %in% basename(am[ttl])]
       missing1 = unique(c(dmissing,xmissing))
@@ -44,12 +45,12 @@ if (file.exists('D:/PNMTALL')) {
       extras = am[ttl][!basename(am[ttl]) %in% basename(zz)]
       dts = dto # replace old dates
       
-      if (length(extras) > 0) {
-        print(paste('Removed ',extras))
+      if (len(extras) > 0) {
+        print(paste('Removed ',substr(extras,10,1000)))
         ttle = which(!basename(am[ttl]) %in% basename(zz))
         am[ttl[ttle]] = NA # remove extra file names
-        if (length(ttle) > 1) {
-          for (kk in 1:(length(ttle) - 1)) {
+        if (len(ttle) > 1) {
+          for (kk in 1:(len(ttle) - 1)) {
             # remove comments, title:
             lnn = dff[ttle][kk]
             if (lnn > 0) {
@@ -61,21 +62,21 @@ if (file.exists('D:/PNMTALL')) {
           }
         }
       }
-      if (length(missing) > 0) {
+      if (len(missing) > 0) {
         #        missing=paste('D:\\',substr(missing,4,nchar(missing)),sep='')
-        print(paste('Added ',missing))
+        print(paste('Added   ',missing))
         
-        for (i in 1:length(missing)) {
+        for (i in 1:len(missing)) {
           cmdd = "shell('getm D: > metadata.txt')"
           fpp = file.path(substr(missing[i],1,2),
                           substr(dirname(missing[i]),3,nchar(dirname(missing[i]))), basename(missing[i]))
           cmdx = sub('D:',fpp,cmdd)
           suppressWarnings(eval(parse(text = cmdx)))
           amm = readLines('metadata.txt')
-          amm = amm[2:length(amm)]
+          amm = amm[2:len(amm)]
           amm[1] = paste("========",missing[i])
-          for (k in 1:length(amm))
-            am[length(am) + k] = amm[k]
+          for (k in 1:len(amm))
+            am[len(am) + k] = amm[k]
         }
       }
     }
@@ -86,8 +87,8 @@ if (file.exists('D:/PNMTALL')) {
     bs1 = an[ttl[1]] # for watch debug only
     
     dff = diff(ttl) - 1
-    dff[length(dff) + 1] = 1
-    for (i in 1:(length(ttl))) {
+    dff[len(dff) + 1] = 1
+    for (i in 1:(len(ttl))) {
       if (dff[i] > 0) {
         for (j in 1:dff[i]) {
           bs1 = an[ttl[i]] # for watch debug only
@@ -118,12 +119,12 @@ if (sub('Z','Y',volz[1]) == voly[1])
   reml = yy[!(substr(yy,2,100) %in% substr(zz,2,100))]
   unlink(reml,recursive = TRUE)
   ccdirs = sub('z:','y:',na.omit(copyl[file.info(copyl)[,'isdir']]))
-  if (length(ccdirs) > 0)
-    for (i in 1:length(ccdirs)) {
+  if (len(ccdirs) > 0)
+    for (i in 1:len(ccdirs)) {
       dir.create(ccdirs[i])
       print(paste(ccdirs[i],'created'))
     }
-  lnc = length(copyl)
+  lnc = len(copyl)
   if (lnc > 0)
     for (i in 1:lnc) {
       print(paste('Copying',copyl[i],lnc - i))
@@ -140,13 +141,13 @@ dflt = ''
 emsg = 'OK'
 while (TRUE) {
   liner <- dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
-  if (!length(liner)) {
+  if (!len(liner)) {
     # The user clicked the 'cancel' button
     cat("OK, No Files Selected\n")
     break
   }
   while (TRUE) {
-    if (length(liner) > 0)
+    if (len(liner) > 0)
       if (nchar(liner) > 0)
       {
         dflt = liner
@@ -155,9 +156,9 @@ while (TRUE) {
         anttlu=toupper(anttl)
         pnoln=NA
         allc=NA
-        for (i in 1:length(srct))
+        for (i in 1:len(srct))
           allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
-        pnoln=anttl[as.integer(names(which(table(allc)==length(srct))))] # how many match criteria?
+        pnoln=anttl[as.integer(names(which(table(allc)==len(srct))))] # how many match criteria?
         fns = NULL
         if (!is.na(pnoln[1])) {
           ttls = unlist(regexpr(
@@ -169,12 +170,13 @@ while (TRUE) {
           testplots(fnames)
           while (!avail & !renamed) {};# testplots returns ssv global
           fns = ssv
+          ssv = NULL #clear bones
           avail = FALSE
           if(renamed){
             renamed = FALSE
             load('AN.RData')} # an[ttl] has been changed by testplots GUI
         }
-        if (length(fns) > 0) { # null HAS LENGTH 0
+        if (len(fns) > 0) { # null HAS LENGTH 0
           writeLines(fns,'fns.m3u') # Write playlist
           load('headfoot.RData')
           writeLines(as.character(c(
