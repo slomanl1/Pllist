@@ -27,7 +27,9 @@ testplots = function(fnames) {
     addHandlerRightclick(
       tab, handler = function(h,...) {
         if (length(svalue(h$obj)) > 0) {
-          msgg = an[ttl][which(grepl(basename(as.character(svalue(h$obj))),an[ttl],fixed = TRUE))]
+          idx=which(grepl(basename(as.character(svalue(h$obj))),an[ttl],fixed = TRUE))
+          print(paste('idx=',idx))
+          msgg = an[ttl][idx]
           msgg = substr(msgg,10,255)
           svalue(w) <- as.character(msgg)
           ofn=as.character(svalue(h$obj)[1])
@@ -41,11 +43,10 @@ testplots = function(fnames) {
             if(nfn!=ofn){
               if(file.rename(ofn,nfn)){
                 print(paste("file rename successful",ofn,nfn))
-                idx=which(grepl(basename(as.character(svalue(h$obj))),
-                            an[ttl],fixed = TRUE))
-                an[ttl][idx]=paste("========",nfn) # replace with new filename
-                .GlobalEnv$renamed = TRUE
+                an[ttl][idx]=sub(ofn,nfn,an[ttl][idx],fixed=TRUE) # replace old filename with new filename
+                print(paste('new anttlidx=',an[ttl][idx]))
                 save(an,file='AN.RData')
+                .GlobalEnv$renamed = TRUE
                 fnx1 = an[ttl][idxs]
                 ttls = unlist(regexpr(
                   'Comment|Title|Sub Title|File Path|Ingredients|Album',fnx1))
@@ -53,7 +54,7 @@ testplots = function(fnames) {
                 fnx= substr(fnx1,10,ttls - 2)
                 print(paste('fnx=',fnx))
                 print(get_list_content(fnx))
-                tab[] <- get_list_content(fnx)
+                tab[] <- get_list_content(fnx) # refresh gtable(write updated table to tab)
 
               }else{
                 print(paste("file rename FAILED",ofn,nfn))}
