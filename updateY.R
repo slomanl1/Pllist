@@ -161,7 +161,7 @@ while (TRUE) {
         fns = NULL
         if (!is.na(pnoln[1])) {
           ttls = unlist(regexpr(
-            'Comment|Title|Sub Title|File Path|Ingredients|Album',pnoln
+            'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks',pnoln
           ))
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,10,ttls - 2)
