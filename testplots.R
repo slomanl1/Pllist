@@ -8,6 +8,7 @@ options(guiToolkit = "RGtk2")                     # avoid question if more than 
 # })
 testplots = function(fnames) {
   idxs=NULL # indices of fnames in an[ttl]
+
   for(x in 1:len(fnames)) idxs=c(idxs,which(grepl(fnames[x],an[ttl],fixed=TRUE)))
   
   if (!.GlobalEnv$tpexist) {
@@ -17,27 +18,29 @@ testplots = function(fnames) {
     
     w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 1024,parent = c(0,0))
     gp <- ggroup(horizontal = FALSE, container = w)
-    tab <- gtable(get_list_content(fnames), container = gp, expand = TRUE,multiple = TRUE,
+    tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
       handler = function(h,...) {
         print(svalue(h$obj))
         .GlobalEnv$ssv = as.character(svalue(h$obj))
         .GlobalEnv$avail = TRUE
+        .GlobalEnv$ww=w # pass window to main for dispose()
       }
     )
     addHandlerRightclick(
       tab, handler = function(h,...) {
-        if (length(svalue(h$obj)) > 0) {
-          idx=which(grepl(basename(as.character(svalue(h$obj))),an[ttl],fixed = TRUE))
+        if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
+          idx=which(grepl(basename(as.character(svalue(h$obj))),gdframe$fnx,fixed = TRUE))
           print(paste('idx=',idx))
           msgg = an[ttl][idx]
           msgg = substr(msgg,10,255)
           svalue(w) <- as.character(msgg)
-          ofn=as.character(svalue(h$obj)[1])
-          dirnm=dirname(ofn)
+          ofn=gdframe[idx,]
+          dirnm=dirname(ofn$fnx)
           nfn=NULL
-          if(okCancelBox(paste(substr(msgg,1,230),'Edit Filename ?')))
-            nfn=dlgInput('Edit filename',default = basename(ofn))$res
 
+          gdf(ofn, container=gwindow("FileSearch",width=1900,height = 20))
+          .GlobalEnv$gdfopen=TRUE
+          ######################## add test for file name edit here (invalid path, reject)
           if(length(nfn)>0){
             nfn=paste(dirnm,nfn,sep='/')
             if(nfn!=ofn){
@@ -48,8 +51,7 @@ testplots = function(fnames) {
                 save(an,file='AN.RData')
                 .GlobalEnv$renamed = TRUE
                 fnx1 = an[ttl][idxs]
-                ttls = unlist(regexpr(
-                  'Comment|Title|Sub Title|File Path|Ingredients|Album',fnx1))
+                ttls = unlist(regexpr(EOFN,fnx1))
                 ttls[ttls < 0] = 500
                 fnx= substr(fnx1,10,ttls - 2)
                 print(paste('fnx=',fnx))

@@ -7,6 +7,7 @@ guiAdd("myGUI")
 volz = 'z'
 voly = 'y'
 tpexist = FALSE
+gdfopen=FALSE
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 
 #get_list_content <- function (fnx) data.frame(fnx,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
@@ -181,6 +182,7 @@ while (TRUE) {
             load('AN.RData')} # an[ttl] has been changed by testplots GUI
         }
         if (len(fns) > 0) { # null HAS LENGTH 0
+          dispose(ww)
           writeLines(fns,'fns.m3u') # Write playlist
           load('headfoot.RData')
           writeLines(as.character(c(
