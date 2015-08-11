@@ -1,11 +1,3 @@
-library(gWidgets)
-options(guiToolkit = "RGtk2")                     # avoid question if more than one is installed
-# w <- gwindow("Hello world example")             # top level window
-# g <- ggroup(cont=w, horizontal=FALSE)           # a box container, added to w
-# b <- gbutton("Click me for a message", cont=g)  # add button to container g
-# addHandlerClicked(b, handler=function(h,...) {  # add interactivity through a handler
-#   galert("Hello world", parent=h$obj)
-# })
 testplots = function(fnames) {
   idxs=NULL # indices of fnames in an[ttl]
   

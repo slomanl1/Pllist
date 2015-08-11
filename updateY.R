@@ -1,3 +1,5 @@
+library(gWidgets)
+options(guiToolkit = "RGtk2")   
 setwd('~/')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
