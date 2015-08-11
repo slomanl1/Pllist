@@ -10,9 +10,7 @@ tpexist = FALSE
 gdfopen=FALSE
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 
-#get_list_content <- function (fnx) data.frame(fnx,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
 get_list_content <- function (fnx,cmts) data.frame(fnx,comments=cmts,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
-
 
 if (file.exists('D:/PNMTALL')) {
   shell('dir D: | findstr Volume > volz.txt')

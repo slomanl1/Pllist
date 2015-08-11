@@ -8,7 +8,7 @@ options(guiToolkit = "RGtk2")                     # avoid question if more than 
 # })
 testplots = function(fnames) {
   idxs=NULL # indices of fnames in an[ttl]
-
+  
   for(x in 1:len(fnames)) idxs=c(idxs,which(grepl(fnames[x],an[ttl],fixed=TRUE)))
   
   if (!.GlobalEnv$tpexist) {
@@ -19,17 +19,17 @@ testplots = function(fnames) {
     w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 1024,parent = c(0,0))
     gp <- ggroup(horizontal = FALSE, container = w)
     tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
-      handler = function(h,...) {
-        print(svalue(h$obj))
-        .GlobalEnv$ssv = as.character(svalue(h$obj))
-        .GlobalEnv$avail = TRUE
-        .GlobalEnv$ww=w # pass window to main for dispose()
-      }
+                  handler = function(h,...) {
+                    print(svalue(h$obj))
+                    .GlobalEnv$ssv = as.character(svalue(h$obj))
+                    .GlobalEnv$avail = TRUE
+                    .GlobalEnv$ww=w # pass window to main for dispose()
+                  }
     )
     addHandlerRightclick(
       tab, handler = function(h,...) {
         if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
-          idx=which(grepl(basename(as.character(svalue(h$obj))),gdframe$fnx,fixed = TRUE))
+          idx=which(grepl(basename(as.character(svalue(h$obj)))[1],gdframe$fnx,fixed = TRUE))
           print(paste('idx=',idx))
           msgg = an[ttl][idx]
           msgg = substr(msgg,10,255)
@@ -37,9 +37,14 @@ testplots = function(fnames) {
           ofn=gdframe[idx,]
           dirnm=dirname(ofn$fnx)
           nfn=NULL
-
-          gdf(ofn, container=gwindow("FileSearch",width=1900,height = 20))
           .GlobalEnv$gdfopen=TRUE
+          fwind=gdf(ofn, container=gwindow("FileSearch",width=1900,height = 20))
+          addHandlerDestroy(
+            fwind, handler = function(h,...) {
+              .GlobalEnv$gdfopen=FALSE
+            }
+          )
+          .GlobalEnv$fw=fwind
           ######################## add test for file name edit here (invalid path, reject)
           if(length(nfn)>0){
             nfn=paste(dirnm,nfn,sep='/')
@@ -57,12 +62,12 @@ testplots = function(fnames) {
                 print(paste('fnx=',fnx))
                 print(get_list_content(fnx))
                 tab[] <- get_list_content(fnx) # refresh gtable(write updated table to tab)
-
+                
               }else{
                 print(paste("file rename FAILED",ofn,nfn))}
-                }
+            }
           }
-
+          
         }
       }
     )
@@ -70,16 +75,24 @@ testplots = function(fnames) {
     bg <- ggroup(container = gp)
     addSpring(bg)
     gbutton("dismiss", container = bg, handler = function(h,...) {
-        .GlobalEnv$tpexist <- FALSE
-        .GlobalEnv$avail = TRUE
-        dispose(w)
-      }
+      .GlobalEnv$tpexist <- FALSE
+      .GlobalEnv$avail = TRUE
+      dispose(w)
+      if(exists('fw', envir = .GlobalEnv)){
+        if(isExtant(.GlobalEnv$fw))
+          dispose(.GlobalEnv$fw)} # fw is gdf window
+      .GlobalEnv$gdfopen=FALSE
+    }
     )
     addHandlerDestroy(
       tab, handler = function(h,...) {
         .GlobalEnv$ssv = NULL
         .GlobalEnv$avail = TRUE
         .GlobalEnv$tpexist <- FALSE
+        if(exists('fw', envir = .GlobalEnv)){
+          if(isExtant(.GlobalEnv$fw))
+            dispose(.GlobalEnv$fw)} # fw is gdf window
+        .GlobalEnv$gdfopen=FALSE
       }
     )
     .GlobalEnv$tpexist <- TRUE
