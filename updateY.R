@@ -10,7 +10,7 @@ tpexist = FALSE
 gdfopen=FALSE
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 
-get_list_content <- function (fnx,cmts) data.frame(fnx,comments=cmts,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
+get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 
 if (file.exists('D:/PNMTALL')) {
   shell('dir D: | findstr Volume > volz.txt')
@@ -30,7 +30,6 @@ if (file.exists('D:/PNMTALL')) {
       shell('getm D:\\PNMTALL > allmetadata.txt')
       shell('getm C:\\PNMTALL >> allmetadata.txt')
       am1 = readLines('allmetadata.txt')
-      am2 = am1[1:len(am1) - 1] # remove last line (RPDN.lnk)
       am = am2[!grepl('Ingredients|Pantry',am2)]
       ttl = which(substr(am,1,1) == '=')
       dts = file.mtime(zz) # file dates
@@ -140,6 +139,8 @@ if (sub('Z','Y',volz[1]) == voly[1])
   cat(paste('\nVolumes in Y and Z do not match',voly,volz,'\n',sep = ''))
 }
 dflt = ''
+if(file.exists('dfltsave.RData'))
+  load('dfltsave.RData')
 emsg = 'OK'
 while (TRUE) {
   liner <- dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
@@ -153,6 +154,7 @@ while (TRUE) {
       if (nchar(liner) > 0)
       {
         dflt = liner
+        save(dflt,file='dfltsave.RData')
         srct=unlist(strsplit(toupper(liner),' '))
         anttl=subset(an[ttl],!grepl('.lnk',an[ttl],fixed=TRUE))
         anttlu=toupper(anttl)
