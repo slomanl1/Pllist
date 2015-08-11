@@ -30,7 +30,7 @@ if (file.exists('D:/PNMTALL')) {
       shell('getm D:\\PNMTALL > allmetadata.txt')
       shell('getm C:\\PNMTALL >> allmetadata.txt')
       am1 = readLines('allmetadata.txt')
-      am = am2[!grepl('Ingredients|Pantry',am2)]
+      am = am1[!grepl('Ingredients|Pantry|Album Title',am1)]
       ttl = which(substr(am,1,1) == '=')
       dts = file.mtime(zz) # file dates
       #unlink('allmetadata.txt')
