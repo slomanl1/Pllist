@@ -7,7 +7,10 @@ guiAdd("myGUI")
 volz = 'z'
 voly = 'y'
 tpexist = FALSE
-get_list_content <- function (fnx) data.frame(fnx,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
+EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
+
+#get_list_content <- function (fnx) data.frame(fnx,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
+get_list_content <- function (fnx,cmts) data.frame(fnx,comments=cmts,cdts=as.character(file.mtime(fnx)),stringsAsFactors =FALSE)
 
 
 if (file.exists('D:/PNMTALL')) {
@@ -161,14 +164,15 @@ while (TRUE) {
         pnoln=anttl[as.integer(names(which(table(allc)==len(srct))))] # how many match criteria?
         fns = NULL
         if (!is.na(pnoln[1])) {
-          ttls = unlist(regexpr(
-            'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks',pnoln
-          ))
+          ttls = unlist(regexpr(EOFN,pnoln))
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,10,ttls - 2)
           fnames = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
-          testplots(fnames)
-          while (!avail & !renamed) {};# testplots returns ssv global
+          comments=substr(pnoln,ttls,nchar(pnoln))
+          gdframe = get_list_content(fnames,comments)
+          testplots(gdframe)
+          while (!avail & !renamed) 
+            {};# testplots returns ssv global
           fns = ssv
           ssv = NULL #clear bones
           avail = FALSE
