@@ -15,8 +15,8 @@ testplots = function(fnames) {
     .GlobalEnv$avail = FALSE
     .GlobalEnv$renamed = FALSE
     .GlobalEnv$ssv = NULL
-    
-    w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 1024,parent = c(0,0))
+    heit=min((100+len(fnames)*170),1900)
+    w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 1900,height=heit,parent = c(0,0))
     gp <- ggroup(horizontal = FALSE, container = w)
     tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                   handler = function(h,...) {
@@ -34,40 +34,52 @@ testplots = function(fnames) {
           msgg = an[ttl][idx]
           msgg = substr(msgg,10,255)
           svalue(w) <- as.character(msgg)
-          ofn=gdframe[idx,]
-          dirnm=dirname(ofn$fnx)
+          ofnx=gdframe[idx,]
           nfn=NULL
           .GlobalEnv$gdfopen=TRUE
-          fwind=gdf(ofn, container=gwindow("FileSearch",width=1900,height = 20))
+          if(exists('fw'))
+            rm(fw)
+          fwind=gdf(ofnx, container=gwindow("Edit File Details",width=1900,height = 20))
           addHandlerDestroy(
             fwind, handler = function(h,...) {
               .GlobalEnv$gdfopen=FALSE
             }
           )
-          .GlobalEnv$fw=fwind
-          ######################## add test for file name edit here (invalid path, reject)
-          if(length(nfn)>0){
-            nfn=paste(dirnm,nfn,sep='/')
-            if(nfn!=ofn){
-              if(file.rename(ofn,nfn)){
-                print(paste("file rename successful",ofn,nfn))
-                an[ttl][idx]=sub(ofn,nfn,an[ttl][idx],fixed=TRUE) # replace old filename with new filename
-                print(paste('new anttlidx=',an[ttl][idx]))
-                save(an,file='AN.RData')
-                .GlobalEnv$renamed = TRUE
-                fnx1 = an[ttl][idxs]
-                ttls = unlist(regexpr(EOFN,fnx1))
-                ttls[ttls < 0] = 500
-                fnx= substr(fnx1,10,ttls - 2)
-                print(paste('fnx=',fnx))
-                print(get_list_content(fnx))
-                tab[] <- get_list_content(fnx) # refresh gtable(write updated table to tab)
-                
-              }else{
-                print(paste("file rename FAILED",ofn,nfn))}
+          addhandlerchanged(fwind, handler = function(h,...) 
+          {.GlobalEnv$fw=fwind})
+          while(!exists('fw'))
+          {};
+          nfnx=fw[,]
+          nfn=nfnx$fnx
+          ofn=ofnx$fnx
+          print(paste('nfn=',nfn))
+          
+          if(dirname(nfn)!=dirname(ofn)){
+            print(paste('New dir name',dirname(nfn),'Not equal to old',dirname(ofn)))
+            dispose(fwind)
+          }else{
+            if(length(nfn)>0){
+              if(nfn!=ofn){
+                if(file.rename(ofn,nfn)){
+                  print(paste("file rename successful",ofn,nfn))
+                  an[ttl][idx]=sub(ofn,nfn,an[ttl][idx],fixed=TRUE) # replace old filename with new filename
+                  print(paste('new anttlidx=',an[ttl][idx]))
+                  save(an,file='AN.RData')
+                  .GlobalEnv$renamed = TRUE
+                  fnx1 = an[ttl][idxs]
+                  ttls = unlist(regexpr(EOFN,fnx1))
+                  ttls[ttls < 0] = 500
+                  fnx= substr(fnx1,10,ttls - 2)
+                  print(paste('fnx=',fnx))
+                  comments=substr(fnx1,ttls,nchar(pnoln))
+                  print(get_list_content(fnx,comments))
+                  tab[] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
+                  
+                }else{
+                  print(paste("file rename FAILED",ofn,nfn))}
+              }
             }
           }
-          
         }
       }
     )
