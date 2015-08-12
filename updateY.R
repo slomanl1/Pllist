@@ -101,7 +101,14 @@ if (file.exists('D:/PNMTALL')) {
         }
       }
     }
-    save(am,an,ttl,dff,dts,file = sfname)
+    if(!file.exists(sfname)){
+    xx=strsplit(an[ttl],paste(EOFN,'|======== ',sep=''))
+    dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA)
+    for(i in 1:len(xx))
+      for(j in 2:5)
+        dfan[i,j-1]=xx[[i]][j]
+    }
+    save(am,an,ttl,dff,dts,dfan,file = sfname)
   }
 }
 
