@@ -9,8 +9,9 @@ testplots = function(fnames) { #fnames is a data frame
     .GlobalEnv$ssv = NULL
     .GlobalEnv$changed = TRUE
     heit=min((100+nrow(fnames)*25),1900)
-    w <- gwindow(paste(liner,"Choose One or More Files\n"),width = 1900,height=heit,parent = c(0,0))
+    w <- gwindow(paste(liner,"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
     gp <- ggroup(horizontal = FALSE, container = w)
+    .GlobalEnv$tpexist <- TRUE
     tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                   handler = function(h,...) {
                     print(svalue(h$obj))
@@ -24,10 +25,6 @@ testplots = function(fnames) { #fnames is a data frame
         if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
           .GlobalEnv$idx=which(grepl(basename(as.character(svalue(h$obj)))[1],fnames$fnx,fixed = TRUE))
           print(paste('idx=',idx))
-          msgg = an[ttl][idxs][1]
-          msgg = substr(msgg,10,255)
-          print(msgg)
-          svalue(w) <- as.character(msgg)
           .GlobalEnv$ofnx=fnames[idx,]
           ofnxa=fnames[idx,]
           nfn=NULL
@@ -60,6 +57,7 @@ testplots = function(fnames) { #fnames is a data frame
     )
     print('bghello')
     bg <- ggroup(container = gp)
+    .GlobalEnv$tab <- tab
     addSpring(bg)
     gbutton("dismiss", container = bg, handler = function(h,...) {
       .GlobalEnv$tpexist <- FALSE
@@ -71,51 +69,52 @@ testplots = function(fnames) { #fnames is a data frame
       .GlobalEnv$gdfopen=FALSE
     }
     )
-    ######## CAHNGED HANDLER LOGIC NEEDS work here, nfn need to be NULL when selected files are chosen from gtable tab   
-    while(!.GlobalEnv$changed)
-    {};
-    print('changed handler (fw)')
-    .GlobalEnv$changed=FALSE
-    fw=.GlobalEnv$fw
-    ofnx=.GlobalEnv$ofnx
-    if(len(ofnx)>0){
-      nfnx=fw[,]
-      nfn=nfnx$fnx
-      ofn=ofnx$fnx
-      ofc=ofnx$comments
-      nfc=nfnx$comments
-      idx=.GlobalEnv$idx
-      print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
-      
-      if(dirname(nfn)!=dirname(ofn)){
-        print(paste('New dir name',dirname(nfn),'Not equal to old',dirname(ofn)))
-        dispose(fwind)
-      }else{
-        if(length(nfn)>0){
-          if(any(nfnx!=ofnx)){ # all fields in DF compared
-            if(file.rename(ofn,nfn)){
-              print(paste("file rename successful,old an[ttl][idxs][idx]=",ofn,nfn,an[ttl][idxs][idx]))
-              an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
-              an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comments with new comments
-              save(an,file='AN.RData')
-              .GlobalEnv$renamed = TRUE
-              fnx1 = an[ttl][idxs]
-              ttls = unlist(regexpr(EOFN,fnx1))
-              ttls[ttls < 0] = 500
-              fnx= substr(fnx1,10,ttls - 2)
-              comments=substr(fnx1,ttls,nchar(fnx1))
-              tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
-            }else{
-              print(paste("file rename FAILED",ofn,nfn))}
-          }
+    
+    
+  }
+ 
+  while(!.GlobalEnv$changed)
+  {};
+  print('changed handler (fw)')
+  .GlobalEnv$changed=FALSE
+  fw=.GlobalEnv$fw
+  ofnx=.GlobalEnv$ofnx
+  if(len(ofnx)>0){
+    nfnx=fw[,]
+    nfn=nfnx$fnx
+    ofn=ofnx$fnx
+    ofc=ofnx$comments
+    nfc=nfnx$comments
+    idx=.GlobalEnv$idx
+    print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
+    
+    if(dirname(nfn)!=dirname(ofn)){
+      print(paste('New dir name',dirname(nfn),'Not equal to old',dirname(ofn)))
+      dispose(fwind)
+    }else{
+      if(length(nfn)>0){
+        if(any(nfnx!=ofnx)){ # all fields in DF compared
+          if(file.rename(ofn,nfn)){
+            print(paste("file rename successful,old an[ttl][idxs][idx]=",ofn,nfn,an[ttl][idxs][idx]))
+            an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
+            an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comments with new comments
+            save(an,file='AN.RData')
+            .GlobalEnv$renamed = TRUE
+            fnx1 = an[ttl][idxs]
+            ttls = unlist(regexpr(EOFN,fnx1))
+            ttls[ttls < 0] = 500
+            fnx= substr(fnx1,10,ttls - 2)
+            comments=substr(fnx1,ttls,nchar(fnx1))
+            tab=.GlobalEnv$tab
+            tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
+          }else{
+            print(paste("file rename FAILED",ofn,nfn))}
         }
       }
-    }  
-    # end of rightclickhandler for gtable (tab)
-    
-    
-    .GlobalEnv$tpexist <- TRUE
-  }
+    }
+  }  
+  # end of rightclickhandler for gtable (tab)
+
 }
 
 #exiftool  -Title=[test] 
