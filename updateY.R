@@ -10,6 +10,8 @@ volz = 'z'
 voly = 'y'
 tpexist = FALSE
 gdfopen=FALSE
+changed=FALSE
+ofnx=NULL
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
