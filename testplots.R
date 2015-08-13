@@ -12,6 +12,7 @@ testplots = function(fnames) { #fnames is a data frame
     w <- gwindow(paste(liner,"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
     gp <- ggroup(horizontal = FALSE, container = w)
     .GlobalEnv$tpexist <- TRUE
+    .GlobalEnv$ww <- w
     tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                   handler = function(h,...) {
                     print(svalue(h$obj))
@@ -29,16 +30,19 @@ testplots = function(fnames) { #fnames is a data frame
           ofnxa=fnames[idx,]
           nfn=NULL
           .GlobalEnv$gdfopen=TRUE
+          enabled(w) <- FALSE
           fwind=gdf(ofnxa, container=gwindow("Edit File Details",width=1900,height = 20))
           .GlobalEnv$fw=fwind
           addHandlerDestroy(
             fwind, handler = function(h,...) {
               .GlobalEnv$gdfopen=FALSE
+              enabled(w) <- TRUE
             }
           )
           addhandlerchanged(fwind, handler = function(h,...) 
           { print('changed handler (fwind)')
-            .GlobalEnv$changed=TRUE})
+            .GlobalEnv$changed=TRUE
+            })
         }
       }
     )
@@ -62,25 +66,24 @@ testplots = function(fnames) { #fnames is a data frame
     gbutton("dismiss", container = bg, handler = function(h,...) {
       .GlobalEnv$tpexist <- FALSE
       .GlobalEnv$avail = TRUE
-      dispose(w)
-      if(exists('fw', envir = .GlobalEnv)){
-        if(isExtant(.GlobalEnv$fw))
-          dispose(.GlobalEnv$fw)} # fw is gdf window
+      wx=.GlobalEnv$ww
+      #dispose(wx)
+      visible(w) <- FALSE
       .GlobalEnv$gdfopen=FALSE
     }
     )
-    
-    
   }
- 
+  print('enter sub while')
   while(!.GlobalEnv$changed)
   {};
   print('changed handler (fw)')
   .GlobalEnv$changed=FALSE
-  fw=.GlobalEnv$fw
   ofnx=.GlobalEnv$ofnx
   if(len(ofnx)>0){
+    print('changed handler (fwofnx>0)')
+    fw=.GlobalEnv$fw
     nfnx=fw[,]
+    print('changed handler (nfnx created OK')
     nfn=nfnx$fnx
     ofn=ofnx$fnx
     ofc=ofnx$comments

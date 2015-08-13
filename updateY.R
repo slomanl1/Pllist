@@ -183,8 +183,10 @@ while (TRUE) {
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames,comments)
           testplots(gdframe)
-          while (!avail & !renamed) 
+          print('enter main while')
+          while (!avail & !renamed &!changed) # #################################### MAIN WHILE ##############
             {};# testplots returns ssv global
+          print('exit main while')
           fns = ssv
           ssv = NULL #clear bones
           avail = FALSE
@@ -204,9 +206,11 @@ while (TRUE) {
         }else{
           print('Non Found')
           emsg = 'NotFound'
-          break
+          if(!changed)
+            break
         }
       }
   }
 }
 #explorer /select,d:\PNMTALL\CF-ACM\
+
