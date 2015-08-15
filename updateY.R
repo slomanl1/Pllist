@@ -114,41 +114,6 @@ if (file.exists('D:/PNMTALL')) {
   }
 }
 
-if (file.exists('y:/')) {
-  shell('dir Y: | findstr Volume > voly.txt')
-  voly = readLines('voly.txt')
-  unlink('voly.txt')
-}
-if (sub('Z','Y',volz[1]) == voly[1])
-{
-  shell('dir z:\\ /S/B > zz.txt')
-  shell('dir y:\\ /S/B > yy.txt')
-  zz = readLines('zz.txt')
-  yy = readLines('yy.txt')
-  unlink('zz.txt')
-  unlink('yy.txt')
-  copyl = zz[!(substr(zz,2,100) %in% substr(yy,2,100))]
-  reml = yy[!(substr(yy,2,100) %in% substr(zz,2,100))]
-  unlink(reml,recursive = TRUE)
-  ccdirs = sub('z:','y:',na.omit(copyl[file.info(copyl)[,'isdir']]))
-  if (len(ccdirs) > 0)
-    for (i in 1:len(ccdirs)) {
-      dir.create(ccdirs[i])
-      print(paste(ccdirs[i],'created'))
-    }
-  lnc = len(copyl)
-  if (lnc > 0)
-    for (i in 1:lnc) {
-      print(paste('Copying',copyl[i],lnc - i))
-      file.copy(copyl[i],sub('z:','y:',copyl[i]))
-    }
-  shell('xcopy z: y: /S/D/Y/J')
-  print('Done')
-  print(md5sum(sfname))
-}else{
-  cat('\n')
-  cat(paste('\nVolumes in Y and Z do not match',voly,volz,'\n',sep = ''))
-}
 dflt = ''
 if(file.exists('dfltsave.RData'))
   load('dfltsave.RData')
