@@ -4,12 +4,12 @@ for(x in 1:nrow(fnames))
   idxs=c(idxs,which(grepl(fnames[x,'fnx'],an[ttl],fixed=TRUE)))
 print(.GlobalEnv$changed)
 if (!.GlobalEnv$tpexist) {
-  .GlobalEnv$avail = FALSE
-  .GlobalEnv$renamed = FALSE
-  .GlobalEnv$ssv = NULL
+  avail = FALSE
+  renamed = FALSE
+  ssv = NULL
 
   fwind=gdf(gdframe[1,], container=gwindow("Edit File Details",width=1900,height = 20))
-  visible(fwind) <- FALSE
+  enabled(fwind) <- FALSE
   addHandlerDestroy(
     fwind, handler = function(h,...) {
       .GlobalEnv$gdfopen=FALSE
@@ -19,7 +19,16 @@ if (!.GlobalEnv$tpexist) {
   addhandlerchanged(fwind, handler = function(h,...) 
   { print('changed handler (fwind)')
     .GlobalEnv$changed=TRUE
+    .GlobalEnv$avail=TRUE
+    enabled(fwind) <- FALSE
   })
+  
+  addHandlerDestroy(fwind, handler = function(h,...) 
+  { print('destroy handler (fwind)')
+    .GlobalEnv$avail=TRUE
+    dispose(w)
+    tpexist=FALSE
+  }) 
   
   heit=min((100+nrow(fnames)*25),1900)
   w <- gwindow(paste(liner,"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
@@ -42,7 +51,8 @@ if (!.GlobalEnv$tpexist) {
         .GlobalEnv$ofnx=fnames[idx,]
         ofnxa=fnames[idx,]
         nfn=NULL
-        visible(fwind) <- TRUE
+        fwind[,]=ofnxa # supply select idx item in editing window fwinf
+        enabled(fwind) <- TRUE
         visible(w) <- FALSE
       }
     }
@@ -50,13 +60,11 @@ if (!.GlobalEnv$tpexist) {
   addHandlerDestroy(
     tab, handler = function(h,...) {
       .GlobalEnv$ssv = NULL
-      .GlobalEnv$avail = TRUE
+      .GlobalEnvavail = TRUE
       .GlobalEnv$tpexist <- FALSE
       print('tab destroyed handler')
-      if(exists('fw', envir = .GlobalEnv)){
-        print('fw exists')
-        if(isExtant(.GlobalEnv$fw))
-          dispose(.GlobalEnv$fw)} # fw is gdf window
+      if(isExtant(fwind))
+          dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
     }
   )
@@ -66,14 +74,15 @@ if (!.GlobalEnv$tpexist) {
   addSpring(bg)
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
-    .GlobalEnv$avail = TRUE
+  avail = TRUE
     wx=.GlobalEnv$ww
     #dispose(wx)
     visible(w) <- FALSE
     .GlobalEnv$gdfopen=FALSE
   }
   )
-}
+}else
+  visible(w)=TRUE
 
 #}
 

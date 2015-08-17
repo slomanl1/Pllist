@@ -3,7 +3,6 @@ options(guiToolkit = "RGtk2")
 setwd('~/')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-#source('~/pllist/pllist.git/testplots.r')
 len=function(x) length(x)
 guiAdd("myGUI")
 volz = 'z'
@@ -11,6 +10,8 @@ voly = 'y'
 tpexist = FALSE
 gdfopen=FALSE
 changed=FALSE
+avail=FALSE
+renamed=FALSE
 ofnx=NULL
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 
@@ -147,11 +148,10 @@ while (TRUE) {
           fnames2 = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
-          #testplots(gdframe)
           fnames=gdframe
           debugSource('~/pllist/pllist.git/testplots.R')
           print('enter sub while')
-          while(!.GlobalEnv$changed)
+          while(!changed & !avail)
           {};
           print('changed handler (fw)')
           .GlobalEnv$changed=FALSE
