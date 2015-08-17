@@ -3,7 +3,7 @@ options(guiToolkit = "RGtk2")
 setwd('~/')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-source('~/pllist/pllist.git/testplots.r')
+#source('~/pllist/pllist.git/testplots.r')
 len=function(x) length(x)
 guiAdd("myGUI")
 volz = 'z'
@@ -104,11 +104,11 @@ if (file.exists('D:/PNMTALL')) {
       }
     }
     if(!file.exists(sfname)){
-    xx=strsplit(an[ttl],paste(EOFN,'|======== ',sep=''))
-    dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA)
-    for(i in 1:len(xx))
-      for(j in 2:5)
-        dfan[i,j-1]=xx[[i]][j]
+      xx=strsplit(an[ttl],paste(EOFN,'|======== ',sep=''))
+      dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA)
+      for(i in 1:len(xx))
+        for(j in 2:5)
+          dfan[i,j-1]=xx[[i]][j]
     }
     save(am,an,ttl,dff,dts,dfan,file = sfname)
   }
@@ -144,13 +144,60 @@ while (TRUE) {
           ttls = unlist(regexpr(EOFN,pnoln))
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,10,ttls - 2)
-          fnames = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
+          fnames2 = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
-          gdframe = get_list_content(fnames,comments)
-          testplots(gdframe)
+          gdframe = get_list_content(fnames2,comments)
+          #testplots(gdframe)
+          fnames=gdframe
+          debugSource('~/pllist/pllist.git/testplots.R')
+          print('enter sub while')
+          while(!.GlobalEnv$changed)
+          {};
+          print('changed handler (fw)')
+          .GlobalEnv$changed=FALSE
+          if(len(ofnx)>0){
+            print('changed handler (fwofnx>0)')
+            nfnx=fwind[,]
+            print('changed handler (nfnx created OK')
+            nfn=nfnx$fnx
+            ofn=ofnx$fnx
+            ofc=ofnx$comments
+            nfc=nfnx$comments
+            idx=.GlobalEnv$idx
+            print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
+            
+            if(dirname(nfn)!=dirname(ofn)){
+              print(paste('New dir name',dirname(nfn),'Not equal to old',dirname(ofn)))
+              dispose(fwind)
+            }else{
+              if(length(nfn)>0){
+                if(any(nfnx!=ofnx)){ # all fields in DF compared
+                  if(ofn!=nfn){
+                    if(file.rename(ofn,nfn)){
+                      print(paste("file rename successful,old an[ttl][idxs][idx]=",ofn,nfn,an[ttl][idxs][idx]))
+                      an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
+                    }else{
+                      print(paste("file rename FAILED",ofn,nfn))}
+                  }else{
+                    an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comments with new comments
+                    save(an,file='AN.RData')
+                    .GlobalEnv$renamed = TRUE
+                    fnx1 = an[ttl][idxs]
+                    ttls = unlist(regexpr(EOFN,fnx1))
+                    ttls[ttls < 0] = 500
+                    fnx= substr(fnx1,10,ttls - 2)
+                    comments=substr(fnx1,ttls,nchar(fnx1))
+                    tab=.GlobalEnv$tab
+                    tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
+                  }
+                }
+              }
+            }  
+            # end of rightclickhandler for gtable (tab)
+          }            
           print('enter main while')
           while (!avail & !renamed &!changed) # #################################### MAIN WHILE ##############
-            {};# testplots returns ssv global
+          {};# testplots returns ssv global
           print('exit main while')
           fns = ssv
           ssv = NULL #clear bones
@@ -169,7 +216,7 @@ while (TRUE) {
           shell("wmplayer c:\\Users\\LarrySloman\\Documents\\fns.wpl")
           emsg = 'OK'
         }else{
-          print('Non Found')
+          print(paste('Non Found changed=',changed))
           emsg = 'NotFound'
           if(!changed)
             break
