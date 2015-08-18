@@ -186,11 +186,12 @@ while (TRUE) {
                   renamed = TRUE
                   dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
                   dfan[dfix,'filename']=nfn
-                  fnx1=an[ttl][idxs][idx]
-                  xx=strsplit(fnx1,paste(EOFN,'|======== ',sep=''))
+                  fnx=an[ttl][idxs][idx]
+                  xx=strsplit(fnx,paste(EOFN,'|======== ',sep=''))
                   for(j in 2:5)
                     dfan[dfix,j-1]=xx[[1]][j]
                   ######### REFRESH GTABLE tab[] ###########
+                  fnx1=an[ttl][idxs]
                   ttls = unlist(regexpr(EOFN,fnx1))
                   ttls[ttls < 0] = 500
                   fnx= substr(fnx1,10,ttls - 2)
