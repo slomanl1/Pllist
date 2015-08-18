@@ -120,14 +120,15 @@ if(file.exists('dfltsave.RData'))
   load('dfltsave.RData')
 emsg = 'OK'
 while (TRUE) {
-  liner <- dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
-  if (!len(liner)) {
+  #  liner <- dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
+  liner = ginput("Enter search Criteria", text=dflt,icon="info", handler = NULL)
+  if (is.na(liner)) {
     # The user clicked the 'cancel' button
     cat("OK, No Files Selected\n")
     break
   }
   while (TRUE) {
-    if (len(liner) > 0)
+    if (!is.na(liner))
       if (nchar(liner) > 0)
       {
         dflt = liner
@@ -149,12 +150,12 @@ while (TRUE) {
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
           fnames=gdframe
-          debugSource('~/pllist/pllist.git/testplots.R')
-          print('enter sub while')
+          source('~/pllist/pllist.git/testplots.R')
+          print('enter sub while') # ##################### SUB WHILE #####################
           while(!changed & !avail)
           {};
           print('changed handler (fw)')
-          .GlobalEnv$changed=FALSE
+          changed=FALSE
           if(len(ofnx)>0){
             print('changed handler (fwofnx>0)')
             nfnx=fwind[,]
@@ -163,7 +164,6 @@ while (TRUE) {
             ofn=ofnx$fnx
             ofc=ofnx$comments
             nfc=nfnx$comments
-            idx=.GlobalEnv$idx
             print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
             
             if(dirname(nfn)!=dirname(ofn)){
@@ -173,41 +173,47 @@ while (TRUE) {
               if(length(nfn)>0){
                 if(any(nfnx!=ofnx)){ # all fields in DF compared
                   if(ofn!=nfn){
-                    if(file.rename(ofn,nfn)){
+                    if(!file.rename(ofn,nfn)){
+                      print(paste("file rename FAILED",ofn,nfn))
+                    }else{
                       print(paste("file rename successful,old an[ttl][idxs][idx]=",ofn,nfn,an[ttl][idxs][idx]))
                       an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
-                    }else{
-                      print(paste("file rename FAILED",ofn,nfn))}
-                  }else{
-                    an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comments with new comments
-                    save(an,file='AN.RData')
-                    .GlobalEnv$renamed = TRUE
-                    fnx1 = an[ttl][idxs]
-                    ttls = unlist(regexpr(EOFN,fnx1))
-                    ttls[ttls < 0] = 500
-                    fnx= substr(fnx1,10,ttls - 2)
-                    comments=substr(fnx1,ttls,nchar(fnx1))
-                    tab=.GlobalEnv$tab
-                    tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
+                    }
                   }
+                  
+                  an[ttl][idxs]=sub(ofc,nfc,an[ttl][idxs],fixed=TRUE) # replace old comments with new comments
+                  save(an,file='AN.RData')
+                  renamed = TRUE
+                  dfan[which(grepl(ofn,dfan$filename,fixed =TRUE)),'filename']=nfn
+                  fnx1 = an[ttl][idxs]
+                  dfx=unlist(gregexpr(EOFN,fnx1[idx]))
+                  
+                  ######### REFRESH GTABLE tab[] ###########
+                  ttls = unlist(regexpr(EOFN,fnx1))
+                  ttls[ttls < 0] = 500
+                  fnx= substr(fnx1,10,ttls - 2)
+                  comments=substr(fnx1,ttls,nchar(fnx1))
+                  tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
+                  
+                  # end of rightclickhandler for gtable (tab)
                 }
               }
-            }  
-            # end of rightclickhandler for gtable (tab)
-          }            
-          print('enter main while')
-          while (!avail & !renamed &!changed) # #################################### MAIN WHILE ##############
-          {};# testplots returns ssv global
-          print('exit main while')
-          fns = ssv
-          ssv = NULL #clear bones
-          avail = FALSE
-          if(renamed){
-            renamed = FALSE
-            load('AN.RData')} # an[ttl] has been changed by testplots GUI
+            }
+          }
         }
+        print('enter main while')
+        while (!avail & !renamed &!changed) # #################################### MAIN WHILE ##############
+        {};# testplots returns ssv global
+        print('exit main while')
+        fns = ssv
+        ssv = NULL #clear bones
+        avail = FALSE
+        if(renamed){
+          renamed = FALSE
+          load('AN.RData')} # an[ttl] has been changed by testplots GUI
+        
         if (len(fns) > 0) { # null HAS LENGTH 0
-          dispose(ww)
+          dispose(w)
           writeLines(fns,'fns.m3u') # Write playlist
           load('headfoot.RData')
           writeLines(as.character(c(
@@ -218,8 +224,13 @@ while (TRUE) {
         }else{
           print(paste('Non Found changed=',changed))
           emsg = 'NotFound'
-          if(!changed)
+          if(!changed){
+            if(exists('fwind')){
+              if(isExtant(fwind))
+                dispose(fwind)
+            }
             break
+          }
         }
       }
   }

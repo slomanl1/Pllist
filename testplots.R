@@ -26,7 +26,9 @@ if (!.GlobalEnv$tpexist) {
   addHandlerDestroy(fwind, handler = function(h,...) 
   { print('destroy handler (fwind)')
     .GlobalEnv$avail=TRUE
-    dispose(w)
+    .GlobalEnv$ofnx=NULL
+    if(isExtant(w))
+      dispose(w)
     tpexist=FALSE
   }) 
   
@@ -34,13 +36,11 @@ if (!.GlobalEnv$tpexist) {
   w <- gwindow(paste(liner,"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
-  .GlobalEnv$ww <- w
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   print(svalue(h$obj))
                   .GlobalEnv$ssv = as.character(svalue(h$obj))
                   .GlobalEnv$avail = TRUE
-                  .GlobalEnv$ww=w # pass window to main for dispose()
                 }
   )
   addHandlerRightclick(
@@ -60,7 +60,7 @@ if (!.GlobalEnv$tpexist) {
   addHandlerDestroy(
     tab, handler = function(h,...) {
       .GlobalEnv$ssv = NULL
-      .GlobalEnvavail = TRUE
+      .GlobalEnv$avail = TRUE
       .GlobalEnv$tpexist <- FALSE
       print('tab destroyed handler')
       if(isExtant(fwind))
@@ -74,10 +74,9 @@ if (!.GlobalEnv$tpexist) {
   addSpring(bg)
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
-  avail = TRUE
-    wx=.GlobalEnv$ww
-    #dispose(wx)
-    visible(w) <- FALSE
+    .GlobalEnv$avail = TRUE
+    dispose(w)
+    dispose(fwind)
     .GlobalEnv$gdfopen=FALSE
   }
   )
