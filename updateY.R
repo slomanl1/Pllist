@@ -184,10 +184,12 @@ while (TRUE) {
                   an[ttl][idxs]=sub(ofc,nfc,an[ttl][idxs],fixed=TRUE) # replace old comments with new comments
                   save(an,file='AN.RData')
                   renamed = TRUE
-                  dfan[which(grepl(ofn,dfan$filename,fixed =TRUE)),'filename']=nfn
-                  fnx1 = an[ttl][idxs]
-                  dfx=unlist(gregexpr(EOFN,fnx1[idx]))
-                  
+                  dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
+                  dfan[dfix,'filename']=nfn
+                  fnx1=an[ttl][idxs][idx]
+                  xx=strsplit(fnx1,paste(EOFN,'|======== ',sep=''))
+                  for(j in 2:5)
+                    dfan[dfix,j-1]=xx[[1]][j]
                   ######### REFRESH GTABLE tab[] ###########
                   ttls = unlist(regexpr(EOFN,fnx1))
                   ttls[ttls < 0] = 500
