@@ -4,6 +4,15 @@ setwd('~/')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 len=function(x) length(x)
+delay500=function(){
+  x=1000000
+  while(TRUE)
+  {
+    x=x-1
+    if(x==0)
+      break
+  }
+}
 guiAdd("myGUI")
 volz = 'z'
 voly = 'y'
@@ -172,7 +181,13 @@ while (TRUE) {
           source('~/pllist/pllist.git/testplots.R')
           print('enter sub while') # ##################### SUB WHILE #####################
           while(!changed & !avail)
-          {};
+          {
+            delay500()
+            if(isExtant(tab)){
+              enabled(tbutton)=(len(svalue(tab))!=0)
+              enabled(dbutton)=(len(svalue(tab))!=0)
+            }
+          }
           print('changed handler (fw)')
           changed=FALSE
           if(len(ofnx)>0){
@@ -275,4 +290,5 @@ while (TRUE) {
   }
 }
 #explorer /select,d:\PNMTALL\CF-ACM\
+#"C:\Program Files (x86)\QuickTime\quicktimeplayer" c:\users\LarrySloman\documents\BSBMp4Tester.mp4
 
