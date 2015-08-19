@@ -80,9 +80,19 @@ if (!.GlobalEnv$tpexist) {
     .GlobalEnv$gdfopen=FALSE
   }
   )
+  dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
+    answ=gconfirm('Are you Sure?')
+    print(answ)
+  }
+  )
+  tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
+    shell("Explorer.exe /e,/root,C:\\users",mustWork = TRUE)
+    #shell('"C:\\Program Files (x86)\\QuickTime\\quicktimeplayer" c:\\users\\LarrySloman\\documents\\BSBMp4Tester.mp4')
+    print(svalue(tab))
+  }
+  )
 }else
   visible(w)=TRUE
 
 #}
 
-#exiftool  -Title=[test] 
