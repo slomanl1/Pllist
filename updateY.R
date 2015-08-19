@@ -174,6 +174,7 @@ while (TRUE) {
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,10,ttls - 2)
           fnames2 = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
+          fnames2 = sub('mp4 NA','mp4',fnames1) # remove extra "NA" from missing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
           fnames=gdframe
@@ -289,6 +290,3 @@ while (TRUE) {
       }
   }
 }
-#explorer /select,d:\PNMTALL\CF-ACM\
-#"C:\Program Files (x86)\QuickTime\quicktimeplayer" c:\users\LarrySloman\documents\BSBMp4Tester.mp4
-
