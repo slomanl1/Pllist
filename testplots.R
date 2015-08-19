@@ -7,7 +7,7 @@ if (!.GlobalEnv$tpexist) {
   avail = FALSE
   renamed = FALSE
   ssv = NULL
-
+  
   fwind=gdf(gdframe[1,], container=gwindow("Edit File Details",width=1900,height = 20))
   enabled(fwind) <- FALSE
   addHandlerDestroy(
@@ -64,7 +64,7 @@ if (!.GlobalEnv$tpexist) {
       .GlobalEnv$tpexist <- FALSE
       print('tab destroyed handler')
       if(isExtant(fwind))
-          dispose(fwind) # gdf window
+        dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
     }
   )

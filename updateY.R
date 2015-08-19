@@ -13,6 +13,7 @@ changed=FALSE
 avail=FALSE
 renamed=FALSE
 ofnx=NULL
+ssv=NULL
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
@@ -119,13 +120,30 @@ dflt = ''
 if(file.exists('dfltsave.RData'))
   load('dfltsave.RData')
 emsg = 'OK'
+lnttl='Enter Search Criteria'
 while (TRUE) {
-  #  liner <- dlgInput(paste("Enter search Criteria \n",emsg),default = dflt)$res;
-  liner = ginput("Enter search Criteria", text=dflt,icon="info", handler = NULL)
-  if (is.na(liner)) {
-    # The user clicked the 'cancel' button
+  avail=FALSE
+  obj <- gedit(text=dflt,container=gwindow(height = 20, title=lnttl))
+  focus(obj)=TRUE
+  addhandlerchanged(obj, handler=function(h,...)
+    .GlobalEnv$avail=TRUE)
+  addHandlerDestroy(obj, handler=function(h,...){
+    .GlobalEnv$avail=TRUE
+  })
+  liner=NULL
+  while(!avail)
+  {}
+  lnttl='Enter Search Criteria'
+  if(isExtant(obj)){
+    liner=svalue(obj)
+    dispose(obj)}
+  
+  if (len(liner)==0) {
     cat("OK, No Files Selected\n")
     break
+  }else{
+    if(nchar(liner)==0)
+      next
   }
   while (TRUE) {
     if (!is.na(liner))
@@ -150,6 +168,7 @@ while (TRUE) {
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
           fnames=gdframe
+          lnttl='Enter Search Criteria'
           source('~/pllist/pllist.git/testplots.R')
           print('enter sub while') # ##################### SUB WHILE #####################
           while(!changed & !avail)
@@ -165,7 +184,7 @@ while (TRUE) {
             ofc=ofnx$comments
             nfc=nfnx$comments
             print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
-            
+            lnttl='Enter Search Criteria'            
             if(dirname(nfn)!=dirname(ofn)){
               print(paste('New dir name',dirname(nfn),'Not equal to old',dirname(ofn)))
               dispose(fwind)
@@ -190,6 +209,18 @@ while (TRUE) {
                   xx=strsplit(fnx,paste(EOFN,'|======== ',sep=''))
                   for(j in 2:5)
                     dfan[dfix,j-1]=xx[[1]][j]
+                  cmtt=NULL
+                  ttll=NULL
+                  stll=NULL
+                  if(!is.na(dfan[dfix,'Comment']))
+                    cmtt=paste('-metadata comment','"', dfan[dfix,'Comment'],'"',sep='')
+                  if(!is.na(dfan[dfix,'Title']))
+                    ttll=paste('-metadata title','"',   dfan[dfix,'Title'],'"',sep='')
+                  if(!is.na(dfan[dfix,'SubTitle']))
+                    stll=paste('-metadata subtitle','"',dfan[dfix,'SubTitle'],'"',sep='')
+                  unlink('xx.mp4')
+                  cmdd=paste("shell(c:/users/LarrySloman/documents/hexdump/bin/ffmpeg",ttll,cmtt,stll,")")
+                  
                   ######### REFRESH GTABLE tab[] ###########
                   fnx1=an[ttl][idxs]
                   ttls = unlist(regexpr(EOFN,fnx1))
@@ -203,6 +234,9 @@ while (TRUE) {
               }
             }
           }
+        }else{
+          lnttl='Search Criteria Not Found, re-enter'
+          avail=TRUE
         }
         print('enter main while')
         while (!avail & !renamed &!changed) # #################################### MAIN WHILE ##############
@@ -224,8 +258,10 @@ while (TRUE) {
           ),sep = ''),'fns.wpl')
           shell("wmplayer c:\\Users\\LarrySloman\\Documents\\fns.wpl")
           emsg = 'OK'
+          
         }else{
           print(paste('Non Found changed=',changed))
+          
           emsg = 'NotFound'
           if(!changed){
             if(exists('fwind')){
