@@ -174,7 +174,7 @@ while (TRUE) {
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,10,ttls - 2)
           fnames2 = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
-          fnames2 = sub('mp4 NA','mp4',fnames1) # remove extra "NA" from missing add bug
+          fnames2 = sub('mp4 NA','mp4',fnames2) # remove extra "NA" from missing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
           fnames=gdframe[order(gdframe$cdts,decreasing = TRUE),]
@@ -215,8 +215,8 @@ while (TRUE) {
                       an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
                     }
                   }
-                  
-                  an[ttl][idxs]=sub(ofc,nfc,an[ttl][idxs],fixed=TRUE) # replace old comments with new comments
+                  if(ofc!=nfc)
+                    an[ttl][idxs]=sub(ofc,nfc,an[ttl][idxs],fixed=TRUE) # replace old comments with new comments
                   save(an,file='AN.RData')
                   renamed = TRUE
                   dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
@@ -235,8 +235,10 @@ while (TRUE) {
                   if(!is.na(dfan[dfix,'SubTitle']))
                     stll=paste('-metadata subtitle','"',dfan[dfix,'SubTitle'],'"',sep='')
                   unlink('xx.mp4')
-                  cmdd=paste("shell(c:/users/LarrySloman/documents/hexdump/bin/ffmpeg",ttll,cmtt,stll,")")
-                  
+                  cmdd=paste("shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i",
+                             nfn,ttll,cmtt,stll,"xx.mp4'",",translate=TRUE)")
+                  writeLines(cmdd,'Jester.R')
+                  source('jester.R')
                   ######### REFRESH GTABLE tab[] ###########
                   fnx1=an[ttl][idxs]
                   ttls = unlist(regexpr(EOFN,fnx1))
@@ -277,7 +279,6 @@ while (TRUE) {
           
         }else{
           print(paste('Non Found changed=',changed))
-          
           emsg = 'NotFound'
           if(!changed){
             if(exists('fwind')){
@@ -291,5 +292,8 @@ while (TRUE) {
   }
 }
 
+
+##################################### MODEL SHELL COMMAND ##############################################
+#shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i D:/PNMTALL/ndbmjaw/9999_01_hdblpnsustpswa+.mov xx.mp4',translate=TRUE)
 
 
