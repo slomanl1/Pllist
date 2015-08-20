@@ -1,4 +1,3 @@
-fnames=gdframe
 idxs=NULL
 for(x in 1:nrow(fnames)) 
   idxs=c(idxs,which(grepl(fnames[x,'fnx'],an[ttl],fixed=TRUE)))
@@ -8,7 +7,7 @@ if (!.GlobalEnv$tpexist) {
   renamed = FALSE
   ssv = NULL
   
-  fwind=gdf(gdframe[1,], container=gwindow("Edit File Details",width=1900,height = 20))
+  fwind=gdf(fnames[1,], container=gwindow("Edit File Details",width=1900,height = 20))
   enabled(fwind) <- FALSE
   addHandlerDestroy(
     fwind, handler = function(h,...) {
@@ -86,9 +85,10 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
-    shell("Explorer.exe /e,/root,C:\\users",mustWork = TRUE)
-    #shell('"C:\\Program Files (x86)\\QuickTime\\quicktimeplayer" c:\\users\\LarrySloman\\documents\\BSBMp4Tester.mp4')
     print(svalue(tab))
+    cmdd=paste('shell("trimfile.bat',dirname(svalue(tab)),'")')
+    eval(parse(text=cmdd))
+    shell("trimfile.bat")
   }
   )
 }else
@@ -96,3 +96,14 @@ if (!.GlobalEnv$tpexist) {
 
 #}
 
+pathPrep <- function(path = "clipboard") {
+  y <- if (path == "clipboard") {
+    readClipboard()
+  } else {
+    cat("Please enter the path:\n\n")
+    readline()
+  }
+  x <- chartr("\\", "/", y)
+  writeClipboard(x)
+  return(x)
+}

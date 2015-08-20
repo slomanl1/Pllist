@@ -177,7 +177,7 @@ while (TRUE) {
           fnames2 = sub('mp4 NA','mp4',fnames1) # remove extra "NA" from missing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
-          fnames=gdframe
+          fnames=gdframe[order(gdframe$cdts,decreasing = TRUE),]
           lnttl='Enter Search Criteria'
           source('~/pllist/pllist.git/testplots.R')
           print('enter sub while') # ##################### SUB WHILE #####################
@@ -290,3 +290,6 @@ while (TRUE) {
       }
   }
 }
+
+
+
