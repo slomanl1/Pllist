@@ -4,7 +4,7 @@ setwd('~/')
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
 rm(list=ls())
 source("~/Local.R")
-shell('dir "Z:\\My Videos\\RealPlayer Downloads" /od/b > ddd.txt')
+shell('dir "Y:\\My Videos\\RealPlayer Downloads" /od/b > ddd.txt')
 lns=readLines('ddd.txt')
 unlink('ddd.txt')
 last=as.numeric(substr(lns[length(lns)],1,5))+1
@@ -42,12 +42,12 @@ for (i in 1:length(fns)){
   }else{
 
       last=last+1
-      if(file.exists(paste("Z:\\My Videos\\RealPlayer Downloads\\",fn[i],sep=''))){
+      if(file.exists(paste(drive,"My Videos\\RealPlayer Downloads\\",fn[i],sep=''))){
         print(paste(fn[i],'exists'))
         next
       }else{
           print(paste(fn[i], 'added'))
-          file.copy(fns[i],paste("Z:\\My Videos\\RealPlayer Downloads\\",fn[i],sep=''))
+          file.copy(fns[i],paste(drive,"My Videos\\RealPlayer Downloads\\",fn[i],sep=''))
           exist=FALSE
           }
       }
@@ -62,7 +62,7 @@ setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
 
 setwd(paste(pldrive,'My Playlists',sep=""))
 lss = unique(readLines('wa.wpl'))
-js="            <media src=\"Z:\\My Videos\\RealPlayer Downloads\\%s\"/>"
+js="            <media src=\"Y:\\My Videos\\RealPlayer Downloads\\%s\"/>"
 adds=sprintf(js,fn)
 lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
 m3uname <- paste(pldrive,'My Playlists/',sep='')
@@ -70,4 +70,7 @@ write(lsx1,paste(m3uname,'wa.wpl',sep=''))
 
 }else print('No new files found')
 } else print('CANNOT OPEN FLK')
+
+
+
 
