@@ -9,12 +9,6 @@ if (!.GlobalEnv$tpexist) {
   
   fwind=gdf(fnames[1,], container=gwindow("Edit File Details",width=1900,height = 20))
   enabled(fwind) <- FALSE
-  addHandlerDestroy(
-    fwind, handler = function(h,...) {
-      .GlobalEnv$gdfopen=FALSE
-      visible(w) <- TRUE
-    }
-  )
   addhandlerchanged(fwind, handler = function(h,...) 
   { print('changed handler (fwind)')
     .GlobalEnv$changed=TRUE
@@ -71,14 +65,7 @@ if (!.GlobalEnv$tpexist) {
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
-  gbutton("dismiss", container = bg, handler = function(h,...) {
-    .GlobalEnv$tpexist <- FALSE
-    .GlobalEnv$avail = TRUE
-    dispose(w)
-    dispose(fwind)
-    .GlobalEnv$gdfopen=FALSE
-  }
-  )
+
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
     print(answ)
@@ -89,6 +76,14 @@ if (!.GlobalEnv$tpexist) {
     cmdd=paste('shell("trimfile.bat',dirname(svalue(tab)),'")')
     eval(parse(text=cmdd))
     shell("trimfile.bat")
+  }
+  )
+  gbutton("dismiss", container = bg, handler = function(h,...) {
+    .GlobalEnv$tpexist <- FALSE
+    .GlobalEnv$avail = TRUE
+    dispose(w)
+    dispose(fwind)
+    .GlobalEnv$gdfopen=FALSE
   }
   )
 }else
