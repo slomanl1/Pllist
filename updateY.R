@@ -1,8 +1,16 @@
 library(gWidgets)
 options(guiToolkit = "RGtk2")   
 setwd('~/')
+if(exists('w'))
+  if(isExtant(w))
+    dispose(w)
+if(exists('fwind'))
+  if(isExtant(fwind))
+    dispose(fwind)
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
+
+
 len=function(x) length(x)
 delay500=function(){
   x=1000000
@@ -24,6 +32,7 @@ renamed=FALSE
 ofnx=NULL
 ssv=NULL
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
+isunsorted = TRUE
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 
@@ -133,6 +142,7 @@ lnttl='Enter Search Criteria'
 while (TRUE) {
   avail=FALSE
   obj <- gedit(text=dflt,container=gwindow(height = 20, title=lnttl))
+
   focus(obj)=TRUE
   addhandlerchanged(obj, handler=function(h,...)
     .GlobalEnv$avail=TRUE)
@@ -177,7 +187,7 @@ while (TRUE) {
           fnames2 = sub('mp4 NA','mp4',fnames2) # remove extra "NA" from missing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
-          fnames=gdframe[order(gdframe$cdts,decreasing = TRUE),]
+          fnames=gdframe[order(gdframe$cdts,decreasing = isunsorted),]
           lnttl='Enter Search Criteria'
           source('~/pllist/pllist.git/testplots.R')
           print('enter sub while') # ##################### SUB WHILE #####################
@@ -223,22 +233,26 @@ while (TRUE) {
                   dfan[dfix,'filename']=nfn
                   fnx=an[ttl][idxs][idx]
                   xx=strsplit(fnx,paste(EOFN,'|======== ',sep=''))
+                  eoff=unlist(strsplit(EOFN,'|',fixed=TRUE))
+                  poss=sapply(1:len(eoff),function(x) regexpr(eoff[x],fnx))
+                  eofx=eoff[which(poss>0)]
+                  
                   for(j in 2:5)
                     dfan[dfix,j-1]=xx[[1]][j]
                   cmtt=NULL
                   ttll=NULL
                   stll=NULL
                   if(!is.na(dfan[dfix,'Comment']))
-                    cmtt=paste('-metadata comment','"', dfan[dfix,'Comment'],'"',sep='')
+                    cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
                   if(!is.na(dfan[dfix,'Title']))
-                    ttll=paste('-metadata title','"',   dfan[dfix,'Title'],'"',sep='')
+                    ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
                   if(!is.na(dfan[dfix,'SubTitle']))
-                    stll=paste('-metadata subtitle','"',dfan[dfix,'SubTitle'],'"',sep='')
-                  unlink('xx.mp4')
+                    stll=paste('-metadata subtitle=','"',dfan[dfix,'SubTitle'],'"',sep='')
+                  unlink('~/xx.mp4')
                   cmdd=paste("shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i",
                              nfn,ttll,cmtt,stll,"xx.mp4'",",translate=TRUE)")
                   writeLines(cmdd,'Jester.R')
-                  source('jester.R')
+                  #source('jester.R')
                   ######### REFRESH GTABLE tab[] ###########
                   fnx1=an[ttl][idxs]
                   ttls = unlist(regexpr(EOFN,fnx1))
@@ -295,5 +309,6 @@ while (TRUE) {
 
 ##################################### MODEL SHELL COMMAND ##############################################
 #shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i D:/PNMTALL/ndbmjaw/9999_01_hdblpnsustpswa+.mov xx.mp4',translate=TRUE)
+
 
 
