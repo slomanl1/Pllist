@@ -25,13 +25,15 @@ if (!.GlobalEnv$tpexist) {
     tpexist=FALSE
   }) 
   
-  heit=min((100+nrow(fnames)*25),1900)
+  heit=min((nrow(fnames)*25),650)
   w <- gwindow(paste(liner,"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   print(svalue(h$obj))
+                  .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
+                  print(paste('isunsorted=',.GlobalEnv$unsorted))
                   .GlobalEnv$ssv = as.character(svalue(h$obj))
                   .GlobalEnv$avail = TRUE
                 }
@@ -68,12 +70,15 @@ if (!.GlobalEnv$tpexist) {
 
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
-    print(answ)
+    if(answ)
+      unlink(svalue(tab))
+
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
     print(svalue(tab))
-    cmdd=paste('shell("trimfile.bat',dirname(svalue(tab)),'")')
+    cmdd=paste('shell("trimfile.bat',svalue(tab),'",mustWork=NA,translate=TRUE)')
+    print(cmdd)
     eval(parse(text=cmdd))
     shell("trimfile.bat")
   }
