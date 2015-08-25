@@ -32,7 +32,7 @@ renamed=FALSE
 ofnx=NULL
 ssv=NULL
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
-isunsorted = TRUE
+unsorted = TRUE
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 
@@ -187,7 +187,7 @@ while (TRUE) {
           fnames2 = sub('mp4 NA','mp4',fnames2) # remove extra "NA" from missing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
-          fnames=gdframe[order(gdframe$cdts,decreasing = isunsorted),]
+          fnames=gdframe[order(gdframe$cdts,decreasing = unsorted),]
           lnttl='Enter Search Criteria'
           source('~/pllist/pllist.git/testplots.R')
           print('enter sub while') # ##################### SUB WHILE #####################

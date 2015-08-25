@@ -33,7 +33,7 @@ if (!.GlobalEnv$tpexist) {
                 handler = function(h,...) {
                   print(svalue(h$obj))
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
-                  print(paste('isunsorted=',.GlobalEnv$unsorted))
+                  print(paste('hdl isunsorted=',.GlobalEnv$unsorted))
                   .GlobalEnv$ssv = as.character(svalue(h$obj))
                   .GlobalEnv$avail = TRUE
                 }
