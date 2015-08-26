@@ -64,15 +64,16 @@ if (file.exists('D:/PNMTALL')) {
       dmissing = NULL
       if (len(dts) == len(dto))
         dmissing = zz[!dto %in% dts] # add records with new date to dmissing
-      xmissing = zz[!basename(zz) %in% basename(am[ttl])]
+
+      xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       missing1 = unique(c(dmissing,xmissing))
-      missing = normalizePath(missing1, winslash = "/")
-      extras = am[ttl][!basename(am[ttl]) %in% basename(zz)]
+      missing = suppressWarnings(normalizePath(missing1, winslash = "/"))
+      extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
       
       if (len(extras) > 0) {
         print(paste('Removed ',substr(extras,10,1000)))
-        ttle = which(!basename(am[ttl]) %in% basename(zz))
+        ttle = which(!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz)))
         am[ttl[ttle]] = NA # remove extra file names
         if (len(ttle) > 1) {
           for (kk in 1:(len(ttle) - 1)) {
@@ -142,7 +143,8 @@ lnttl='Enter Search Criteria'
 while (TRUE) {
   avail=FALSE
   obj <- gedit(text=dflt,container=gwindow(height = 20, title=lnttl))
-
+  delay500()
+  shell('nircmd win activate title "Enter Search Criteria"')
   focus(obj)=TRUE
   addhandlerchanged(obj, handler=function(h,...)
     .GlobalEnv$avail=TRUE)
@@ -190,6 +192,7 @@ while (TRUE) {
           fnames=gdframe[order(gdframe$cdts,decreasing = unsorted),]
           lnttl='Enter Search Criteria'
           source('~/pllist/pllist.git/testplots.R')
+
           print('enter sub while') # ##################### SUB WHILE #####################
           while(!changed & !avail)
           {
