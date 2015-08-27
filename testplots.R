@@ -7,13 +7,15 @@ if (!.GlobalEnv$tpexist) {
   renamed = FALSE
   ssv = NULL
   
-  fwind=gdf(fnames[1,], container=gwindow("Edit File Details",width=1900,height = 20))
-  enabled(fwind) <- FALSE
+  fw=gwindow("Edit File Details",width=1900,height = 20)
+  fwind=gdf(fnames[1,], container=fw)
+  getToolkitWidget(fw)$move(0,100)
+  visible(fw) <- FALSE
   addhandlerchanged(fwind, handler = function(h,...) 
   { print('changed handler (fwind)')
     .GlobalEnv$changed=TRUE
     .GlobalEnv$avail=TRUE
-    enabled(fwind) <- FALSE
+    visible(fw) <- FALSE
   })
   
   addHandlerDestroy(fwind, handler = function(h,...) 
@@ -25,8 +27,9 @@ if (!.GlobalEnv$tpexist) {
     tpexist=FALSE
   }) 
   
-  heit=min((nrow(fnames)*25),650)
+  heit=min(100+(nrow(fnames)*30),750)
   w <- gwindow(paste(liner,"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
+  getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
@@ -47,7 +50,7 @@ if (!.GlobalEnv$tpexist) {
         ofnxa=fnames[idx,]
         nfn=NULL
         fwind[,]=ofnxa # supply select idx item in editing window fwinf
-        enabled(fwind) <- TRUE
+        visible(fw) <- TRUE
         visible(w) <- FALSE
       }
     }
@@ -77,10 +80,9 @@ if (!.GlobalEnv$tpexist) {
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
     print(svalue(tab))
-    cmdd=paste('shell("trimfile.bat',svalue(tab),'",mustWork=NA,translate=TRUE)')
+    cmdd=paste('shell("exx.bat',svalue(tab),'",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
-    shell("trimfile.bat")
   }
   )
   gbutton("dismiss", container = bg, handler = function(h,...) {
