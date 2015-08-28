@@ -143,7 +143,6 @@ lnttl='Enter Search Criteria'
 while (TRUE) {
   avail=FALSE
   obj <- gedit(text=dflt,container=gwindow(height = 20, title=lnttl))
-  delay500()
   shell('nircmd win activate title "Enter Search Criteria"')
   focus(obj)=TRUE
   addhandlerchanged(obj, handler=function(h,...)
