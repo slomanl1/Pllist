@@ -15,7 +15,9 @@ if (!.GlobalEnv$tpexist) {
   { print('changed handler (fwind)')
     .GlobalEnv$changed=TRUE
     .GlobalEnv$avail=TRUE
-    visible(fw) <- FALSE
+    if(isExtant(w))
+      dispose(w)
+    tpexist=FALSE
   })
   
   addHandlerDestroy(fwind, handler = function(h,...) 
