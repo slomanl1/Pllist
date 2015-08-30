@@ -64,7 +64,7 @@ if (file.exists('D:/PNMTALL')) {
       dmissing = NULL
       if (len(dts) == len(dto))
         dmissing = zz[!dto %in% dts] # add records with new date to dmissing
-
+      
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       missing1 = unique(c(dmissing,xmissing))
       missing = suppressWarnings(normalizePath(missing1, winslash = "/"))
@@ -124,12 +124,17 @@ if (file.exists('D:/PNMTALL')) {
         }
       }
     }
-    if(!file.exists(sfname)){
-      xx=strsplit(an[ttl],paste(EOFN,'|======== ',sep=''))
+    if(!file.exists(sfname) | len(missing) > 0){
+      xxt=strsplit(an[ttl],paste('Title :','|======== ',sep=''))
+      xxc=strsplit(an[ttl],paste('Comment :','|======== ',sep=''))
+      xxs=strsplit(an[ttl],paste('Sub Title :','|======== ',sep=''))
       dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA)
-      for(i in 1:len(xx))
-        for(j in 2:5)
-          dfan[i,j-1]=xx[[i]][j]
+      for(i in 1:len(xxt)){
+        dfan[i,'filename']=xxt[[i]][2]
+        dfan[i,'Title']=xxt[[i]][3]
+        dfan[i,'Comment']=xxc[[i]][3]
+        dfan[i,'SubTitle']=xxs[[i]][3]
+      }
     }
     save(am,an,ttl,dff,dts,dfan,file = sfname)
   }
@@ -191,7 +196,7 @@ while (TRUE) {
           fnames=gdframe[order(gdframe$cdts,decreasing = unsorted),]
           lnttl='Enter Search Criteria'
           source('~/pllist/pllist.git/testplots.R')
-
+          
           print('enter sub while') # ##################### SUB WHILE #####################
           while(!changed & !avail)
           {
@@ -227,20 +232,24 @@ while (TRUE) {
                       an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
                     }
                   }
-                  if(ofc!=nfc)
-                    an[ttl][idxs]=sub(ofc,nfc,an[ttl][idxs],fixed=TRUE) # replace old comments with new comments
+                  if(ofc!=nfc){
+                    if(nchar(ofc)>0)
+                      an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comments with new comments
+                    else
+                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Comment : ',nfc) # replace old comments with new comments
+                  }
                   save(an,file='AN.RData')
                   renamed = TRUE
                   dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
+                  print(paste('dfix=',dfix))
                   dfan[dfix,'filename']=nfn
                   fnx=an[ttl][idxs][idx]
-                  xx=strsplit(fnx,paste(EOFN,'|======== ',sep=''))
-                  eoff=unlist(strsplit(EOFN,'|',fixed=TRUE))
-                  poss=sapply(1:len(eoff),function(x) regexpr(eoff[x],fnx))
-                  eofx=eoff[which(poss>0)]
-                  
-                  for(j in 2:5)
-                    dfan[dfix,j-1]=xx[[1]][j]
+                  xxt=strsplit(fnx,paste('Title :','|======== ',sep=''))
+                  xxc=strsplit(fnx,paste('Comment :','|======== ',sep=''))
+                  xxs=strsplit(fnx,paste('Sub Title :','|======== ',sep=''))
+                  dfan[dfix,'Title']=xxt[[1]][3]
+                  dfan[dfix,'Comment']=xxc[[1]][3]
+                  dfan[dfix,'SubTitle']=xxs[[1]][3]
                   cmtt=NULL
                   ttll=NULL
                   stll=NULL
@@ -261,7 +270,7 @@ while (TRUE) {
                   ttls[ttls < 0] = 500
                   fnx= substr(fnx1,10,ttls - 2)
                   comments=substr(fnx1,ttls,nchar(fnx1))
-                  tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
+                  #                  tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
                   
                   # end of rightclickhandler for gtable (tab)
                 }
