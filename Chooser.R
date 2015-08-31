@@ -20,19 +20,19 @@ if (length(selectL > 0)) {
 		if (!is.na(b)) bits = bitOr(bits,2^(b-1))
 	}
 	if (selectL == 'AND')
-		flist = lsst[bitAnd(xx,bits) == bits]
+		flist1 = lsst[bitAnd(xx,bits) == bits]
 	else
 		if (selectL == 'OR')
-			flist = lsst[bitAnd(xx,bits) > 0]
+			flist1 = lsst[bitAnd(xx,bits) > 0]
 		else #NOT
-			flist = lsst[bitAnd(xx,bits) == 0]
+			flist1 = lsst[bitAnd(xx,bits) == 0]
 	
-	flist = flist[flist!='']
+	flist2 = flist1[flist1!='']
 
-	if(length(flist)==0)
+	if(length(flist2)==0)
 		print('No Records Found')
 	else {
-	  flist = paste(drive,'My Videos/RealPlayer Downloads/',flist,sep='')
+	  flist = paste(drive,'My Videos/RealPlayer Downloads/',flist2,sep='')
     indxs=regexpr('wpl',wpls)[1:length(wpls)]
     fname=""
     for (i in 1:length(wpls)){
