@@ -7,7 +7,7 @@ rn=rownames(fnfo)
 addfnfo=file.info(lsst[(!lsst %in% rn)])
 fnfo=rbind(fnfo,addfnfo)
 save(fnfo,file='~/fnfo.RData')
-flist=lsst
+#flist=lsst
 setwd(paste(pldrive,'My Playlists',sep=""))
 fns=dir(pattern='*.wpl')
 for (j in 1:length(fns)) {
