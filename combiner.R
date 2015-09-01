@@ -1,6 +1,5 @@
 rm(list=ls())
-if (!exists('xx'))
-  load('~/xxxx.RData')
+load('~/xxxx.RData')
 print('Combiner')
 source('~/Local.R') #get drive
 setwd(paste(pldrive,'My Playlists',sep=""))
