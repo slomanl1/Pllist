@@ -31,6 +31,7 @@ avail=FALSE
 renamed=FALSE
 ofnx=NULL
 ssv=NULL
+fmissing=NULL
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 unsorted = TRUE
 
@@ -67,7 +68,7 @@ if (file.exists('D:/PNMTALL')) {
       
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       missing1 = unique(c(dmissing,xmissing))
-      missing = suppressWarnings(normalizePath(missing1, winslash = "/"))
+      fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
       
@@ -88,19 +89,19 @@ if (file.exists('D:/PNMTALL')) {
           }
         }
       }
-      if (len(missing) > 0) {
-        #        missing=paste('D:\\',substr(missing,4,nchar(missing)),sep='')
-        print(paste('Added   ',missing))
+      if (len(fmissing) > 0) {
+        #        fmissing=paste('D:\\',substr(fmissing,4,nchar(fmissing)),sep='')
+        print(paste('Added   ',fmissing))
         
-        for (i in 1:len(missing)) {
+        for (i in 1:len(fmissing)) {
           cmdd = "shell('getm D: > metadata.txt')"
-          fpp = file.path(substr(missing[i],1,2),
-                          substr(dirname(missing[i]),3,nchar(dirname(missing[i]))), basename(missing[i]))
+          fpp = file.path(substr(fmissing[i],1,2),
+                          substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i]))
           cmdx = sub('D:',fpp,cmdd)
           suppressWarnings(eval(parse(text = cmdx)))
           amm = readLines('metadata.txt')
           amm = amm[2:len(amm)]
-          amm[1] = paste("========",missing[i])
+          amm[1] = paste("========",fmissing[i])
           for (k in 1:len(amm))
             am[len(am) + k] = amm[k]
         }
@@ -124,7 +125,8 @@ if (file.exists('D:/PNMTALL')) {
         }
       }
     }
-    if(!file.exists(sfname) | len(missing) > 0){
+    if(!file.exists(sfname) | len(fmissing) > 0){
+      print('Updating Dfan')
       xxt=strsplit(an[ttl],paste('Title :','|======== ',sep=''))
       xxc=strsplit(an[ttl],paste('Comment :','|======== ',sep=''))
       xxs=strsplit(an[ttl],paste('Sub Title :','|======== ',sep=''))
@@ -135,6 +137,7 @@ if (file.exists('D:/PNMTALL')) {
         dfan[i,'Comment']=xxc[[i]][3]
         dfan[i,'SubTitle']=xxs[[i]][3]
       }
+      print('Updating Dfan - DONE')
     }
     save(am,an,ttl,dff,dts,dfan,file = sfname)
   }
@@ -181,6 +184,7 @@ while (TRUE) {
         anttlu=toupper(anttl)
         pnoln=NA
         allc=NA
+
         for (i in 1:len(srct))
           allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
         pnoln=anttl[as.integer(names(which(table(allc)==len(srct))))] # how many match criteria?
@@ -189,8 +193,8 @@ while (TRUE) {
           ttls = unlist(regexpr(EOFN,pnoln))
           ttls[ttls < 0] = 500
           fnames1 = substr(pnoln,10,ttls - 2)
-          fnames2 = sub('v NA','v',fnames1) # remove extra "NA" from missing add bug
-          fnames2 = sub('mp4 NA','mp4',fnames2) # remove extra "NA" from missing add bug
+          fnames2 = sub('v NA','v',fnames1) # remove extra "NA" from fmissing add bug
+          fnames2 = sub('mp4 NA','mp4',fnames2) # remove extra "NA" from fmissing add bug
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
           fnames=gdframe[order(gdframe$cdts,decreasing = unsorted),]
@@ -206,7 +210,7 @@ while (TRUE) {
               enabled(dbutton)=(len(svalue(tab))!=0)
             }
           }
-          print('changed handler (fw)')
+          print(paste('changed handler (fw),changed=',changed))
           changed=FALSE
           if(len(ofnx)>0){
             print('changed handler (fwofnx>0)')
@@ -227,43 +231,49 @@ while (TRUE) {
                   if(ofn!=nfn){
                     if(!file.rename(ofn,nfn)){
                       print(paste("file rename FAILED",ofn,nfn))
+                      renamed=FALSE ########## KLUDGE, comes here after tab destroyed after change/dissmiss
+                      nfc=ofc # prevents comment replace error
                     }else{
+                      renamed = TRUE
                       print(paste("file rename successful,old an[ttl][idxs][idx]=",ofn,nfn,an[ttl][idxs][idx]))
                       an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
                     }
                   }
                   if(ofc!=nfc){
-                    if(nchar(ofc)>0)
+                    renamed = TRUE
+                    if(nchar(ofc)>0){
                       an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comments with new comments
-                    else
-                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Comment : ',nfc) # replace old comments with new comments
+                    }else{
+                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Comment : ',nfc)} # replace old comments with new comments
                   }
                   save(an,file='AN.RData')
-                  renamed = TRUE
-                  dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
-                  print(paste('dfix=',dfix))
-                  dfan[dfix,'filename']=nfn
-                  fnx=an[ttl][idxs][idx]
-                  xxt=strsplit(fnx,paste('Title :','|======== ',sep=''))
-                  xxc=strsplit(fnx,paste('Comment :','|======== ',sep=''))
-                  xxs=strsplit(fnx,paste('Sub Title :','|======== ',sep=''))
-                  dfan[dfix,'Title']=xxt[[1]][3]
-                  dfan[dfix,'Comment']=xxc[[1]][3]
-                  dfan[dfix,'SubTitle']=xxs[[1]][3]
-                  cmtt=NULL
-                  ttll=NULL
-                  stll=NULL
-                  if(!is.na(dfan[dfix,'Comment']))
-                    cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
-                  if(!is.na(dfan[dfix,'Title']))
-                    ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
-                  if(!is.na(dfan[dfix,'SubTitle']))
-                    stll=paste('-metadata subtitle=','"',dfan[dfix,'SubTitle'],'"',sep='')
-                  unlink('~/xx.mp4')
-                  cmdd=paste("shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i",
-                             nfn,ttll,cmtt,stll,"xx.mp4'",",translate=TRUE)")
-                  writeLines(cmdd,'Jester.R')
-                  #source('jester.R')
+
+                  if(ofc!=nfc){
+                    dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
+                    print(paste('dfix=',dfix))
+                    dfan[dfix,'filename']=nfn
+                    fnx=an[ttl][idxs][idx]
+                    xxt=strsplit(fnx,paste('Title :','|======== ',sep=''))
+                    xxc=strsplit(fnx,paste('Comment :','|======== ',sep=''))
+                    xxs=strsplit(fnx,paste('Sub Title :','|======== ',sep=''))
+                    dfan[dfix,'Title']=xxt[[1]][3]
+                    dfan[dfix,'Comment']=xxc[[1]][3]
+                    dfan[dfix,'SubTitle']=xxs[[1]][3]
+                    cmtt=NULL
+                    ttll=NULL
+                    stll=NULL
+                    if(!is.na(dfan[dfix,'Comment']))
+                      cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
+                    if(!is.na(dfan[dfix,'Title']))
+                      ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
+                    if(!is.na(dfan[dfix,'SubTitle']))
+                      stll=paste('-metadata subtitle=','"',dfan[dfix,'SubTitle'],'"',sep='')
+                    unlink('~/xx.mp4')
+                    cmdd=paste("shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i",
+                               nfn,ttll,cmtt,stll,"xx.mp4'",",translate=TRUE)")
+                    writeLines(cmdd,'Jester.R')
+                    #source('jester.R')
+                  }
                   ######### REFRESH GTABLE tab[] ###########
                   fnx1=an[ttl][idxs]
                   ttls = unlist(regexpr(EOFN,fnx1))
@@ -290,7 +300,8 @@ while (TRUE) {
         avail = FALSE
         if(renamed){
           renamed = FALSE
-          load('AN.RData')} # an[ttl] has been changed by testplots GUI
+          load('AN.RData') # an[ttl] has been changed by testplots GUI
+        } 
         
         if (len(fns) > 0) { # null HAS LENGTH 0
           dispose(w)
