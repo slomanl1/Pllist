@@ -90,6 +90,7 @@ if (!.GlobalEnv$tpexist) {
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
     .GlobalEnv$avail = TRUE
+    .GlobalEnv$ofnx=NULL
     dispose(w)
     dispose(fwind)
     .GlobalEnv$gdfopen=FALSE
