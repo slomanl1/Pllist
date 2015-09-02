@@ -55,7 +55,7 @@ if (file.exists('D:/PNMTALL')) {
       shell('getm D:\\PNMTALL > allmetadata.txt')
       shell('getm C:\\PNMTALL >> allmetadata.txt')
       am1 = readLines('allmetadata.txt')
-      am = am1[!grepl('Ingredients|Pantry|Album Title',am1)]
+      am = am1[!grepl('Ingredients|Pantry|Album Title|Handler',am1)]
       ttl = which(substr(am,1,1) == '=')
       dts = file.mtime(zz) # file dates
       #unlink('allmetadata.txt')
@@ -66,6 +66,7 @@ if (file.exists('D:/PNMTALL')) {
       if (len(dts) == len(dto))
         dmissing = zz[!dto %in% dts] # add records with new date to dmissing
       
+      ttl = which(substr(am,1,1) == '=')
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       missing1 = unique(c(dmissing,xmissing))
       fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
@@ -184,7 +185,7 @@ while (TRUE) {
         anttlu=toupper(anttl)
         pnoln=NA
         allc=NA
-
+        
         for (i in 1:len(srct))
           allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
         pnoln=anttl[as.integer(names(which(table(allc)==len(srct))))] # how many match criteria?
@@ -246,8 +247,7 @@ while (TRUE) {
                     }else{
                       an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Comment : ',nfc)} # replace old comments with new comments
                   }
-                  save(an,file='AN.RData')
-
+                  
                   if(ofc!=nfc){
                     dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
                     print(paste('dfix=',dfix))
@@ -256,24 +256,47 @@ while (TRUE) {
                     xxt=strsplit(fnx,paste('Title :','|======== ',sep=''))
                     xxc=strsplit(fnx,paste('Comment :','|======== ',sep=''))
                     xxs=strsplit(fnx,paste('Sub Title :','|======== ',sep=''))
-                    dfan[dfix,'Title']=xxt[[1]][3]
-                    dfan[dfix,'Comment']=xxc[[1]][3]
-                    dfan[dfix,'SubTitle']=xxs[[1]][3]
+                    dfan[dfix,'Title']=trim(xxt[[1]][3])
+                    dfan[dfix,'Comment']=trim(xxc[[1]][3])
+                    dfan[dfix,'SubTitle']=trim(xxs[[1]][3])
                     cmtt=NULL
                     ttll=NULL
                     stll=NULL
-                    if(!is.na(dfan[dfix,'Comment']))
+                    tix=which(grepl(nfn,am,fixed=TRUE)) # find file name in am
+                    if(!is.na(dfan[dfix,'Comment'])){
                       cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
-                    if(!is.na(dfan[dfix,'Title']))
+                      tixc=which(grepl('Comment',am[tix:(tix+2)]))
+                      if(len(tixc)>0)
+                        am[tix+tixc-1]=dfan[dfix,'Comment']
+                      else{
+                        am = append(am, paste("Comment                         : ",dfan[dfix,'Comment']), after = tix)
+                      }
+                    }
+                    if(!is.na(dfan[dfix,'Title'])){
                       ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
-                    if(!is.na(dfan[dfix,'SubTitle']))
+                      tixc=which(grepl('Title',am[tix:(tix+2)]))
+                      if(len(tixc)>0)
+                        am[tix+tixc-1]=dfan[dfix,'Title']
+                      else{
+                        am = append(am, paste("Title                         : ",dfan[dfix,'Comment']), after = tix)
+                      }
+                    }
+                    if(!is.na(dfan[dfix,'SubTitle'])){
                       stll=paste('-metadata subtitle=','"',dfan[dfix,'SubTitle'],'"',sep='')
+                      tixc=which(grepl('SubTitle',am[tix:(tix+2)]))
+                      if(len(tixc)>0)
+                        am[tix+tixc-1]=dfan[dfix,'SubTitle']
+                      else{
+                        am = append(am, paste("SubTitle                         : ",dfan[dfix,'Comment']), after = tix)
+                      }
+                    }
                     unlink('~/xx.mp4')
                     cmdd=paste("shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i",
                                nfn,ttll,cmtt,stll,"xx.mp4'",",translate=TRUE)")
                     writeLines(cmdd,'Jester.R')
                     #source('jester.R')
                   }
+                  save(an,am,dfan,ttl,file='AN.RData')
                   ######### REFRESH GTABLE tab[] ###########
                   fnx1=an[ttl][idxs]
                   ttls = unlist(regexpr(EOFN,fnx1))
@@ -300,7 +323,8 @@ while (TRUE) {
         avail = FALSE
         if(renamed){
           renamed = FALSE
-          load('AN.RData') # an[ttl] has been changed by testplots GUI
+          load('AN.RData') # an[ttl] and dfan have been changed by testplots GUI
+          save(am,an,ttl,dff,dts,dfan,file = sfname)
         } 
         
         if (len(fns) > 0) { # null HAS LENGTH 0
