@@ -42,7 +42,8 @@ for (j in 1:length(fns)) {
   lssg=data.frame(fname=lssy,lss1)
   lssj=merge(lssg,fnfoz,by='fname')
   lssz=as.character(lssj[order(lssj$ctime),'lss1'])
-  fnno=c(fnnh,lssz,fnnt)
+  fnno1=c(fnnh,lssz,fnnt)
+  fnno=sub('Y:','C:',fnno1)
   setwd(paste(pldrive,'My Playlists',sep=""))
   writeLines(fnno,fns[j])
 }

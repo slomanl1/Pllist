@@ -4,12 +4,12 @@ setwd('~/')
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
 rm(list=ls())
 source("~/Local.R")
-shell('dir "Y:\\My Videos\\RealPlayer Downloads" /od/b > ddd.txt')
+shell('dir "C:\\My Videos\\RealPlayer Downloads" /od/b > ddd.txt')
 lns=readLines('ddd.txt')
 unlink('ddd.txt')
-last=as.numeric(substr(lns[length(lns)],1,5))+1
+last=as.numeric(substr(lns[length(lns)],5,9))+1
 if(is.na(last))
-  last=as.numeric(substr(lns[length(lns)],1,4))+1
+  last=as.numeric(substr(lns[length(lns)],5,8))+1
 
 setwd('C:\\RealPlayerDownloads')
 fns1=dir(pattern='*.mp4')
@@ -32,7 +32,7 @@ for (i in 1:length(fns)){
   }
   exist=TRUE
   while (exist){
-  fn[i]=paste(as.character(last),cc,'.wmv',sep='')
+  fn[i]=paste('NEW_',as.character(last),cc,'.wmv',sep='')
   fs=file.info(fns[i])
   if(fs$size %in% fnfo$size &
     identical(md5sum(fns[i]), md5sum(fns[fs$size %in% fnfo$size]))){
