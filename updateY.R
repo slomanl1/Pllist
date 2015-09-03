@@ -169,7 +169,12 @@ while (TRUE) {
   lnttl='Enter Search Criteria'
   if(isExtant(obj)){
     liner=svalue(obj)
-    dispose(obj)}
+    dispose(obj)
+    if(exists('w'))
+    if(isExtant(w))
+      dispose(w)
+    tpexist=FALSE
+  }
   
   if (len(liner)==0) {
     cat("OK, No Files Selected\n")
@@ -228,6 +233,8 @@ while (TRUE) {
             nfc=trim(nfnx$Comment)
             oft=trim(ofnxa$Title)
             nft=trim(nfnx$Title)
+            ofs=trim(ofnxa$SubTitle)
+            nfs=trim(nfnx$SubTitle)
             print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
             lnttl='Enter Search Criteria'            
             if(dirname(nfn)!=dirname(ofn)){
@@ -256,30 +263,32 @@ while (TRUE) {
                   }
                   if(oft!=nft){
                     renamed = TRUE
-                    if(nchar(ofc)>0){
-                      an[ttl][idxs][idx]=sub(oft,nft,an[ttl][idxs][idx],fixed=TRUE) # replace old comment with new comment
+                    if(nchar(oft)>0){
+                      an[ttl][idxs][idx]=sub(oft,nft,an[ttl][idxs][idx],fixed=TRUE) # replace old Title with new comment
                     }else{
-                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Title : ',nft)} # add new comment
+                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Title : ',nft)} # add new Title
+                  }
+                  if(ofs!=nfs){
+                    renamed = TRUE
+                    if(nchar(ofs)>0){
+                      an[ttl][idxs][idx]=sub(ofs,nfs,an[ttl][idxs][idx],fixed=TRUE) # replace old sub title with new comment
+                    }else{
+                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Title : ',nfs)} # add new sub title
                   }
                   
-                  if(ofc!=nfc | oft!=nft){
+                  if(ofc!=nfc | oft!=nft | ofs!=nfs){
                     dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
                     print(paste('dfix=',dfix))
                     dfan[dfix,'filename']=nfn
-                    fnx=an[ttl][idxs][idx]
-                    xxg=strsplit(an[ttl],paste(' ','|======== ',sep=''))
-                    xxt=strsplit(fnx,paste('Title :','|======== ',sep=''))
-                    xxc=strsplit(fnx,paste('Comment :','|======== ',sep=''))
-                    xxs=strsplit(fnx,paste('Sub Title :','|======== ',sep=''))
-                    #dfan[i,'filename']=ifelse(len(trim(xxg[[i]][2]))==0,'',trim(xxg[[i]][2]))
-                    dfan[dfix,'Title']=   ifelse(len(trim(xxt[[1]][3]))==0,'',trim(xxt[[1]][3]))
-                    dfan[dfix,'Comment']= ifelse(len(trim(xxc[[1]][3]))==0,'',trim(xxc[[1]][3]))
-                    dfan[dfix,'SubTitle']=ifelse(len(trim(xxs[[1]][3]))==0,'',trim(xxs[[1]][3]))
+                    dfan[dfix,'Title']=   nft
+                    dfan[dfix,'Comment']= nfc
+                    dfan[dfix,'SubTitle']=nfs
+                    
                     cmtt=NULL
                     ttll=NULL
                     stll=NULL
                     tix=which(grepl(nfn,am,fixed=TRUE)) # find file name in am
-                    if(!is.na(dfan[dfix,'Comment'])){
+                    if(nchar(dfan[dfix,'Comment'])){
                       cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
                       tixc=which(grepl('Comment',am[tix:(tix+2)],fixed=TRUE))
                       if(len(tixc)>0)
@@ -288,7 +297,7 @@ while (TRUE) {
                         am = append(am, paste("Comment                         : ",dfan[dfix,'Comment']), after = tix)
                       }
                     }
-                    if(!is.na(dfan[dfix,'Title'])){
+                    if(nchar(dfan[dfix,'Title'])){
                       ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
                       tixc=which(grepl('Title',am[tix:(tix+2)]))
                       if(len(tixc)>0)
@@ -297,7 +306,7 @@ while (TRUE) {
                         am = append(am, paste("Title                         : ",dfan[dfix,'Title']), after = tix)
                       }
                     }
-                    if(!is.na(dfan[dfix,'SubTitle'])){
+                    if(nchar(dfan[dfix,'SubTitle'])){
                       stll=paste('-metadata subtitle=','"',dfan[dfix,'SubTitle'],'"',sep='')
                       tixc=which(grepl('SubTitle',am[tix:(tix+2)]))
                       if(len(tixc)>0)
