@@ -41,7 +41,7 @@ for (j in 1:length(fns)) {
   fnfoz$fname=rownames(fnfoz)
   lssg=data.frame(fname=lssy,lss1)
   lssj=merge(lssg,fnfoz,by='fname')
-  lssz=as.character(lssj[order(lssj$ctime),'lss1'])
+  lssz=as.character(lssj[order(lssj$mtime),'lss1'])
   fnno1=c(fnnh,lssz,fnnt)
   fnno=sub('Y:','C:',fnno1)
   setwd(paste(pldrive,'My Playlists',sep=""))
