@@ -138,6 +138,9 @@ if (file.exists('D:/PNMTALL')) {
         dfan[i,'Comment']=xxc[[i]][3]
         dfan[i,'SubTitle']=xxs[[i]][3]
       }
+      dfan[is.na(dfan$Comment),'Comment']=''
+      dfan[is.na(dfan$Title),'Title']=''
+      dfan[is.na(dfan$SubTitle),'SubTitle']=''
       print('Updating Dfan - DONE')
     }
     save(am,an,ttl,dff,dts,dfan,file = sfname)
@@ -217,10 +220,11 @@ while (TRUE) {
             print('changed handler (fwofnx>0)')
             nfnx=fwind[,]
             print('changed handler (nfnx created OK')
-            nfn=nfnx$fnx
-            ofn=ofnx$fnx
-            ofc=ofnx$comments
-            nfc=nfnx$comments
+            ofnxa=dfan[grepl(fnames[idx,'fnx'],dfan[,'filename'],fixed=TRUE),]
+            nfn=trim(nfnx$filename)
+            ofn=trim(ofnxa$filename)
+            ofc=trim(ofnxa$Comment)
+            nfc=trim(nfnx$Comment)
             print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
             lnttl='Enter Search Criteria'            
             if(dirname(nfn)!=dirname(ofn)){
@@ -228,7 +232,7 @@ while (TRUE) {
               dispose(fwind)
             }else{
               if(length(nfn)>0){
-                if(any(nfnx!=ofnx)){ # all fields in DF compared
+                if(any(nfnx!=ofnxa)){ # all fields in DF compared
                   if(ofn!=nfn){
                     if(!file.rename(ofn,nfn)){
                       print(paste("file rename FAILED",ofn,nfn))
@@ -256,16 +260,16 @@ while (TRUE) {
                     xxt=strsplit(fnx,paste('Title :','|======== ',sep=''))
                     xxc=strsplit(fnx,paste('Comment :','|======== ',sep=''))
                     xxs=strsplit(fnx,paste('Sub Title :','|======== ',sep=''))
-                    dfan[dfix,'Title']=trim(xxt[[1]][3])
-                    dfan[dfix,'Comment']=trim(xxc[[1]][3])
-                    dfan[dfix,'SubTitle']=trim(xxs[[1]][3])
+                    dfan[dfix,'Title']=   ifelse(is.na(trim(xxt[[1]][3])),'',trim(xxt[[1]][3]))
+                    dfan[dfix,'Comment']= ifelse(is.na(trim(xxc[[1]][3])),'',trim(xxc[[1]][3]))
+                    dfan[dfix,'SubTitle']=ifelse(is.na(trim(xxs[[1]][3])),'',trim(xxs[[1]][3]))
                     cmtt=NULL
                     ttll=NULL
                     stll=NULL
                     tix=which(grepl(nfn,am,fixed=TRUE)) # find file name in am
                     if(!is.na(dfan[dfix,'Comment'])){
                       cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
-                      tixc=which(grepl('Comment',am[tix:(tix+2)]))
+                      tixc=which(grepl('Comment',am[tix:(tix+2)],fixed=TRUE))
                       if(len(tixc)>0)
                         am[tix+tixc-1]=dfan[dfix,'Comment']
                       else{
