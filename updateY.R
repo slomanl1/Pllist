@@ -50,7 +50,7 @@ if (file.exists('D:/PNMTALL')) {
     shell('dir C:\\PNMTALL /S/B/OD >> zz.txt')
     zz1 = readLines('zz.txt')
     zz = zz1[which(grepl('.',zz1,fixed = TRUE) &
-                     !grepl('RECYCLE|txt|RData|RPDN',zz1))]
+                     !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE))]
     if (!file.exists(sfname)) {
       shell('getm D:\\PNMTALL > allmetadata.txt')
       shell('getm C:\\PNMTALL >> allmetadata.txt')
@@ -128,15 +128,16 @@ if (file.exists('D:/PNMTALL')) {
     }
     if(!file.exists(sfname) | len(fmissing) > 0){
       print('Updating Dfan')
+      xxg=strsplit(an[ttl],paste(' ','|======== ',sep=''))
       xxt=strsplit(an[ttl],paste('Title :','|======== ',sep=''))
       xxc=strsplit(an[ttl],paste('Comment :','|======== ',sep=''))
       xxs=strsplit(an[ttl],paste('Sub Title :','|======== ',sep=''))
       dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA)
       for(i in 1:len(xxt)){
-        dfan[i,'filename']=xxt[[i]][2]
-        dfan[i,'Title']=xxt[[i]][3]
-        dfan[i,'Comment']=xxc[[i]][3]
-        dfan[i,'SubTitle']=xxs[[i]][3]
+        dfan[i,'filename']=ifelse(len(trim(xxg[[i]][2]))==0,'',trim(xxg[[i]][2]))
+        dfan[i,'Title']=   ifelse(len(trim(xxt[[i]][3]))==0,'',trim(xxt[[i]][3]))
+        dfan[i,'Comment']= ifelse(len(trim(xxc[[i]][3]))==0,'',trim(xxc[[i]][3]))
+        dfan[i,'SubTitle']=ifelse(len(trim(xxs[[i]][3]))==0,'',trim(xxs[[i]][3]))
       }
       dfan[is.na(dfan$Comment),'Comment']=''
       dfan[is.na(dfan$Title),'Title']=''
@@ -225,6 +226,8 @@ while (TRUE) {
             ofn=trim(ofnxa$filename)
             ofc=trim(ofnxa$Comment)
             nfc=trim(nfnx$Comment)
+            oft=trim(ofnxa$Title)
+            nft=trim(nfnx$Title)
             print(paste('ofnx,nfnx',ofnx,nfnx)) ######### debug only
             lnttl='Enter Search Criteria'            
             if(dirname(nfn)!=dirname(ofn)){
@@ -247,22 +250,31 @@ while (TRUE) {
                   if(ofc!=nfc){
                     renamed = TRUE
                     if(nchar(ofc)>0){
-                      an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comments with new comments
+                      an[ttl][idxs][idx]=sub(ofc,nfc,an[ttl][idxs][idx],fixed=TRUE) # replace old comment with new comment
                     }else{
-                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Comment : ',nfc)} # replace old comments with new comments
+                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Comment : ',nfc)} # add new comment
+                  }
+                  if(oft!=nft){
+                    renamed = TRUE
+                    if(nchar(ofc)>0){
+                      an[ttl][idxs][idx]=sub(oft,nft,an[ttl][idxs][idx],fixed=TRUE) # replace old comment with new comment
+                    }else{
+                      an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Title : ',nft)} # add new comment
                   }
                   
-                  if(ofc!=nfc){
+                  if(ofc!=nfc | oft!=nft){
                     dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
                     print(paste('dfix=',dfix))
                     dfan[dfix,'filename']=nfn
                     fnx=an[ttl][idxs][idx]
+                    xxg=strsplit(an[ttl],paste(' ','|======== ',sep=''))
                     xxt=strsplit(fnx,paste('Title :','|======== ',sep=''))
                     xxc=strsplit(fnx,paste('Comment :','|======== ',sep=''))
                     xxs=strsplit(fnx,paste('Sub Title :','|======== ',sep=''))
-                    dfan[dfix,'Title']=   ifelse(is.na(trim(xxt[[1]][3])),'',trim(xxt[[1]][3]))
-                    dfan[dfix,'Comment']= ifelse(is.na(trim(xxc[[1]][3])),'',trim(xxc[[1]][3]))
-                    dfan[dfix,'SubTitle']=ifelse(is.na(trim(xxs[[1]][3])),'',trim(xxs[[1]][3]))
+                    #dfan[i,'filename']=ifelse(len(trim(xxg[[i]][2]))==0,'',trim(xxg[[i]][2]))
+                    dfan[dfix,'Title']=   ifelse(len(trim(xxt[[1]][3]))==0,'',trim(xxt[[1]][3]))
+                    dfan[dfix,'Comment']= ifelse(len(trim(xxc[[1]][3]))==0,'',trim(xxc[[1]][3]))
+                    dfan[dfix,'SubTitle']=ifelse(len(trim(xxs[[1]][3]))==0,'',trim(xxs[[1]][3]))
                     cmtt=NULL
                     ttll=NULL
                     stll=NULL
@@ -282,7 +294,7 @@ while (TRUE) {
                       if(len(tixc)>0)
                         am[tix+tixc-1]=dfan[dfix,'Title']
                       else{
-                        am = append(am, paste("Title                         : ",dfan[dfix,'Comment']), after = tix)
+                        am = append(am, paste("Title                         : ",dfan[dfix,'Title']), after = tix)
                       }
                     }
                     if(!is.na(dfan[dfix,'SubTitle'])){
@@ -291,7 +303,7 @@ while (TRUE) {
                       if(len(tixc)>0)
                         am[tix+tixc-1]=dfan[dfix,'SubTitle']
                       else{
-                        am = append(am, paste("SubTitle                         : ",dfan[dfix,'Comment']), after = tix)
+                        am = append(am, paste("Sub Title                         : ",dfan[dfix,'SubTitle']), after = tix)
                       }
                     }
                     unlink('~/xx.mp4')
