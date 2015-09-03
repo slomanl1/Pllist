@@ -47,11 +47,10 @@ if (!.GlobalEnv$tpexist) {
     tab, handler = function(h,...) {
       if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
         .GlobalEnv$idx=which(grepl(basename(as.character(svalue(h$obj)))[1],fnames$fnx,fixed = TRUE))
-        print(paste('idx=',idx))
+        print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
-        ofnxa=dfan[grepl(fnames[idx,'fnx'],dfan[,'filename'],fixed=TRUE),]
-        nfn=NULL
-        fwind[,]=ofnxa # supply select idx item in editing window fwinf
+        nfn=NULL  # supply select idx item in editing window fwinf
+        fwind[,] = dfan[grepl(fnames[idx,'fnx'],dfan[,'filename'],fixed=TRUE),]
         visible(fw) <- TRUE
         visible(w) <- FALSE
       }
