@@ -8,7 +8,7 @@ if (!.GlobalEnv$tpexist) {
   ssv = NULL
   
   fw=gwindow("Edit File Details",width=1900,height = 20)
-  fwind=gdf(fnames[1,], container=fw)
+  fwind=gdf(dfan[1,], container=fw)
   getToolkitWidget(fw)$move(0,100)
   visible(fw) <- FALSE
   addhandlerchanged(fwind, handler = function(h,...) 
@@ -49,7 +49,7 @@ if (!.GlobalEnv$tpexist) {
         .GlobalEnv$idx=which(grepl(basename(as.character(svalue(h$obj)))[1],fnames$fnx,fixed = TRUE))
         print(paste('idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
-        ofnxa=fnames[idx,]
+        ofnxa=dfan[grepl(fnames[idx,'fnx'],dfan[,'filename'],fixed=TRUE),]
         nfn=NULL
         fwind[,]=ofnxa # supply select idx item in editing window fwinf
         visible(fw) <- TRUE
