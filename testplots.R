@@ -15,8 +15,6 @@ if (!.GlobalEnv$tpexist) {
   { print('changed handler (fwind)')
     .GlobalEnv$changed=TRUE
     .GlobalEnv$avail=TRUE
-#    if(isExtant(w))
-#      dispose(w)
     visible(w) <- FALSE
     tpexist=FALSE
   })
@@ -51,7 +49,7 @@ if (!.GlobalEnv$tpexist) {
         print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
         nfn=NULL  # supply select idx item in editing window fwinf
-        fwind[,] = dfan[grepl(fnames[idx,'fnx'],dfan[,'filename'],fixed=TRUE),]
+        fwind[,] = dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
         visible(fw) <- TRUE
         visible(w) <- FALSE
       }
