@@ -10,7 +10,6 @@ if(exists('fwind'))
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 
-
 len=function(x) length(x)
 delay500=function(){
   x=1000000
@@ -21,6 +20,7 @@ delay500=function(){
       break
   }
 }
+
 guiAdd("myGUI")
 volz = 'z'
 voly = 'y'
@@ -36,6 +36,8 @@ EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 unsorted = TRUE
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
+dirpath1 = "D:\\PNMTALL"
+dirpath2 = "c:\\PNMTALL"
 
 if (file.exists('D:/PNMTALL')) {
   shell('dir D: | findstr Volume > volz.txt')
@@ -46,14 +48,32 @@ if (file.exists('D:/PNMTALL')) {
     vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
     print(paste('VNAME =',vname))
     sfname = paste(substr(vname,1,nchar(vname) - 4),'.RData',sep = '')
-    shell('dir D:\\PNMTALL /S/B/OD > zz.txt')
-    shell('dir C:\\PNMTALL /S/B/OD >> zz.txt')
+    YesorNo=select.list(c('No','Yes'),preselect = 'No',title='DELETE sfname and choose folders?',graphics = TRUE)
+    if(YesorNo=='Yes'){
+      unlink(sfname)
+      dirpath1=choose.dir(default = "D:\\PNMTALL", caption = "Select folder set 1")
+      dirpath2=choose.dir(default = "C:\\PNMTALL", caption = "Select folder set 2")
+      if(is.na(dirpath1) & is.na(dirpath2))
+        stop('Aborted')
+      
+      save(dirpath1,dirpath2,file='dirpaths.RData')
+    }else{
+      if(YesorNo=='')
+        stop('Aborted')
+      else
+        load('dirpaths.RData')
+    }
+    print(paste('dirpath1=',dirpath1,'dirpath2=',dirpath2))
+    shell(paste('dir', dirpath1,' /S/B/OD >  zz.txt'))
+    if(!is.na(dirpath2))
+      shell(paste('dir', dirpath2,' /S/B/OD >> zz.txt'))
     zz1 = readLines('zz.txt')
     zz = zz1[which(grepl('.',zz1,fixed = TRUE) &
                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE))]
     if (!file.exists(sfname)) {
-      shell('getm D:\\PNMTALL > allmetadata.txt')
-      shell('getm C:\\PNMTALL >> allmetadata.txt')
+      shell(paste('getm',dirpath1,' >  allmetadata.txt'))
+      if(!is.na(dirpath2))
+        shell(paste('getm',dirpath2,' >> allmetadata.txt'))
       am1 = readLines('allmetadata.txt')
       am = am1[!grepl('Ingredients|Pantry|Album Title|Handler',am1)]
       ttl = which(substr(am,1,1) == '=')
@@ -171,8 +191,8 @@ while (TRUE) {
     liner=svalue(obj)
     dispose(obj)
     if(exists('w'))
-    if(isExtant(w))
-      dispose(w)
+      if(isExtant(w))
+        dispose(w)
     tpexist=FALSE
   }
   
@@ -248,12 +268,16 @@ while (TRUE) {
                       print(paste("file rename FAILED",ofn,nfn))
                       renamed=FALSE ########## KLUDGE, comes here after tab destroyed after change/dissmiss
                       nfc=ofc # prevents comment replace error
+                      tix=NA # invalid filename, not in am
                     }else{
                       renamed = TRUE
                       print(paste("file rename successful,old an[ttl][idxs][idx]=",ofn,nfn,an[ttl][idxs][idx]))
                       an[ttl][idxs][idx]=sub(ofn,nfn,an[ttl][idxs][idx],fixed=TRUE) # replace old filename with new filename
+                      tix=which(grepl(ofn,am,fixed=TRUE)) 
+                      am[tix]=sub(ofn,nfn,am[tix],fixed=TRUE) # replace old filename with new filename in am
                     }
-                  }
+                  }else
+                    tix=which(grepl(nfn,am,fixed=TRUE)) # find new file name in am
                   if(ofc!=nfc){
                     renamed = TRUE
                     if(nchar(ofc)>0){
@@ -276,7 +300,7 @@ while (TRUE) {
                       an[ttl][idxs][idx]=paste(an[ttl][idxs][idx],' Title : ',nfs)} # add new sub title
                   }
                   
-                  if(ofc!=nfc | oft!=nft | ofs!=nfs){
+                  if(ofc!=nfc | oft!=nft | ofs!=nfs | ofn!=nfn){
                     dfix=which(grepl(ofn,dfan$filename,fixed =TRUE))
                     print(paste('dfix=',dfix))
                     dfan[dfix,'filename']=nfn
@@ -287,10 +311,10 @@ while (TRUE) {
                     cmtt=NULL
                     ttll=NULL
                     stll=NULL
-                    tix=which(grepl(nfn,am,fixed=TRUE)) # find file name in am
+                    #tix=which(grepl(ofn,am,fixed=TRUE)) # find file name in am
                     if(nchar(dfan[dfix,'Comment'])){
                       cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
-                      tixc=which(grepl('Comment',am[tix:(tix+2)],fixed=TRUE))
+                      tixc=which(grepl('Comment',am[tix:(tix+2)]) & !any(grepl('========',am[tix:(tix+2)],fixed=TRUE)))
                       if(len(tixc)>0)
                         am[tix+tixc-1]=dfan[dfix,'Comment']
                       else{
@@ -299,7 +323,7 @@ while (TRUE) {
                     }
                     if(nchar(dfan[dfix,'Title'])){
                       ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
-                      tixc=which(grepl('Title',am[tix:(tix+2)]))
+                      tixc=which(grepl('Title',am[tix:(tix+2)]) & !any(grepl('========',am[tix:(tix+2)],fixed=TRUE)))
                       if(len(tixc)>0)
                         am[tix+tixc-1]=dfan[dfix,'Title']
                       else{
@@ -308,7 +332,7 @@ while (TRUE) {
                     }
                     if(nchar(dfan[dfix,'SubTitle'])){
                       stll=paste('-metadata subtitle=','"',dfan[dfix,'SubTitle'],'"',sep='')
-                      tixc=which(grepl('SubTitle',am[tix:(tix+2)]))
+                      tixc=which(grepl('SubTitle',am[tix:(tix+2)]) & !any(grepl('========',am[tix:(tix+2)],fixed=TRUE)))
                       if(len(tixc)>0)
                         am[tix+tixc-1]=dfan[dfix,'SubTitle']
                       else{
