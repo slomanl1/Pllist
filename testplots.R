@@ -15,6 +15,7 @@ if (!.GlobalEnv$tpexist) {
   { print('changed handler (fwind)')
     .GlobalEnv$changed=TRUE
     .GlobalEnv$avail=TRUE
+    .GlobalEnv$Passt=TRUE
     visible(w) <- FALSE
     tpexist=FALSE
   })

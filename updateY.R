@@ -34,6 +34,7 @@ ssv=NULL
 fmissing=NULL
 EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 unsorted = TRUE
+Passt=FALSE
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 dirpath1 = "D:\\PNMTALL"
@@ -175,15 +176,21 @@ emsg = 'OK'
 lnttl='Enter Search Criteria'
 while (TRUE) {
   avail=FALSE
-  obj <- gedit(text=dflt,container=gwindow(height = 20, title=lnttl))
-  shell('nircmd win activate title "Enter Search Criteria"')
-  focus(obj)=TRUE
-  addhandlerchanged(obj, handler=function(h,...)
-    .GlobalEnv$avail=TRUE)
-  addHandlerDestroy(obj, handler=function(h,...){
-    .GlobalEnv$avail=TRUE
-  })
-  liner=NULL
+  if(!Passt){
+    linerw=gwindow(height = 20, title=lnttl)
+    obj <- gedit(text=dflt,container=linerw)
+    shell('nircmd win activate title "Enter Search Criteria"')
+    focus(obj)=TRUE
+    addhandlerchanged(obj, handler=function(h,...)
+      .GlobalEnv$avail=TRUE)
+    addHandlerDestroy(obj, handler=function(h,...){
+      .GlobalEnv$avail=TRUE
+    })
+    liner=NULL
+  }else{
+    avail=TRUE
+    Passt=FALSE
+  }
   while(!avail)
   {}
   lnttl='Enter Search Criteria'
