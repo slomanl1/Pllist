@@ -17,6 +17,7 @@ if (!.GlobalEnv$tpexist) {
     .GlobalEnv$avail=TRUE
     .GlobalEnv$Passt=TRUE
     visible(w) <- FALSE
+    enabled(fw) <- FALSE
     tpexist=FALSE
   })
   
@@ -52,6 +53,7 @@ if (!.GlobalEnv$tpexist) {
         nfn=NULL  # supply select idx item in editing window fwinf
         fwind[,] = dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
         visible(fw) <- TRUE
+        enabled(fw) <- TRUE
         visible(w) <- FALSE
       }
     }
