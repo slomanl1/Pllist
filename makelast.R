@@ -7,7 +7,7 @@ source("~/Local.R")
 shell('dir "C:\\My Videos\\RealPlayer Downloads" /od/b > ddd.txt')
 lns=readLines('ddd.txt')
 unlink('ddd.txt')
-last=tail(sort(as.numeric(substr(lns,5,9))),1)
+last=suppressWarnings(tail(sort(as.numeric(substr(lns,5,9))),1))
 
 setwd('C:\\RealPlayerDownloads')
 fns1=dir(pattern='*.mp4')
