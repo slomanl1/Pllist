@@ -71,12 +71,21 @@ if (!.GlobalEnv$tpexist) {
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
-
+  
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
-    if(answ)
-      unlink(svalue(tab))
-
+    if(answ){
+      print(paste('Deleting',svalue(tab)))
+      if(unlink(svalue(tab)))
+        print('delete FAILED')
+      else{
+        .GlobalEnv$changed=TRUE
+        .GlobalEnv$avail=TRUE
+        .GlobalEnv$Passt=TRUE
+        visible(w) <- FALSE
+        tpexist=FALSE
+      }
+    }
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
@@ -98,4 +107,5 @@ if (!.GlobalEnv$tpexist) {
 }else
   visible(w)=TRUE
 
-
+#exiftool BSBMp4Tester.mp4 -Subtitle="asdasd"
+#exiftool BSBMp4Tester.mp4 -Title="askndppp"
