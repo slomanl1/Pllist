@@ -72,6 +72,7 @@ if (file.exists('D:/PNMTALL')) {
     zz = zz1[which(grepl('.',zz1,fixed = TRUE) &
                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE))]
     if (!file.exists(sfname)) {
+      updateList=zz[which(file.mtime(zz) > file.mtime('allmetadata.txt'))]
       shell(paste('getm',dirpath1,' >  allmetadata.txt'))
       if(!is.na(dirpath2))
         shell(paste('getm',dirpath2,' >> allmetadata.txt'))
@@ -328,7 +329,8 @@ while (TRUE) {
                         am = append(am, paste("Comment                         : ",dfan[dfix,'Comment']), after = tix)
                       }
                     }
-                    if(nchar(dfan[dfix,'Title'])){
+                    ttll=' '
+                    if(nchar(dfan[dfix,'Title'])){ ############ chack here IF REPLACEMENT BLANK TITLE WILL WORK ############
                       ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
                       tixc=which(grepl('Title',am[tix:(tix+2)]) & !any(grepl('========',am[tix:(tix+2)],fixed=TRUE)))
                       if(len(tixc)>0)
@@ -346,21 +348,21 @@ while (TRUE) {
                         am = append(am, paste("Sub Title                         : ",dfan[dfix,'SubTitle']), after = tix)
                       }
                     }
-                    unlink('~/xx.mp4')
-                    cmdd=paste("shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i",
-                               nfn,ttll,cmtt,stll,"xx.mp4'",",translate=TRUE)")
-                    writeLines(cmdd,'Jester.R')
-                    #source('jester.R')
+
+                    if(oft!=nft)                    {
+                      if(nchar(nft)==0)
+                        nft=" "
+                      cmdd=paste("shell('exiftool -Title=",'"',nft,'" ',nfn,"')",sep='')
+                      writeLines(cmdd,'Jester.R')
+                      source('jester.R')
+                      ttllorig=paste(nfn,'_original',sep='')
+                      if(file.exists(ttllorig))
+                        unlink(ttllorig)
+                      else
+                        print('Orig file not found for deletion')
+                    }
                   }
                   save(an,am,dfan,ttl,file='AN.RData')
-                  ######### REFRESH GTABLE tab[] ###########
-                  fnx1=an[ttl][idxs]
-                  ttls = unlist(regexpr(EOFN,fnx1))
-                  ttls[ttls < 0] = 500
-                  fnx= substr(fnx1,10,ttls - 2)
-                  comments=substr(fnx1,ttls,nchar(fnx1))
-                  #                  tab[,] <- get_list_content(fnx,comments) # refresh gtable(write updated table to tab)
-                  
                   # end of rightclickhandler for gtable (tab)
                 }
               }
@@ -411,6 +413,8 @@ while (TRUE) {
 
 ##################################### MODEL SHELL COMMAND ##############################################
 #shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i D:/PNMTALL/ndbmjaw/9999_01_hdblpnsustpswa+.mov xx.mp4',translate=TRUE)
-
+#unlink('~/xx.mp4')
+#cmdd=paste("shell('c:/users/LarrySloman/documents/hexdump/bin/ffmpeg.exe -i",
+#           nfn,ttll,cmtt,stll,"xx.mp4'",",translate=TRUE)")
 
 
