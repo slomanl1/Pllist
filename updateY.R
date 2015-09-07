@@ -32,14 +32,15 @@ renamed=FALSE
 ofnx=NULL
 ssv=NULL
 fmissing=NULL
-EOFN = 'Comment|Title|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
+EOFN = 'Title|Comment|Sub Title|File Path|Ingredients|Album|File Name|Tracks'
 unsorted = TRUE
 Passt=FALSE
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 dirpath1 = "D:\\PNMTALL"
 dirpath2 = "c:\\PNMTALL"
-
+dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('D:/PNMTALL',full.names = TRUE))
+dirs=subset(dirs,!grepl('lnk',dirs))
 if (file.exists('D:/PNMTALL')) {
   shell('dir D: | findstr Volume > volz.txt')
   volz = readLines('volz.txt')
@@ -52,32 +53,34 @@ if (file.exists('D:/PNMTALL')) {
     YesorNo=select.list(c('No','Yes'),preselect = 'No',title='DELETE sfname and choose folders?',graphics = TRUE)
     if(YesorNo=='Yes'){
       unlink(sfname)
-      dirpath1=choose.dir(default = "D:\\PNMTALL", caption = "Select folder set 1")
-      dirpath2=choose.dir(default = "C:\\PNMTALL", caption = "Select folder set 2")
-      if(is.na(dirpath1) & is.na(dirpath2))
+      dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE)
+      if(nchar(dirpaths[1])==0)
         stop('Aborted')
       
-      save(dirpath1,dirpath2,file='dirpaths.RData')
+    save(dirpaths,file='dirpaths.RData')
     }else{
       if(YesorNo=='')
         stop('Aborted')
       else
         load('dirpaths.RData')
     }
-    print(paste('dirpath1=',dirpath1,'dirpath2=',dirpath2))
-    shell(paste('dir', dirpath1,' /S/B/OD >  zz.txt'))
-    if(!is.na(dirpath2))
-      shell(paste('dir', dirpath2,' /S/B/OD >> zz.txt'))
+    dirsx=dirs[basename(dirs) %in% dirpaths]
+    shell(paste('dir', 'D:\\PNMTALL',' /S/B/OD >  zz.txt'))
+    shell(paste('dir', 'c:\\PNMTALL',' /S/B/OD >> zz.txt'))
     zz1 = readLines('zz.txt')
-    zz = zz1[which(grepl('.',zz1,fixed = TRUE) &
-                     !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE))]
+    zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
+                     !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
+                     toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
+    zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
+    #updateList=zz[which(file.mtime(zz) > file.mtime('allmetadata.txt'))]
     if (!file.exists(sfname)) {
-      updateList=zz[which(file.mtime(zz) > file.mtime('allmetadata.txt'))]
-      shell(paste('getm',dirpath1,' >  allmetadata.txt'))
-      if(!is.na(dirpath2))
-        shell(paste('getm',dirpath2,' >> allmetadata.txt'))
+      writeLines('','allmetadata.txt')
+      for(dirpath1 in dirpaths){
+        print(dirpath1)
+        shell(paste('getm',dirs[grepl(dirpath1,dirs)][1],' >>  allmetadata.txt'))
+      }
       am1 = readLines('allmetadata.txt')
-      am = am1[!grepl('Ingredients|Pantry|Album Title|Handler',am1)]
+      am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
       ttl = which(substr(am,1,1) == '=')
       dts = file.mtime(zz) # file dates
       #unlink('allmetadata.txt')
@@ -352,6 +355,7 @@ while (TRUE) {
                     if(oft!=nft)                    {
                       if(nchar(nft)==0)
                         nft=" "
+                      print('Updating Metadata')
                       cmdd=paste("shell('exiftool -Title=",'"',nft,'" ',nfn,"')",sep='')
                       writeLines(cmdd,'Jester.R')
                       source('jester.R')
