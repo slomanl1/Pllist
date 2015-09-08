@@ -76,7 +76,7 @@ if (file.exists('D:/PNMTALL')) {
       writeLines('','allmetadata.txt')
       for(dirpath in dirpaths){
         print(dirpath)
-        shell(paste('getm',dirs[which(dirs %in% dirname(zz))],' >>  allmetadata.txt'))
+        shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) ##### [1] is not correct
       }
       am1 = readLines('allmetadata.txt')
       am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
