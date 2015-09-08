@@ -37,9 +37,8 @@ unsorted = TRUE
 Passt=FALSE
 
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
-dirpath1 = "D:\\PNMTALL"
-dirpath2 = "c:\\PNMTALL"
-dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('D:/PNMTALL',full.names = TRUE))
+
+dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
 if (file.exists('D:/PNMTALL')) {
   shell('dir D: | findstr Volume > volz.txt')
@@ -53,7 +52,7 @@ if (file.exists('D:/PNMTALL')) {
     YesorNo=select.list(c('No','Yes'),preselect = 'No',title='DELETE sfname and choose folders?',graphics = TRUE)
     if(YesorNo=='Yes'){
       unlink(sfname)
-      dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE)
+      dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
       if(nchar(dirpaths[1])==0)
         stop('Aborted')
       
@@ -66,7 +65,7 @@ if (file.exists('D:/PNMTALL')) {
     }
     dirsx=dirs[basename(dirs) %in% dirpaths]
     shell(paste('dir', 'D:\\PNMTALL',' /S/B/OD >  zz.txt'))
-    shell(paste('dir', 'c:\\PNMTALL',' /S/B/OD >> zz.txt'))
+    shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
     zz1 = readLines('zz.txt')
     zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
@@ -75,12 +74,12 @@ if (file.exists('D:/PNMTALL')) {
     #updateList=zz[which(file.mtime(zz) > file.mtime('allmetadata.txt'))]
     if (!file.exists(sfname)) {
       writeLines('','allmetadata.txt')
-      for(dirpath1 in dirpaths){
-        print(dirpath1)
-        shell(paste('getm',dirs[grepl(dirpath1,dirs)][1],' >>  allmetadata.txt'))
+      for(dirpath in dirpaths){
+        print(dirpath)
+        shell(paste('getm',dirs[grepl(dirpath,dirs)][1],' >>  allmetadata.txt'))
       }
       am1 = readLines('allmetadata.txt')
-      am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
+      am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
       ttl = which(substr(am,1,1) == '=')
       dts = file.mtime(zz) # file dates
       #unlink('allmetadata.txt')
@@ -159,10 +158,10 @@ if (file.exists('D:/PNMTALL')) {
       xxs=strsplit(an[ttl],paste('Sub Title :','|======== ',sep=''))
       dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA)
       for(i in 1:len(xxt)){
-        dfan[i,'filename']=ifelse(len(trim(xxg[[i]][2]))==0,'',trim(xxg[[i]][2]))
-        dfan[i,'Title']=   ifelse(len(trim(xxt[[i]][3]))==0,'',trim(xxt[[i]][3]))
-        dfan[i,'Comment']= ifelse(len(trim(xxc[[i]][3]))==0,'',trim(xxc[[i]][3]))
-        dfan[i,'SubTitle']=ifelse(len(trim(xxs[[i]][3]))==0,'',trim(xxs[[i]][3]))
+        dfan[i,'filename']= ifelse(len(trim(xxg[[i]][2]))==0,'',trim(xxg[[i]][2]))
+        dfan[i,'Title']=    ifelse(len(trim(xxt[[i]][3]))==0,'',trim(xxt[[i]][3]))
+        dfan[i,'Comment']=  ifelse(len(trim(xxc[[i]][3]))==0,'',trim(xxc[[i]][3]))
+        dfan[i,'SubTitle']= ifelse(len(trim(xxs[[i]][3]))==0,'',trim(xxs[[i]][3]))
       }
       dfan[is.na(dfan$Comment),'Comment']=''
       dfan[is.na(dfan$Title),'Title']=''
@@ -236,6 +235,7 @@ while (TRUE) {
           fnames1 = substr(pnoln,10,ttls - 2)
           fnames2 = sub('v NA','v',fnames1) # remove extra "NA" from fmissing add bug
           fnames2 = sub('mp4 NA','mp4',fnames2) # remove extra "NA" from fmissing add bug
+          fnames2 = sub('mov DM','mov',fnames2)
           comments=substr(pnoln,ttls,nchar(pnoln))
           gdframe = get_list_content(fnames2,comments)
           fnames=gdframe[order(gdframe$cdts,decreasing = unsorted),]
@@ -356,8 +356,8 @@ while (TRUE) {
                       if(nchar(nft)==0)
                         nft=" "
                       print('Updating Metadata')
-                      cmdd=paste("shell('exiftool -Title=",'"',nft,'" ',nfn,"')",sep='')
-                      writeLines(cmdd,'Jester.R')
+                      cmdd=paste("shell('exiftool -DMComment=",'"',nfc,'" -Title=" ',nft,'" ',nfn,"')",sep='')
+                      writeLines(cmdd,'Jester.R') ############TEST############ ADD SUBTITLE and compare old/new logic
                       source('jester.R')
                       ttllorig=paste(nfn,'_original',sep='')
                       if(file.exists(ttllorig))
