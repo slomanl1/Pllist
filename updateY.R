@@ -76,7 +76,7 @@ if (file.exists('D:/PNMTALL')) {
       writeLines('','allmetadata.txt')
       for(dirpath in dirpaths){
         print(dirpath)
-        shell(paste('getm',dirs[grepl(dirpath,dirs)][1],' >>  allmetadata.txt'))
+        shell(paste('getm',dirs[which(dirs %in% dirname(zz))],' >>  allmetadata.txt'))
       }
       am1 = readLines('allmetadata.txt')
       am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
@@ -287,8 +287,10 @@ while (TRUE) {
                       tix=which(grepl(ofn,am,fixed=TRUE)) 
                       am[tix]=sub(ofn,nfn,am[tix],fixed=TRUE) # replace old filename with new filename in am
                     }
-                  }else
+                  }else{
                     tix=which(grepl(nfn,am,fixed=TRUE)) # find new file name in am
+                    idx=which(grepl(nfn,an[ttl[idxs]],fixed=TRUE))
+                  }
                   if(ofc!=nfc){
                     renamed = TRUE
                     if(nchar(ofc)>0){
