@@ -8,7 +8,7 @@ if (!.GlobalEnv$tpexist) {
   ssv = NULL
   
   fw=gwindow("Edit File Details",width=1900,height = 20)
-  fwind=gdf(dfan[1,], container=fw)
+  fwind=gdf(dfan[1,1:4], container=fw)
   getToolkitWidget(fw)$move(0,100)
   visible(fw) <- FALSE
   addhandlerchanged(fwind, handler = function(h,...) 
@@ -51,7 +51,7 @@ if (!.GlobalEnv$tpexist) {
         print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
         nfn=NULL  # supply select idx item in editing window fwinf
-        fwind[,] = dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+        fwind[,] = dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),1:4]
         visible(fw) <- TRUE
         enabled(fw) <- TRUE
         visible(w) <- FALSE
