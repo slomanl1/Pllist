@@ -56,7 +56,7 @@ if (file.exists('D:/PNMTALL')) {
       if(nchar(dirpaths[1])==0)
         stop('Aborted')
       
-    save(dirpaths,file='dirpaths.RData')
+      save(dirpaths,file='dirpaths.RData')
     }else{
       if(YesorNo=='')
         stop('Aborted')
@@ -68,17 +68,17 @@ if (file.exists('D:/PNMTALL')) {
     shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
     zz1 = readLines('zz.txt')
     zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
-                     !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
-                     toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
+                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
+                      toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
     zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
-    #updateList=zz[which(file.mtime(zz) > file.mtime('allmetadata.txt'))]
     if (!file.exists(sfname)) {
       writeLines('','allmetadata.txt')
       for(dirpath in dirpaths){
         print(dirpath)
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) ##### [1] is not correct
       }
-      am1 = readLines('allmetadata.txt')
+      am2 = readLines('allmetadata.txt')
+      am1=am2[!grepl("Subtitle                        : |DM Comment                      : ",am2)] 
       am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
       ttl = which(substr(am,1,1) == '=')
       dts = file.mtime(zz) # file dates
@@ -156,16 +156,20 @@ if (file.exists('D:/PNMTALL')) {
       xxt=strsplit(an[ttl],paste('Title :','|======== ',sep=''))
       xxc=strsplit(an[ttl],paste('Comment :','|======== ',sep=''))
       xxs=strsplit(an[ttl],paste('Sub Title :','|======== ',sep=''))
-      dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA)
+      xxd=strsplit(an[ttl],paste('DM Comment','|======== ',sep=''))
+      dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
       for(i in 1:len(xxt)){
-        dfan[i,'filename']= ifelse(len(trim(xxg[[i]][2]))==0,'',trim(xxg[[i]][2]))
-        dfan[i,'Title']=    ifelse(len(trim(xxt[[i]][3]))==0,'',trim(xxt[[i]][3]))
-        dfan[i,'Comment']=  ifelse(len(trim(xxc[[i]][3]))==0,'',trim(xxc[[i]][3]))
-        dfan[i,'SubTitle']= ifelse(len(trim(xxs[[i]][3]))==0,'',trim(xxs[[i]][3]))
+        dfan[i,'filename']=  ifelse(len(trim(xxg[[i]][2]))==0,'',trim(xxg[[i]][2]))
+        dfan[i,'Title']=     ifelse(len(trim(xxt[[i]][3]))==0,'',trim(xxt[[i]][3]))
+        dfan[i,'Comment']=   ifelse(len(trim(xxc[[i]][3]))==0,'',trim(xxc[[i]][3]))
+        dfan[i,'SubTitle']=  ifelse(len(trim(xxs[[i]][3]))==0,'',trim(xxs[[i]][3]))
+        dfan[i,'DMComment']= ifelse(len(trim(xxs[[i]][3]))==0,'',trim(xxd[[i]][3]))
       }
       dfan[is.na(dfan$Comment),'Comment']=''
       dfan[is.na(dfan$Title),'Title']=''
       dfan[is.na(dfan$SubTitle),'SubTitle']=''
+      dfan[is.na(dfan$DMComment),'DMComment']=''
+      sub(':','',dfan[,'DMComment'])
       print('Updating Dfan - DONE')
     }
     save(am,an,ttl,dff,dts,dfan,file = sfname)
@@ -260,6 +264,8 @@ while (TRUE) {
             ofnxa=dfan[grepl(fnames[idx,'fnx'],dfan[,'filename'],fixed=TRUE),]
             nfn=trim(nfnx$filename)
             ofn=trim(ofnxa$filename)
+            if(nchar(trim(ofnxa$DMComment)))
+              ofnxa$Comment=ofnxa$DMComment
             ofc=trim(ofnxa$Comment)
             nfc=trim(nfnx$Comment)
             oft=trim(ofnxa$Title)
@@ -273,7 +279,7 @@ while (TRUE) {
               dispose(fwind)
             }else{
               if(length(nfn)>0){
-                if(any(nfnx!=ofnxa)){ # all fields in DF compared
+                if(any(nfnx!=ofnxa[,1:4])){ # all fields in DF compared
                   if(ofn!=nfn){
                     if(!file.rename(ofn,nfn)){
                       print(paste("file rename FAILED",ofn,nfn))
@@ -326,7 +332,6 @@ while (TRUE) {
                     stll=NULL
                     #tix=which(grepl(ofn,am,fixed=TRUE)) # find file name in am
                     if(nchar(dfan[dfix,'Comment'])){
-                      cmtt=paste('-metadata comment=','"', dfan[dfix,'Comment'],'"',sep='')
                       tixc=which(grepl('Comment',am[tix:(tix+2)]) & !any(grepl('========',am[tix:(tix+2)],fixed=TRUE)))
                       if(len(tixc)>0)
                         am[tix+tixc-1]=dfan[dfix,'Comment']
@@ -335,7 +340,7 @@ while (TRUE) {
                       }
                     }
                     ttll=' '
-                    if(nchar(dfan[dfix,'Title'])){ ############ chack here IF REPLACEMENT BLANK TITLE WILL WORK ############
+                    if(nchar(dfan[dfix,'Title'])){ ############ check here IF REPLACEMENT BLANK TITLE WILL WORK ############
                       ttll=paste('-metadata title=','"',   dfan[dfix,'Title'],'"',sep='')
                       tixc=which(grepl('Title',am[tix:(tix+2)]) & !any(grepl('========',am[tix:(tix+2)],fixed=TRUE)))
                       if(len(tixc)>0)
@@ -353,20 +358,22 @@ while (TRUE) {
                         am = append(am, paste("Sub Title                         : ",dfan[dfix,'SubTitle']), after = tix)
                       }
                     }
-
-                    if(oft!=nft)                    {
-                      if(nchar(nft)==0)
-                        nft=" "
-                      print('Updating Metadata')
-                      cmdd=paste("shell('exiftool -DMComment=",'"',nfc,'" -Title=" ',nft,'" ',nfn,"')",sep='')
-                      writeLines(cmdd,'Jester.R') ############TEST############ ADD SUBTITLE and compare old/new logic
-                      source('jester.R')
-                      ttllorig=paste(nfn,'_original',sep='')
-                      if(file.exists(ttllorig))
-                        unlink(ttllorig)
-                      else
-                        print('Orig file not found for deletion')
-                    }
+                    
+                    if(nchar(nft)==0)
+                      nft=" "
+                    if(nchar(nfc)==0)
+                      nfc=" "
+                    if(nchar(nfs)==0)
+                      nfs=" "
+                    print('Updating Metadata')
+                    cmdd=paste("shell('exiftool -DMComment=",'"',nfc,'" -Title=" ',nft,'", -SubTitle=" ',nfs,'" ',nfn,"')",sep='')
+                    writeLines(cmdd,'Jester.R') 
+                    source('jester.R')
+                    ttllorig=paste(nfn,'_original',sep='')
+                    if(file.exists(ttllorig))
+                      unlink(ttllorig)
+                    else
+                      print('Orig file not found for deletion')
                   }
                   save(an,am,dfan,ttl,file='AN.RData')
                   # end of rightclickhandler for gtable (tab)
