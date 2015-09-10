@@ -20,11 +20,68 @@ delay500=function(){
       break
   }
 }
+extras=NULL
+dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
+dirs=subset(dirs,!grepl('lnk',dirs))
+if (file.exists('D:/PNMTALL')) {
+  shell('dir D: | findstr Volume > volz.txt')
+  volz = readLines('volz.txt')
+  unlink('volz.txt')
+  if (grepl('Volume',volz[1]) & !grepl('RPDN',volz[1]))
+  {
+    vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
+    print(paste('VNAME =',vname))
+    sfname = paste(substr(vname,1,nchar(vname) - 4),'.RData',sep = '')
+    YesorNo=select.list(c('No','Yes'),preselect = 'No',title='DELETE sfname and choose folders?',graphics = TRUE)
+    if(YesorNo=='Yes'){
+      dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
+      if(nchar(dirpaths[1])==0)
+        stop('Aborted')
+      unlink(sfname)
+      save(dirpaths,file='dirpaths.RData')
+    }else{
+      if(YesorNo=='')
+        stop('Aborted')
+      else
+        load('dirpaths.RData')
+    }
+    dirsx=dirs[basename(dirs) %in% dirpaths]
+    shell(paste('dir', 'D:\\PNMTALL',' /S/B/OD >  zz.txt'))
+    shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
+    zz1 = readLines('zz.txt')
+    zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
+                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
+                      toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
+    zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
+    if (!file.exists(sfname)) {
+      writeLines('','allmetadata.txt')
+      for(dirpath in dirpaths){
+        print(dirpath)
+        shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
+      }
+      dts = file.mtime(zz) # file dates
+      #unlink('allmetadata.txt')
+    }else{
+      load(sfname)
+      dto = file.mtime(zz) # new file dates
+      dmissing = NULL
+      if (len(dts) == len(dto))
+        dmissing = zz[!dto %in% dts] # add records with new date to dmissing
+      
+      ttl = which(substr(am,1,1) == '=')
+      xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
+      missing1 = unique(c(dmissing,xmissing))
+      fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
+      extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
+      dts = dto # replace old dates
+    }
+  } 
+}   
+
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 
 dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
-am2 = readLines('allmetadata.txt')
-am1=am2 #[!grepl("Subtitle                        : |DM Comment                      : ",am2)] 
+am1 = readLines('allmetadata.txt')
 am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
 ttl = c(which(substr(am,1,1) == '='),len(am))
 flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
@@ -32,11 +89,13 @@ pb = winProgressBar(title = "R progress bar", label = "",
                     min = 1, max = length(ttl)-1, initial = 0, width = 300)
 for(i in 1:(len(ttl)-1)){
   setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = NULL))
+  if(any(substr(extras,10,nchar(extras)) %in% substr(am[ttl][i],10,nchar(am[ttl][i]))))
+    print('Extras found')
   dfan[i,'filename']=  substr(am[ttl][i],10,nchar(am[ttl][i]))
   j=1
   while(ttl[i]+j < ttl[i+1]){
     tmpp=am[ttl[i]+j]
-    if(is.na(tmpp)){
+    if(is.na(tmpp)){ # indicates terminal condition
       break
     }
     fld=flds[as.integer(attributes(regexpr('Title|Comment|Subtitle|DM Comment',tmpp))[1])]
@@ -53,38 +112,42 @@ tpexist=FALSE
 avail=FALSE
 changed=FALSE
 close(pb)
+save(am,ttl,dts,dfan,file = sfname)
 
 lnttl='Enter Search Criteria'
 dflt = ''
 if(file.exists('dfltsave.RData'))
   load('dfltsave.RData')
-
+Passt=FALSE
 jerking=FALSE
 while(!jerking)
 {
   
-  linerw=gwindow(height = 20, title=lnttl)
-  obj <- gedit(text=dflt,container=linerw)
-  shell('nircmd win activate title "Enter Search Criteria"')
-  focus(obj)=TRUE
-  addhandlerchanged(obj, handler=function(h,...)
-    .GlobalEnv$avail=TRUE)
-  addHandlerDestroy(obj, handler=function(h,...){
-    .GlobalEnv$avail=TRUE
-  })
-  
-  liner=NULL
-  while(!avail)
-  {}
-  lnttl='Enter Search Criteria'
-  if(isExtant(obj)){
-    liner=svalue(obj)
-    dispose(obj)
-    if(exists('w'))
-      if(isExtant(w))
-        dispose(w)
-    tpexist=FALSE
-  }
+  if(!Passt){
+    linerw=gwindow(height = 20, title=lnttl)
+    obj <- gedit(text=dflt,container=linerw)
+    shell('nircmd win activate title "Enter Search Criteria"')
+    focus(obj)=TRUE
+    addhandlerchanged(obj, handler=function(h,...)
+      .GlobalEnv$avail=TRUE)
+    addHandlerDestroy(obj, handler=function(h,...){
+      .GlobalEnv$avail=TRUE
+    })
+    
+    liner=NULL
+    while(!avail)
+    {}
+    lnttl='Enter Search Criteria'
+    if(isExtant(obj)){
+      liner=svalue(obj)
+      dispose(obj)
+      if(exists('w'))
+        if(isExtant(w))
+          dispose(w)
+      tpexist=FALSE
+    }
+  }else
+    Passt=FALSE
   ################ REBUILD an from dfan ################
   an=paste(ifelse(is.na(dfan$Title),'',    paste('Title:',dfan$Title,sep='')),
            ifelse(is.na(dfan$Comment),'',  paste('Comment:',dfan$Comment,sep='')),
