@@ -9,8 +9,10 @@ if(exists('fwind'))
     dispose(fwind)
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
+get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 
 len=function(x) length(x)
+
 delay500=function(){
   x=1000000
   while(TRUE)
@@ -21,6 +23,8 @@ delay500=function(){
   }
 }
 extras=NULL
+fmissing=NULL
+
 dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
 if (file.exists('D:/PNMTALL')) {
@@ -35,7 +39,7 @@ if (file.exists('D:/PNMTALL')) {
     YesorNo=select.list(c('No','Yes'),preselect = 'No',title='DELETE sfname and choose folders?',graphics = TRUE)
     if(YesorNo=='Yes'){
       dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
-      if(nchar(dirpaths[1])==0)
+      if(len(dirpaths)==0)
         stop('Aborted')
       unlink(sfname)
       save(dirpaths,file='dirpaths.RData')
@@ -77,20 +81,50 @@ if (file.exists('D:/PNMTALL')) {
     }
   } 
 }   
+if (len(fmissing) > 0) {
+  #        fmissing=paste('D:\\',substr(fmissing,4,nchar(fmissing)),sep='')
+  print(paste('Added   ',fmissing))
+  
+  for (i in 1:len(fmissing)) {
+    cmdd = "shell('getm D: >> allmetadata.txt')"
+    fpp = file.path(substr(fmissing[i],1,2),
+                    substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i]))
+  #echo fpp+'====== ' >> allmetadata.txt paste("========",fmissing[i])
+    cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
+    suppressWarnings(eval(parse(text = cmdy)))
+    cmdx = sub('D:',fpp,cmdd)
+    suppressWarnings(eval(parse(text = cmdx)))
 
-get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
+  }
+}
+if(len(extras)>0){
+exidxs=which(substr(am,10,nchar(am)) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
+ttidxs=which(ttl%in%exidxs)
+for (i in 1:len(exidxs)){
+  nexttlidx=ttl[ttidxs[i]+1]
+    idx=ttl[ttidxs[i]]
+    j=0
+    while((idx+j)!=nexttlidx){
+      am[idx+j]=NA
+      j=j+1
+      }
+}  
+am=am[!is.na(am)]
+ttl = which(substr(am,1,1) == '=')
+writeLines(am,'allmetadata.txt')
+}
 
 dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
 am1 = readLines('allmetadata.txt')
 am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
+am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
 ttl = c(which(substr(am,1,1) == '='),len(am))
+
 flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
 pb = winProgressBar(title = "R progress bar", label = "",
                     min = 1, max = length(ttl)-1, initial = 0, width = 300)
 for(i in 1:(len(ttl)-1)){
   setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = NULL))
-  if(any(substr(extras,10,nchar(extras)) %in% substr(am[ttl][i],10,nchar(am[ttl][i]))))
-    print('Extras found')
   dfan[i,'filename']=  substr(am[ttl][i],10,nchar(am[ttl][i]))
   j=1
   while(ttl[i]+j < ttl[i+1]){
@@ -149,10 +183,10 @@ while(!jerking)
   }else
     Passt=FALSE
   ################ REBUILD an from dfan ################
-  an=paste(ifelse(is.na(dfan$Title),'',    paste('Title:',dfan$Title,sep='')),
-           ifelse(is.na(dfan$Comment),'',  paste('Comment:',dfan$Comment,sep='')),
-           ifelse(is.na(dfan$SubTitle),'', paste('Subtitle:',dfan$SubTitle,sep='')),
-           ifelse(is.na(dfan$DMComment),'',paste('DM Comment:',dfan$DMComment,sep='')))
+  an=paste(ifelse(is.na(dfan$Title),'',    paste('Title: ',dfan$Title,sep='')),
+           ifelse(is.na(dfan$Comment),'',  paste('Comment: ',dfan$Comment,sep='')),
+           ifelse(is.na(dfan$SubTitle),'', paste('Subtitle: ',dfan$SubTitle,sep='')),
+           ifelse(is.na(dfan$DMComment),'',paste('DM Comment: ',dfan$DMComment,sep='')))
   
   
   if (is.null(liner))
@@ -185,6 +219,7 @@ while(!jerking)
   while(!avail)
   {}
   if(changed){
+    dispose(w)
     changed=FALSE
     dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     print(paste("dfix=",dfix,fnames[idx,'fnx']))
@@ -200,7 +235,16 @@ while(!jerking)
     }
     dfan[dfix,1:4]=fwind[,1:4]
     print('DFAN CHANGED')
-    dispose(w)
+    print('Updating Metadata')
+    cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
+               dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
+    writeLines(cmdd,'Jester.R') 
+    source('jester.R')
+    ttllorig=paste(nfn,'_original',sep='')
+    if(file.exists(ttllorig))
+      unlink(ttllorig)
+    else
+      print('Orig file not found for deletion')
     next #rebuild an from updated dfan
   }
   fns = ssv
