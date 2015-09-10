@@ -28,7 +28,10 @@ am1=am2 #[!grepl("Subtitle                        : |DM Comment                 
 am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
 ttl = c(which(substr(am,1,1) == '='),len(am))
 flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
+pb = winProgressBar(title = "R progress bar", label = "",
+                    min = 1, max = length(ttl)-1, initial = 0, width = 300)
 for(i in 1:(len(ttl)-1)){
+  setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = NULL))
   dfan[i,'filename']=  substr(am[ttl][i],10,nchar(am[ttl][i]))
   j=1
   while(ttl[i]+j < ttl[i+1]){
@@ -49,6 +52,7 @@ dfan$DMComment=sub("DM Comment                      :",'',dfan$DMComment)
 tpexist=FALSE
 avail=FALSE
 changed=FALSE
+close(pb)
 
 lnttl='Enter Search Criteria'
 dflt = ''
@@ -58,7 +62,7 @@ if(file.exists('dfltsave.RData'))
 jerking=FALSE
 while(!jerking)
 {
-
+  
   linerw=gwindow(height = 20, title=lnttl)
   obj <- gedit(text=dflt,container=linerw)
   shell('nircmd win activate title "Enter Search Criteria"')
@@ -88,25 +92,28 @@ while(!jerking)
            ifelse(is.na(dfan$DMComment),'',paste('DM Comment:',dfan$DMComment,sep='')))
   
   
-    if (!is.na(liner))
-      if (nchar(liner) > 0)
-      {
-        dflt = liner
-        save(dflt,file='dfltsave.RData')
-        srct=unlist(strsplit(toupper(liner),' '))
-#        anttl=subset(an[ttl],!grepl('.lnk',an[ttl],fixed=TRUE))
-        anttl=paste(dfan$filename,an)
-        anttlu=toupper(anttl)
-        pnoln=NA
-        allc=NA
-        
-        for (i in 1:len(srct))
-          allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
-        idxs=as.integer(names(which(table(allc)==len(srct))))
-        pnoln=dfan[idxs,'filename'] # how many match criteria?
-        fns = NULL  
-      }  
-
+  if (is.null(liner))
+    break
+  
+  if (nchar(liner) > 0)
+  {
+    dflt = liner
+    save(dflt,file='dfltsave.RData')
+    srct=unlist(strsplit(toupper(liner),' '))
+    #        anttl=subset(an[ttl],!grepl('.lnk',an[ttl],fixed=TRUE))
+    anttl=paste(dfan$filename,an)
+    anttlu=toupper(anttl)
+    pnoln=NA
+    allc=NA
+    
+    for (i in 1:len(srct))
+      allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
+    idxs=as.integer(names(which(table(allc)==len(srct))))
+    pnoln=dfan[idxs,'filename'] # how many match criteria?
+    fns = NULL  
+  }else
+    break
+  
   gdfopen=FALSE
   gdframe = get_list_content(pnoln,an[idxs])
   unsorted=TRUE
@@ -115,10 +122,42 @@ while(!jerking)
   while(!avail)
   {}
   if(changed){
-    print(' DFAN CHANGED')
-    dfan[which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE)),1:4]=fwind[,1:4]
+    changed=FALSE
+    dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
+    print(paste("dfix=",dfix,fnames[idx,'fnx']))
+    if(fwind[,'filename']!=dfan[dfix,'filename']){
+      answ=gconfirm('Rename - Are you Sure?')
+      if(answ){
+        if(!file.rename(dfan[dfix,'filename'],fwind[,'filename'])){ 
+          print(paste("file rename FAILED from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
+        }else{
+          print(paste("file rename SUCCESSFUL from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
+        }
+      }
+    }
+    dfan[dfix,1:4]=fwind[,1:4]
+    print('DFAN CHANGED')
+    dispose(w)
     next #rebuild an from updated dfan
   }
+  fns = ssv
+  ssv = NULL #clear bones
+  avail = FALSE
+  if (len(fns) > 0) { # null HAS LENGTH 0
+    dispose(w)
+    writeLines(fns,'fns.m3u') # Write playlist
+    load('headfoot.RData')
+    writeLines(as.character(c(
+      header,paste('<media src="',fns,'"/>'),footer
+    ),sep = ''),'fns.wpl')
+    shell("wmplayer c:\\Users\\LarrySloman\\Documents\\fns.wpl")
+    Passt=TRUE
+    unsorted=FALSE
+    avail=FALSE
+    emsg = 'OK'
+    
+  }
 }
+
 
 
