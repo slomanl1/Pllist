@@ -89,29 +89,34 @@ if (len(fmissing) > 0) {
     cmdd = "shell('getm D: >> allmetadata.txt')"
     fpp = file.path(substr(fmissing[i],1,2),
                     substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i]))
-  #echo fpp+'====== ' >> allmetadata.txt paste("========",fmissing[i])
+    #echo fpp+'====== ' >> allmetadata.txt paste("========",fmissing[i])
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
     suppressWarnings(eval(parse(text = cmdy)))
     cmdx = sub('D:',fpp,cmdd)
     suppressWarnings(eval(parse(text = cmdx)))
-
   }
 }
+
 if(len(extras)>0){
-exidxs=which(substr(am,10,nchar(am)) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
-ttidxs=which(ttl%in%exidxs)
-for (i in 1:len(exidxs)){
-  nexttlidx=ttl[ttidxs[i]+1]
-    idx=ttl[ttidxs[i]]
+  exidxs=which(substr(am,10,nchar(am)) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
+  ttidxs=which(ttl%in%exidxs)
+  for (i in 1:len(exidxs)){
+    nexttlidx=ttl[ttidxs[i]+1]
+    if(is.na(nexttlidx)){
+      idx=ttl[ttidxs[i]]
+      am[idx]=NA
+      break #indicates terminal condition (last ttl)
+    }
     j=0
     while((idx+j)!=nexttlidx){
       am[idx+j]=NA
       j=j+1
-      }
-}  
-am=am[!is.na(am)]
-ttl = which(substr(am,1,1) == '=')
-writeLines(am,'allmetadata.txt')
+    }
+  }  
+  am=am[!is.na(am)]
+  ttl = which(substr(am,1,1) == '=')
+  writeLines(am,'allmetadata.txt')
+  print(paste('removed from allmetadata.txt',extras))
 }
 
 dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
@@ -240,11 +245,11 @@ while(!jerking)
                dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
     writeLines(cmdd,'Jester.R') 
     source('jester.R')
-    ttllorig=paste(nfn,'_original',sep='')
+    ttllorig=paste(dfan[dfix,'filename'],'_original',sep='')
     if(file.exists(ttllorig))
       unlink(ttllorig)
     else
-      print('Orig file not found for deletion')
+      print(paste('Orig file not found for deletion',ttllorig))
     next #rebuild an from updated dfan
   }
   fns = ssv
