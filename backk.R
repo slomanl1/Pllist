@@ -20,5 +20,5 @@
       print(paste('Copying',copyl[i],lnc - i))
       file.copy(copyl[i],sub('D:','E:',copyl[i]))
     }
-  shell('xcopy D: E: /S/D/Y/J')
+  shell('xcopy D: E: /S/D/Y/J',intern = TRUE)
   print('Done')
