@@ -75,7 +75,7 @@ if (file.exists('D:/PNMTALL')) {
       writeLines('','allmetadata.txt')
       for(dirpath in dirpaths){
         print(dirpath)
-        shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) ##### [1] is not correct
+        shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
       }
       am2 = readLines('allmetadata.txt')
       am1=am2[!grepl("Subtitle                        : |DM Comment                      : ",am2)] 
@@ -406,6 +406,8 @@ while (TRUE) {
             header,paste('<media src="',fns,'"/>'),footer
           ),sep = ''),'fns.wpl')
           shell("wmplayer c:\\Users\\LarrySloman\\Documents\\fns.wpl")
+          Passt=TRUE
+          unsorted=FALSE
           emsg = 'OK'
           
         }else{
