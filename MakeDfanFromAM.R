@@ -96,7 +96,8 @@ if (len(fmissing) > 0) {
     suppressWarnings(eval(parse(text = cmdx)))
   }
 }
-
+###########################################
+procExtras=function() {
 if(len(extras)>0){
   exidxs=which(substr(am,10,nchar(am)) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
   ttidxs=which(ttl%in%exidxs)
@@ -118,7 +119,9 @@ if(len(extras)>0){
   writeLines(am,'allmetadata.txt')
   print(paste('removed from allmetadata.txt',extras))
 }
-
+}
+####################################
+procExtras()
 dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
 am1 = readLines('allmetadata.txt')
 am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
@@ -236,6 +239,7 @@ while(!jerking)
     changed=FALSE
     dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     print(paste("dfix=",dfix,fnames[idx,'fnx']))
+    ofn=dfan[dfix,'filename']
     if(fwind[,'filename']!=dfan[dfix,'filename']){
       answ=gconfirm('Rename - Are you Sure?')
       if(answ){
@@ -256,10 +260,12 @@ while(!jerking)
     if(answ){
       source('jester.R')
     ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
-    if(file.exists(ttllorig))
+    if(file.exists(ttllorig)){
       unlink(ttllorig)
-    else
-      print(paste('Orig file not found for deletion',ttllorig))
+      extras=paste("========",ofn) # remove old metadata associated with the old file
+      procExtras()
+    }else
+      print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
     next #rebuild an from updated dfan
   }
