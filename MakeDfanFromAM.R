@@ -7,6 +7,10 @@ if(exists('w'))
 if(exists('fwind'))
   if(isExtant(fwind))
     dispose(fwind)
+if(exists('obj'))
+  if(isExtant(obj))
+    dispose(obj)
+
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
@@ -207,7 +211,6 @@ while(!jerking)
     dflt = liner
     save(dflt,file='dfltsave.RData')
     srct=unlist(strsplit(toupper(liner),' '))
-    #        anttl=subset(an[ttl],!grepl('.lnk',an[ttl],fixed=TRUE))
     anttl=paste(dfan$filename,an)
     anttlu=toupper(anttl)
     pnoln=NA
@@ -233,7 +236,14 @@ while(!jerking)
   fnames=gdframe[order(gdframe$cdts,decreasing = unsorted),]
   source('~/pllist/pllist.git/testplots.R')
   while(!avail)
-  {}
+  {
+    delay500()
+    if(isExtant(tab)){
+      enabled(tbutton)=(len(svalue(tab))!=0)
+      enabled(dbutton)=(len(svalue(tab))!=0)
+    }
+  }
+  
   if(changed){
     dispose(w)
     changed=FALSE
