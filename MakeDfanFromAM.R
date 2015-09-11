@@ -138,8 +138,10 @@ for(i in 1:(len(ttl)-1)){
       break
     }
     fld=flds[as.integer(attributes(regexpr('Title|Comment|Subtitle|DM Comment',tmpp))[1])]
-    if(len(fld)==1)
+    if(len(fld)==1){
+      fld=sub('DM Comment','DMComment',fld) # convert DM Comment field name to disallow spaces
       dfan[i,fld]=tmpp
+    }
     j=j+1
   }
 }
@@ -211,6 +213,12 @@ while(!jerking)
     for (i in 1:len(srct))
       allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
     idxs=as.integer(names(which(table(allc)==len(srct))))
+    if(len(idxs)==0)
+    {
+      print('Non found')
+      avail=FALSE
+      next
+    }
     pnoln=dfan[idxs,'filename'] # how many match criteria?
     fns = NULL  
   }else
@@ -244,12 +252,15 @@ while(!jerking)
     cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
     writeLines(cmdd,'Jester.R') 
-    source('jester.R')
+    answ=gconfirm('Update Metadata - Are you Sure?')
+    if(answ){
+      source('jester.R')
     ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
     if(file.exists(ttllorig))
       unlink(ttllorig)
     else
       print(paste('Orig file not found for deletion',ttllorig))
+    }
     next #rebuild an from updated dfan
   }
   fns = ssv
