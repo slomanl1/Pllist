@@ -102,8 +102,8 @@ if(len(extras)>0){
   ttidxs=which(ttl%in%exidxs)
   for (i in 1:len(exidxs)){
     nexttlidx=ttl[ttidxs[i]+1]
+    idx=ttl[ttidxs[i]]
     if(is.na(nexttlidx)){
-      idx=ttl[ttidxs[i]]
       am[idx]=NA
       break #indicates terminal condition (last ttl)
     }
@@ -121,7 +121,7 @@ if(len(extras)>0){
 
 dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
 am1 = readLines('allmetadata.txt')
-am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)][3:len(am1)]
+am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
 am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
 ttl = c(which(substr(am,1,1) == '='),len(am))
 
@@ -240,12 +240,12 @@ while(!jerking)
     }
     dfan[dfix,1:4]=fwind[,1:4]
     print('DFAN CHANGED')
-    print('Updating Metadata')
+    print(paste('Updating Metadata in',dfan[dfix,'filename']))
     cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
     writeLines(cmdd,'Jester.R') 
     source('jester.R')
-    ttllorig=paste(dfan[dfix,'filename'],'_original',sep='')
+    ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
     if(file.exists(ttllorig))
       unlink(ttllorig)
     else
