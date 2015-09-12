@@ -28,6 +28,7 @@ delay500=function(){
 }
 extras=NULL
 fmissing=NULL
+deleted=FALSE
 
 dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
@@ -87,7 +88,7 @@ if (file.exists('D:/PNMTALL')) {
 }   
 if (len(fmissing) > 0) {
   #        fmissing=paste('D:\\',substr(fmissing,4,nchar(fmissing)),sep='')
-  print(paste('Added   ',fmissing))
+  
   
   for (i in 1:len(fmissing)) {
     cmdd = "shell('getm D: >> allmetadata.txt')"
@@ -98,31 +99,32 @@ if (len(fmissing) > 0) {
     suppressWarnings(eval(parse(text = cmdy)))
     cmdx = sub('D:',fpp,cmdd)
     suppressWarnings(eval(parse(text = cmdx)))
+    print(paste('Added   ',fmissing[i],'to allmetadata'))
   }
 }
 ###########################################
 procExtras=function() {
-if(len(extras)>0){
-  exidxs=which(substr(am,10,nchar(am)) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
-  ttidxs=which(ttl%in%exidxs)
-  for (i in 1:len(exidxs)){
-    nexttlidx=ttl[ttidxs[i]+1]
-    idx=ttl[ttidxs[i]]
-    if(is.na(nexttlidx)){
-      am[idx]=NA
-      break #indicates terminal condition (last ttl)
-    }
-    j=0
-    while((idx+j)!=nexttlidx){
-      am[idx+j]=NA
-      j=j+1
-    }
-  }  
-  am=am[!is.na(am)]
-  ttl = which(substr(am,1,1) == '=')
-  writeLines(am,'allmetadata.txt')
-  print(paste('removed from allmetadata.txt',extras))
-}
+  if(len(extras)>0){
+    exidxs=which(substr(am,10,nchar(am)) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
+    ttidxs=which(ttl%in%exidxs)
+    for (i in 1:len(exidxs)){
+      nexttlidx=ttl[ttidxs[i]+1]
+      idx=ttl[ttidxs[i]]
+      if(is.na(nexttlidx)){
+        am[idx]=NA
+        break #indicates terminal condition (last ttl)
+      }
+      j=0
+      while((idx+j)!=nexttlidx){
+        am[idx+j]=NA
+        j=j+1
+      }
+    }  
+    am=am[!is.na(am)]
+    ttl = which(substr(am,1,1) == '=')
+    writeLines(am,'allmetadata.txt')
+    print(paste('removed from allmetadata.txt',extras))
+  }
 }
 ####################################
 procExtras()
@@ -243,13 +245,14 @@ while(!jerking)
       enabled(dbutton)=(len(svalue(tab))!=0)
     }
   }
-  
+  dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
+  ofn=dfan[dfix,'filename']
   if(changed){
     dispose(w)
     changed=FALSE
-    dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
+    #dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     print(paste("dfix=",dfix,fnames[idx,'fnx']))
-    ofn=dfan[dfix,'filename']
+    #ofn=dfan[dfix,'filename']
     if(fwind[,'filename']!=dfan[dfix,'filename']){
       answ=gconfirm('Rename - Are you Sure?')
       if(answ){
@@ -269,15 +272,22 @@ while(!jerking)
     answ=gconfirm('Update Metadata - Are you Sure?')
     if(answ){
       source('jester.R')
-    ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
-    if(file.exists(ttllorig)){
-      unlink(ttllorig)
-      extras=paste("========",ofn) # remove old metadata associated with the old file
-      procExtras()
-    }else
-      print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
+      ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
+      if(file.exists(ttllorig)){
+        unlink(ttllorig)
+        extras=paste("========",ofn) # remove old metadata associated with the old file
+        procExtras()
+      }else
+        print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
     next #rebuild an from updated dfan
+  }
+  if(deleted){
+    dispose(w)
+    dfan=dfan[rownames(dfan)!=dfix,] # remove deleted file from dfan and rebuild an
+    extras=paste("========",ofn) # remove old metadata associated with the old file
+    procExtras()
+    deleted=FALSE
   }
   fns = ssv
   ssv = NULL #clear bones
