@@ -78,10 +78,12 @@ if (!.GlobalEnv$tpexist) {
     answ=gconfirm('Are you Sure?')
     if(answ){
       print(paste('Deleting',svalue(tab)))
+      .GlobalEnv$idx=which(grepl(as.character(svalue(tab)),fnames$fnx,fixed=TRUE))
+      print(paste('idx=',.GlobalEnv$idx))
       if(unlink(svalue(tab)))
         print('delete FAILED')
       else{
-        .GlobalEnv$changed=TRUE
+        .GlobalEnv$deleted=TRUE
         .GlobalEnv$avail=TRUE
         .GlobalEnv$Passt=TRUE
         visible(w) <- FALSE
