@@ -245,14 +245,14 @@ while(!jerking)
       enabled(dbutton)=(len(svalue(tab))!=0)
     }
   }
-  dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
-  ofn=dfan[dfix,'filename']
-  if(changed){
+  if(changed | deleted){
+    dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
+    ofn=dfan[dfix,'filename']
     dispose(w)
+  }
+  if(changed){
     changed=FALSE
-    #dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     print(paste("dfix=",dfix,fnames[idx,'fnx']))
-    #ofn=dfan[dfix,'filename']
     if(fwind[,'filename']!=dfan[dfix,'filename']){
       answ=gconfirm('Rename - Are you Sure?')
       if(answ){
@@ -283,7 +283,6 @@ while(!jerking)
     next #rebuild an from updated dfan
   }
   if(deleted){
-    dispose(w)
     dfan=dfan[rownames(dfan)!=dfix,] # remove deleted file from dfan and rebuild an
     extras=paste("========",ofn) # remove old metadata associated with the old file
     procExtras()
