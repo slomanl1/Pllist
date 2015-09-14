@@ -16,7 +16,7 @@ source(scriptStatsRemoveAll) #clear bones
 get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
 
 len=function(x) length(x)
-
+fi=function(x,y) y[grepl(x,y,fixed=TRUE)] # find within function
 delay500=function(){
   x=1000000
   while(TRUE)
@@ -138,7 +138,7 @@ flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
 pb = winProgressBar(title = "R progress bar", label = "",
                     min = 1, max = length(ttl)-1, initial = 0, width = 300)
 for(i in 1:(len(ttl)-1)){
-  setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = NULL))
+  setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = ifelse(i>1,dirname(dfan[i-1,'filename']),'')))
   dfan[i,'filename']=  substr(am[ttl][i],10,nchar(am[ttl][i]))
   j=1
   while(ttl[i]+j < ttl[i+1]){
@@ -199,11 +199,22 @@ while(!jerking)
   }else
     Passt=FALSE
   ################ REBUILD an from dfan ################
-  an=paste(ifelse(is.na(dfan$Title),'',    paste('Title: ',dfan$Title,sep='')),
-           ifelse(is.na(dfan$Comment),'',  paste('Comment: ',dfan$Comment,sep='')),
-           ifelse(is.na(dfan$SubTitle),'', paste('Subtitle: ',dfan$SubTitle,sep='')),
-           ifelse(is.na(dfan$DMComment),'',paste('DM Comment: ',dfan$DMComment,sep='')))
-  
+  an=paste(ifelse(is.na(dfan$Title)     ,'', paste('Title: ',dfan$Title,sep='')),
+           ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')),
+           ifelse(is.na(dfan$Comment)& !is.na(dfan$DMComment),'', paste('Comment: ',dfan$Comment,sep='')),########### FIX?
+           ifelse(is.na(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')))
+  an=gsub('Title: ','Title:',an,ignore.case = TRUE)
+  an=gsub('Title: ','Title:',an,ignore.case = TRUE)
+  an=sub("Title:NA",'',an)
+  an=sub("Title: NA",'',an)
+  an=gsub('Comment: ','Comment:',an)
+  an=gsub('Comment: ','Comment:',an)
+  an=sub("Comment:NA",'',an)
+  an=gsub('Subtitle:  ','Subtitle:',an,ignore.case = TRUE)
+  an=gsub('Subtitle: ','Subtitle:',an,ignore.case = TRUE)
+  an=gsub("Subtitle:  NA",'',an,ignore.case = TRUE)
+  an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
+
   
   if (is.null(liner))
     break
