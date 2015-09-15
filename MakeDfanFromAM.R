@@ -127,42 +127,50 @@ procExtras=function() {
   }
 }
 ####################################
-procExtras()
-dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
-am1 = readLines('allmetadata.txt')
-am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
-am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
-ttl = c(which(substr(am,1,1) == '='),len(am))
-
-flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
-pb = winProgressBar(title = "R progress bar", label = "",
-                    min = 1, max = length(ttl)-1, initial = 0, width = 300)
-for(i in 1:(len(ttl)-1)){
-  setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = ifelse(i>1,dirname(dfan[i-1,'filename']),'')))
-  dfan[i,'filename']=  substr(am[ttl][i],10,nchar(am[ttl][i]))
-  j=1
-  while(ttl[i]+j < ttl[i+1]){
-    tmpp=am[ttl[i]+j]
-    if(is.na(tmpp)){ # indicates terminal condition
-      break
+if(len(extras) | len(fmissing) | !file.exists(sfname)){
+  procExtras()
+  dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
+  am1 = readLines('allmetadata.txt')
+  am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
+  am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
+  ttl = c(which(substr(am,1,1) == '='),len(am))
+  
+  flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
+  pb = winProgressBar(title = "R progress bar", label = "",
+                      min = 1, max = length(ttl)-1, initial = 0, width = 300)
+  for(i in 1:(len(ttl)-1)){
+    setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = ifelse(i>1,dirname(dfan[i-1,'filename']),'')))
+    dfan[i,'filename']=  substr(am[ttl][i],10,nchar(am[ttl][i]))
+    j=1
+    while(ttl[i]+j < ttl[i+1]){
+      tmpp=am[ttl[i]+j]
+      if(is.na(tmpp)){ # indicates terminal condition
+        break
+      }
+      fld=flds[as.integer(attributes(regexpr('Title|Comment|Subtitle|DM Comment',tmpp))[1])]
+      if(len(fld)==1){
+        fld=sub('DM Comment','DMComment',fld) # convert DM Comment field name to disallow spaces
+        dfan[i,fld]=tmpp
+      }
+      j=j+1
     }
-    fld=flds[as.integer(attributes(regexpr('Title|Comment|Subtitle|DM Comment',tmpp))[1])]
-    if(len(fld)==1){
-      fld=sub('DM Comment','DMComment',fld) # convert DM Comment field name to disallow spaces
-      dfan[i,fld]=tmpp
-    }
-    j=j+1
   }
+  dfan$Title=    trim(sub("Title                           :",'',dfan$Title))
+  dfan$Comment=  trim(sub("Comment                         :",'',dfan$Comment))
+  dfan$SubTitle= trim(sub("Subtitle                        :",'',dfan$SubTitle))
+  dfan$DMComment=trim(sub("DM Comment                      :",'',dfan$DMComment))
+  
+  dfan$Title=    gsub("'",'',dfan$Title)
+  dfan$Comment=  gsub("'",'',dfan$Comment)
+  dfan$SubTitle= gsub("'",'',dfan$SubTitle)
+  dfan$DMComment=gsub("'",'',dfan$DMComment)
+  save(am,ttl,dts,dfan,file = sfname)
+  close(pb)
 }
-dfan$Title=    sub("Title                           :",'',dfan$Title)
-dfan$Comment=  sub("Comment                         :",'',dfan$Comment)
-dfan$SubTitle= sub("Subtitle                        :",'',dfan$SubTitle)
-dfan$DMComment=sub("DM Comment                      :",'',dfan$DMComment)
+
 tpexist=FALSE
 avail=FALSE
 changed=FALSE
-close(pb)
-save(am,ttl,dts,dfan,file = sfname)
 
 lnttl='Enter Search Criteria'
 dflt = ''
@@ -201,20 +209,16 @@ while(!jerking)
   ################ REBUILD an from dfan ################
   an=paste(ifelse(is.na(dfan$Title)     ,'', paste('Title: ',dfan$Title,sep='')),
            ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')),
-           ifelse(is.na(dfan$Comment)& !is.na(dfan$DMComment),'', paste('Comment: ',dfan$Comment,sep='')),########### FIX?
+           ifelse(is.na(dfan$Comment)& !is.na(dfan$DMComment),'', paste('Comment: ',dfan$Comment,sep='')),
            ifelse(is.na(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')))
-  an=gsub('Title: ','Title:',an,ignore.case = TRUE)
-  an=gsub('Title: ','Title:',an,ignore.case = TRUE)
+  an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
   an=sub("Title:NA",'',an)
-  an=sub("Title: NA",'',an)
-  an=gsub('Comment: ','Comment:',an)
-  an=gsub('Comment: ','Comment:',an)
+  an=gsub('Comment:  ','Comment: ',an)
   an=sub("Comment:NA",'',an)
-  an=gsub('Subtitle:  ','Subtitle:',an,ignore.case = TRUE)
-  an=gsub('Subtitle: ','Subtitle:',an,ignore.case = TRUE)
+  an=gsub('Subtitle:  ','Subtitle: ',an,ignore.case = TRUE)
   an=gsub("Subtitle:  NA",'',an,ignore.case = TRUE)
   an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
-
+  
   
   if (is.null(liner))
     break
@@ -277,6 +281,9 @@ while(!jerking)
     dfan[dfix,1:4]=fwind[,1:4]
     print('DFAN CHANGED')
     print(paste('Updating Metadata in',dfan[dfix,'filename']))
+    if(nchar(trim(dfan[dfix,'Comment']))==0){
+      dfan[dfix,'Comment']='--'
+    }
     cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
     writeLines(cmdd,'Jester.R') 
