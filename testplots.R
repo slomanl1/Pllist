@@ -29,7 +29,7 @@ if (!.GlobalEnv$tpexist) {
       dispose(w)
     tpexist=FALSE
   }) 
-  
+
   heit=min(100+(nrow(fnames)*30),750)
   w <- gwindow(paste(liner,nrow(fnames),"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
   getToolkitWidget(w)$move(0,0)
@@ -88,6 +88,9 @@ if (!.GlobalEnv$tpexist) {
         .GlobalEnv$Passt=TRUE
         visible(w) <- FALSE
         tpexist=FALSE
+        writeLines(svalue(tab),'file.tmp')
+        file.append('deletelog.txt','file.tmp') # update delete log
+        unlink('file.tmp')
       }
     }
   }
