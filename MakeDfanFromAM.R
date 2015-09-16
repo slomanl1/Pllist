@@ -13,7 +13,7 @@ if(exists('obj'))
 
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mtime(fnx)),comments=cmts,stringsAsFactors =FALSE)
+get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=paste(as.character(file.mtime(fnx)),file.size(fnx)),comments=cmts,stringsAsFactors =FALSE)
 
 len=function(x) length(x)
 fi=function(x,y) y[grepl(x,y,fixed=TRUE)] # find within function
@@ -77,27 +77,22 @@ if (file.exists('D:/PNMTALL')) {
       dmissing = NULL
       if (len(dts) == len(dto))
         dmissing = zz[!dto %in% dts] # add records with new date to dmissing
-      
       ttl = which(substr(am,1,1) == '=')
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       missing1 = unique(c(dmissing,xmissing))
       fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
-      ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))))
-      print(paste(ducc,'Duplicates found'))
+
     }
   } 
 }   
 if (len(fmissing) > 0) {
-  #        fmissing=paste('D:\\',substr(fmissing,4,nchar(fmissing)),sep='')
-  
-  
   for (i in 1:len(fmissing)) {
     cmdd = "shell('getm D: >> allmetadata.txt')"
     fpp = file.path(substr(fmissing[i],1,2),
                     substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i]))
-    #echo fpp+'====== ' >> allmetadata.txt paste("========",fmissing[i])
+
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
     suppressWarnings(eval(parse(text = cmdy)))
     cmdx = sub('D:',fpp,cmdd)
@@ -108,17 +103,19 @@ if (len(fmissing) > 0) {
 ###########################################
 procExtras=function() {
   if(len(extras)>0){
-    exidxs=which(substr(am,10,nchar(am)) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
+    exidxs=which(trim(substr(am,10,nchar(am))) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
     ttidxs=which(ttl%in%exidxs)
     for (i in 1:len(exidxs)){
       nexttlidx=ttl[ttidxs[i]+1]
       idx=ttl[ttidxs[i]]
       if(is.na(nexttlidx)){
-        am[idx]=NA
+        print(paste('removed from allmetadata.txt',am[idx]))
+        am[idx:len(am)]=NA
         break #indicates terminal condition (last ttl)
       }
       j=0
       while((idx+j)!=nexttlidx){
+        print(paste('removed from allmetadata.txt',am[idx+j]))
         am[idx+j]=NA
         j=j+1
       }
@@ -126,7 +123,7 @@ procExtras=function() {
     am=am[!is.na(am)]
     ttl = which(substr(am,1,1) == '=')
     writeLines(am,'allmetadata.txt')
-    print(paste('removed from allmetadata.txt',extras))
+
   }
 }
 ####################################
@@ -137,7 +134,8 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
   am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
-  
+  ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))))
+  print(paste(ducc,'Duplicates found'))  
   flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
   pb = winProgressBar(title = "R progress bar", label = "",
                       min = 1, max = length(ttl)-1, initial = 0, width = 300)
@@ -164,6 +162,7 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan$DMComment=trim(sub("DM Comment                      :",'',dfan$DMComment))
   
   dfan$Title=    gsub("'",'',dfan$Title)
+  dfan$Title=    gsub(",",'',dfan$Title)
   dfan$Comment=  gsub("'",'',dfan$Comment)
   dfan$SubTitle= gsub("'",'',dfan$SubTitle)
   dfan$DMComment=gsub("'",'',dfan$DMComment)
@@ -212,11 +211,12 @@ while(!jerking)
   ################ REBUILD an from dfan ################
   an=paste(ifelse(is.na(dfan$Title)     ,'', paste('Title: ',dfan$Title,sep='')),
            ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')),
-           ifelse(!is.na(dfan$Comment) | is.na(dfan$DMComment),'', 
-                                             paste('Comment: ',dfan$DMComment,sep='')),
-           ifelse(is.na(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')))
+#           ifelse(!is.na(dfan$Comment) | is.na(dfan$DMComment),'', 
+#                                             paste('Comment: ',dfan$DMComment,sep='')),
+           ifelse(!is.na(dfan$SubTitle)&!nchar(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')))
   an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
   an=sub("Title:NA",'',an)
+  an=gsub(',','',an)
   an=gsub('Comment:  ','Comment: ',an)
   an=gsub("Comment: NA",'',an)
   an=gsub('Subtitle:  ','Subtitle: ',an,ignore.case = TRUE)
@@ -284,13 +284,15 @@ while(!jerking)
     }
     dfan[dfix,1:4]=fwind[,1:4]
     print('DFAN CHANGED')
-    print(paste('Updating Metadata in',dfan[dfix,'filename']))
     if(nchar(trim(dfan[dfix,'Comment']))==0){
       dfan[dfix,'Comment']='--'
+    }else{
+      dfan[dfix,'DMComment']=dfan[dfix,'Comment']
     }
     if(file.ext(dfan[dfix,'filename'])=='wmv'){
-      gmessage('Cannot wirte metadata to wmv files')
+      gmessage('Cannot write metadata to wmv files')
     }else{
+      print(paste('Updating Metadata in',dfan[dfix,'filename']))
       cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                  dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
       writeLines(cmdd,'Jester.R') 
