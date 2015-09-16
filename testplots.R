@@ -51,7 +51,9 @@ if (!.GlobalEnv$tpexist) {
         print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
         nfn=NULL  # supply select idx item in editing window fwinf
-        fwind[,] = dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),1:4]
+        tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+        tmpdf$Comment=tmpdf$DMComment
+        fwind[,] = tmpdf[,1:4]
         visible(fw) <- TRUE
         enabled(fw) <- TRUE
         visible(w) <- FALSE
