@@ -17,6 +17,7 @@ get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=as.character(file.mt
 
 len=function(x) length(x)
 fi=function(x,y) y[grepl(x,y,fixed=TRUE)] # find within function
+file.ext=function(x) substr(x,nchar(x)-2,nchar(x))
 delay500=function(){
   x=1000000
   while(TRUE)
@@ -284,19 +285,23 @@ while(!jerking)
     if(nchar(trim(dfan[dfix,'Comment']))==0){
       dfan[dfix,'Comment']='--'
     }
-    cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
-               dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
-    writeLines(cmdd,'Jester.R') 
-    answ=gconfirm('Update Metadata - Are you Sure?')
-    if(answ){
-      source('jester.R')
-      ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
-      if(file.exists(ttllorig)){
-        unlink(ttllorig)
-        extras=paste("========",ofn) # remove old metadata associated with the old file
-        procExtras()
-      }else
-        print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
+    if(file.ext(dfan[dfix,'filename'])=='wmv'){
+      gmessage('Cannot wirte metadata to wmv files')
+    }else{
+      cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
+                 dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
+      writeLines(cmdd,'Jester.R') 
+      answ=gconfirm('Update Metadata - Are you Sure?')
+      if(answ){
+        source('jester.R')
+        ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
+        if(file.exists(ttllorig)){
+          unlink(ttllorig)
+          extras=paste("========",ofn) # remove old metadata associated with the old file
+          procExtras()
+        }else
+          print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
+      }
     }
     next #rebuild an from updated dfan
   }
