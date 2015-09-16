@@ -84,6 +84,8 @@ if (file.exists('D:/PNMTALL')) {
       fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
+      ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))))
+      print(paste(ducc,'Duplicates found'))
     }
   } 
 }   
@@ -134,7 +136,7 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   am1 = readLines('allmetadata.txt')
   am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
   am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
-  ttl = c(which(substr(am,1,1) == '='),len(am))
+  ttl = c(which(substr(am,1,1) == '='),len(am)+1)
   
   flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
   pb = winProgressBar(title = "R progress bar", label = "",
@@ -210,14 +212,15 @@ while(!jerking)
   ################ REBUILD an from dfan ################
   an=paste(ifelse(is.na(dfan$Title)     ,'', paste('Title: ',dfan$Title,sep='')),
            ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')),
-           ifelse(is.na(dfan$Comment)& !is.na(dfan$DMComment),'', paste('Comment: ',dfan$Comment,sep='')),
+           ifelse(!is.na(dfan$Comment) | is.na(dfan$DMComment),'', 
+                                             paste('Comment: ',dfan$DMComment,sep='')),
            ifelse(is.na(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')))
   an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
   an=sub("Title:NA",'',an)
   an=gsub('Comment:  ','Comment: ',an)
-  an=sub("Comment:NA",'',an)
+  an=gsub("Comment: NA",'',an)
   an=gsub('Subtitle:  ','Subtitle: ',an,ignore.case = TRUE)
-  an=gsub("Subtitle:  NA",'',an,ignore.case = TRUE)
+  an=gsub("Subtitle: NA",'',an,ignore.case = TRUE)
   an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
   
   
@@ -297,7 +300,7 @@ while(!jerking)
         ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
         if(file.exists(ttllorig)){
           unlink(ttllorig)
-          extras=paste("========",ofn) # remove old metadata associated with the old file
+          extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
           procExtras()
         }else
           print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
