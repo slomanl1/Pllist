@@ -13,7 +13,7 @@ if(exists('obj'))
 
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=paste(as.character(file.mtime(fnx)),file.size(fnx)),comments=cmts,stringsAsFactors =FALSE)
+get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=paste(as.character(file.mtime(fnx)),prettyNum(file.size(fnx),big.mark = ",")),comments=cmts,stringsAsFactors =FALSE)
 
 len=function(x) length(x)
 fi=function(x,y) y[grepl(x,y,fixed=TRUE)] # find within function
@@ -63,10 +63,12 @@ if (file.exists('D:/PNMTALL')) {
                       !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
                       toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
     zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
+    dirtbl=as.data.frame(table(as.character(dirname(zz))))
+    nfiles=sum(dirtbl$Freq)
     if (!file.exists(sfname)) {
       writeLines('','allmetadata.txt')
       for(dirpath in dirpaths){
-        print(dirpath)
+        print(paste(dirpath,dirtbl[which(grepl(dirpath,dirtbl$Var1)),'Freq']))
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
       }
       dts = file.mtime(zz) # file dates
@@ -83,7 +85,7 @@ if (file.exists('D:/PNMTALL')) {
       fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
-
+      
     }
   } 
 }   
@@ -92,7 +94,7 @@ if (len(fmissing) > 0) {
     cmdd = "shell('getm D: >> allmetadata.txt')"
     fpp = file.path(substr(fmissing[i],1,2),
                     substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i]))
-
+    
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
     suppressWarnings(eval(parse(text = cmdy)))
     cmdx = sub('D:',fpp,cmdd)
@@ -123,7 +125,7 @@ procExtras=function() {
     am=am[!is.na(am)]
     ttl = which(substr(am,1,1) == '=')
     writeLines(am,'allmetadata.txt')
-
+    
   }
 }
 ####################################
@@ -135,7 +137,10 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
   ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))))
-  print(paste(ducc,'Duplicates found'))  
+  if(ducc){
+    print(paste(ducc,'Duplicates found'))  
+    stop('TERMINATED - DUPLICATES FOUND')
+  }
   flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
   pb = winProgressBar(title = "R progress bar", label = "",
                       min = 1, max = length(ttl)-1, initial = 0, width = 300)
@@ -211,11 +216,12 @@ while(!jerking)
   ################ REBUILD an from dfan ################
   an=paste(ifelse(is.na(dfan$Title)     ,'', paste('Title: ',dfan$Title,sep='')),
            ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')),
-#           ifelse(!is.na(dfan$Comment) | is.na(dfan$DMComment),'', 
-#                                             paste('Comment: ',dfan$DMComment,sep='')),
+           #           ifelse(!is.na(dfan$Comment) | is.na(dfan$DMComment),'', 
+           #                                             paste('Comment: ',dfan$DMComment,sep='')),
            ifelse(!is.na(dfan$SubTitle)&!nchar(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')))
   an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
   an=sub("Title:NA",'',an)
+  an=sub("Title: NA",'',an)
   an=gsub(',','',an)
   an=gsub('Comment:  ','Comment: ',an)
   an=gsub("Comment: NA",'',an)
@@ -296,17 +302,15 @@ while(!jerking)
       cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                  dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
       writeLines(cmdd,'Jester.R') 
-      answ=gconfirm('Update Metadata - Are you Sure?')
-      if(answ){
-        source('jester.R')
-        ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
-        if(file.exists(ttllorig)){
-          unlink(ttllorig)
-          extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
-          procExtras()
-        }else
-          print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
-      }
+      
+      source('jester.R')
+      ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
+      if(file.exists(ttllorig)){
+        unlink(ttllorig)
+        extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
+        procExtras()
+      }else
+        print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
     next #rebuild an from updated dfan
   }
