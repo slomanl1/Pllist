@@ -13,7 +13,7 @@ if(exists('obj'))
 
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-get_list_content <- function (fnx,cmts) data.frame(fnx,cdts=paste(as.character(file.mtime(fnx)),prettyNum(file.size(fnx),big.mark = ",")),comments=cmts,stringsAsFactors =FALSE)
+get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 
 len=function(x) length(x)
 fi=function(x,y) y[grepl(x,y,fixed=TRUE)] # find within function
@@ -260,7 +260,7 @@ while(!jerking)
   gdfopen=FALSE
   gdframe = get_list_content(pnoln,an[idxs])
   unsorted=TRUE
-  fnames=gdframe[order(gdframe$cdts,decreasing = unsorted),]
+  fnames=gdframe[order(gdframe$Date,decreasing = unsorted),]
   source('~/pllist/pllist.git/testplots.R')
   while(!avail)
   {
