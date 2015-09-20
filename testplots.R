@@ -52,7 +52,8 @@ if (!.GlobalEnv$tpexist) {
         .GlobalEnv$ofnx=fnames[idx,]
         nfn=NULL  # supply select idx item in editing window fwinf
         tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
-        tmpdf$Comment=tmpdf$DMComment
+        if(!is.na(tmpdf$DMComment))
+          tmpdf$Comment=tmpdf$DMComment
         fwind[,] = tmpdf[,1:4]
         visible(fw) <- TRUE
         enabled(fw) <- TRUE
