@@ -101,31 +101,36 @@ if (len(fmissing) > 0) {
     suppressWarnings(eval(parse(text = cmdx)))
     print(paste('Added   ',fmissing[i],'to allmetadata'))
   }
+  am1 = readLines('allmetadata.txt')
+  am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
+  am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
+  ttl = c(which(substr(am,1,1) == '='),len(am)+1)
 }
 ###########################################
 procExtras=function() {
   if(len(extras)>0){
     exidxs=which(trim(substr(am,10,nchar(am))) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
-    ttidxs=which(ttl%in%exidxs)
-    for (i in 1:len(exidxs)){
-      nexttlidx=ttl[ttidxs[i]+1]
-      idx=ttl[ttidxs[i]]
-      if(is.na(nexttlidx)){
-        print(paste('removed from allmetadata.txt',am[idx]))
-        am[idx:len(am)]=NA
-        break #indicates terminal condition (last ttl)
-      }
-      j=0
-      while((idx+j)!=nexttlidx){
-        print(paste('removed from allmetadata.txt',am[idx+j]))
-        am[idx+j]=NA
-        j=j+1
-      }
+    if(len(exidxs)){
+      ttidxs=which(ttl%in%exidxs)
+      for (i in 1:len(exidxs)){
+        nexttlidx=ttl[ttidxs[i]+1]
+        idx=ttl[ttidxs[i]]
+        if(is.na(nexttlidx)){
+          print(paste('removed from allmetadata.txt',am[idx]))
+          am[idx:len(am)]=NA
+          break #indicates terminal condition (last ttl)
+        }
+        j=0
+        while((idx+j)!=nexttlidx){
+          print(paste('removed from allmetadata.txt',am[idx+j]))
+          am[idx+j]=NA
+          j=j+1
+        }
+      }  
+      am=am[!is.na(am)]
+      ttl = which(substr(am,1,1) == '=')
+      writeLines(am,'allmetadata.txt')
     }  
-    am=am[!is.na(am)]
-    ttl = which(substr(am,1,1) == '=')
-    writeLines(am,'allmetadata.txt')
-    
   }
 }
 ####################################
@@ -174,6 +179,7 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   save(am,ttl,dts,dfan,file = sfname)
   close(pb)
 }
+dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
 
 tpexist=FALSE
 avail=FALSE
@@ -215,13 +221,14 @@ while(!jerking)
     Passt=FALSE
   ################ REBUILD an from dfan ################
   an=paste(ifelse(is.na(dfan$Title)     ,'', paste('Title: ',dfan$Title,sep='')),
-           ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')),
-           #           ifelse(!is.na(dfan$Comment) | is.na(dfan$DMComment),'', 
-           #                                             paste('Comment: ',dfan$DMComment,sep='')),
-           ifelse(!is.na(dfan$SubTitle)&!nchar(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')))
+           ifelse(!is.na(dfan$SubTitle)&!nchar(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')),
+           ifelse(is.na(dfan$Comment)|!is.na(dfan$DMComment),'',    paste('Comment: ',dfan$Comment,sep='')),
+           ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')))
+  
   an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
   an=sub("Title:NA",'',an)
   an=sub("Title: NA",'',an)
+  an=gsub("Title:   ",'',an)
   an=gsub(',','',an)
   an=gsub('Comment:  ','Comment: ',an)
   an=gsub("Comment: NA",'',an)
@@ -266,7 +273,7 @@ while(!jerking)
   {
     delay500()
     if(isExtant(tab)){
-      enabled(tbutton)=(len(svalue(tab))!=0)
+      enabled(tbutton)=(len(svalue(tab))!=0)#CHECKsvalue(tab) S/B global in testplots.R
       enabled(dbutton)=(len(svalue(tab))!=0)
     }
   }
