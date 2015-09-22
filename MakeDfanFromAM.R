@@ -268,6 +268,7 @@ while(!jerking)
   gdframe = get_list_content(pnoln,an[idxs])
   unsorted=TRUE
   fnames=gdframe[order(gdframe$Date,decreasing = unsorted),]
+  fnames$comments=trim(fnames$comments)
   source('~/pllist/pllist.git/testplots.R')
   while(!avail)
   {
@@ -302,8 +303,8 @@ while(!jerking)
     }else{
       dfan[dfix,'DMComment']=dfan[dfix,'Comment']
     }
-    if(file.ext(dfan[dfix,'filename'])=='wmv'){
-      gmessage('Cannot write metadata to wmv files')
+    if(file.ext(dfan[dfix,'filename'])%in% c('wmv','flv')){
+      gmessage('Cannot write metadata to wmv or flv files')
     }else{
       print(paste('Updating Metadata in',dfan[dfix,'filename']))
       cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
