@@ -309,7 +309,7 @@ while(!jerking)
     }else{
       dfan[dfix,'DMComment']=dfan[dfix,'Comment']
     }
-    if(file.ext(dfan[dfix,'filename'])%in% c('wmv','flv')){
+    if(file.ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
       gmessage('Cannot write metadata to wmv or flv files')
     }else{
       print(paste('Updating Metadata in',dfan[dfix,'filename']))
