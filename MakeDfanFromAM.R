@@ -65,12 +65,18 @@ if (file.exists('D:/PNMTALL')) {
     zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
     dirtbl=as.data.frame(table(as.character(dirname(zz))))
     nfiles=sum(dirtbl$Freq)
+    nf=0
     if (!file.exists(sfname)) {
       writeLines('','allmetadata.txt')
+      pb = winProgressBar(title = "R progress bar", label = "",
+                          min = 1, max = nfiles, initial = 0, width = 300)
       for(dirpath in dirpaths){
-        print(paste(dirpath,dirtbl[which(grepl(dirpath,dirtbl$Var1)),'Freq']))
+        nf=nf+dirtbl[which(grepl(dirpath,dirtbl$Var1)),'Freq']
+        setWinProgressBar(pb, nf, title = dirpath)
+        print(paste(dirpath,dirtbl[which((dirpath==basename(as.character(dirtbl$Var1)))),'Freq']))
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
       }
+      close(pb)
       dts = file.mtime(zz) # file dates
       #unlink('allmetadata.txt')
     }else{
