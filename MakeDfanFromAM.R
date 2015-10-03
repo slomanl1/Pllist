@@ -1,5 +1,6 @@
 library(gWidgets)
-options(guiToolkit = "RGtk2")   
+options(guiToolkit = "RGtk2") 
+
 setwd('~/')
 if(exists('w'))
   if(isExtant(w))
@@ -27,6 +28,7 @@ delay500=function(){
       break
   }
 }
+
 extras=NULL
 fmissing=NULL
 deleted=FALSE
@@ -42,8 +44,9 @@ if (file.exists('D:/PNMTALL')) {
     vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
     print(paste('VNAME =',vname))
     sfname = paste(substr(vname,1,nchar(vname) - 4),'.RData',sep = '')
-    YesorNo=select.list(c('No','Yes'),preselect = 'No',title='DELETE sfname and choose folders?',graphics = TRUE)
-    if(YesorNo=='Yes'){
+    source('~/pllist/pllist.git/selecttt.R')
+    YesorNo=vall
+    if(YesorNo=='YES'){
       dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
       if(len(dirpaths)==0)
         stop('Aborted')
@@ -55,6 +58,7 @@ if (file.exists('D:/PNMTALL')) {
       else
         load('dirpaths.RData')
     }
+    galert('working')
     dirsx=dirs[basename(dirs) %in% dirpaths]
     shell(paste('dir', 'D:\\PNMTALL',' /S/B/OD >  zz.txt'))
     shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
@@ -72,7 +76,7 @@ if (file.exists('D:/PNMTALL')) {
                           min = 1, max = nfiles, initial = 0, width = 300)
       for(dirpath in dirpaths){
         nf=nf+dirtbl[which(grepl(dirpath,dirtbl$Var1)),'Freq']
-        setWinProgressBar(pb, nf, title = dirpath)
+        setWinProgressBar(pb, nf, title = paste(dirpath,'-',(nfiles-nf),'files remaining'))
         print(paste(dirpath,dirtbl[which((dirpath==basename(as.character(dirtbl$Var1)))),'Freq']))
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
       }
