@@ -29,7 +29,7 @@ if (!.GlobalEnv$tpexist) {
       dispose(w)
     tpexist=FALSE
   }) 
-
+  
   heit=min(100+(nrow(fnames)*30),750)
   w <- gwindow(paste(liner,nrow(fnames),"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
   getToolkitWidget(w)$move(0,0)
@@ -70,6 +70,7 @@ if (!.GlobalEnv$tpexist) {
       if(isExtant(fwind))
         dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
+      visible(wm) <- FALSE
     }
   )
   print('bghello')
@@ -105,6 +106,30 @@ if (!.GlobalEnv$tpexist) {
     eval(parse(text=cmdd))
   }
   )
+  
+  wm <- gwindow("Metadata",width=400)
+  gpm<- ggroup(horizontal=FALSE, container=wm)
+  tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
+                 handler = NULL)
+  bgm <- ggroup(container=gpm)
+  addSpring(bgm)
+  addHandlerDestroy(
+    tabm, handler = function(h,...) {print('destroyed tabm');if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
+  gbutton("dismiss", container=bgm, handler = function(h,...) {visible(wm) <- FALSE;    if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
+  visible(wm) <- FALSE
+  
+  mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
+    enabled(w) <- FALSE
+    print(svalue(tab))
+    cmdd=paste('shell("exiftool.exe',svalue(tab),' >meta.txt",mustWork=NA,translate=TRUE)')
+    print(cmdd)
+    eval(parse(text=cmdd))
+    .GlobalEnv$meta=readLines('meta.txt')
+    tabm[,]=meta
+    visible(wm) <- TRUE
+  }
+  )
+  
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
     .GlobalEnv$avail = TRUE
