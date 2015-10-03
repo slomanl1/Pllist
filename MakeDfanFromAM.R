@@ -286,6 +286,7 @@ while(!jerking)
     if(isExtant(tab)){
       enabled(tbutton)=(len(svalue(tab))!=0)#CHECKsvalue(tab) S/B global in testplots.R
       enabled(dbutton)=(len(svalue(tab))!=0)
+      enabled(mbutton)=(len(svalue(tab))!=0)
     }
   }
   if(changed | deleted){
