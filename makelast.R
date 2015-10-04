@@ -22,6 +22,7 @@ fnfo=fnfo[ex,] #remove non existent files from fnfo
 fns=fns1[order(odr)]
 fn=fns
 setwd('C:\\RealPlayerDownloads')
+last=last+1
 for (i in 1:length(fns)){
   cc=''
   for (j in 1:length(exts)){
