@@ -70,7 +70,8 @@ if (!.GlobalEnv$tpexist) {
       if(isExtant(fwind))
         dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
-      visible(wm) <- FALSE
+      if(isExtant(wm))
+        visible(wm) <- FALSE
     }
   )
   print('bghello')
@@ -114,7 +115,12 @@ if (!.GlobalEnv$tpexist) {
   bgm <- ggroup(container=gpm)
   addSpring(bgm)
   addHandlerDestroy(
-    tabm, handler = function(h,...) {print('destroyed tabm');if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
+    tabm, handler = function(h,...) {
+      print('destroyed tabm');
+      if(exists('w')) 
+        if(isExtant(w)) 
+          dispose(w)
+        .GlobalEnv$avail = TRUE})
   gbutton("dismiss", container=bgm, handler = function(h,...) {visible(wm) <- FALSE;    if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
   visible(wm) <- FALSE
   
