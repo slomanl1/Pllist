@@ -9,7 +9,7 @@ f <- function(h,...) {
 xw <- gwindow("Delete sfname and rebuild?",height = 20)
 gp <- ggroup(container=xw)
 
-cb <- gdroplist(flavors, editable=TRUE, container=gp, handler=f)
+cb <- gcombobox(flavors, editable=TRUE, container=gp, handler=f)
 addHandlerDestroy(xw, handler = function(h,...) {
   .GlobalEnv$avail=TRUE
 #  .GlobalEnv$vall=''
