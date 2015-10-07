@@ -1,4 +1,5 @@
-rm(list=ls())
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 load('~/xxxx.RData')
 load('~/fnfo.RData')
 source('~/Local.R') #get drive
@@ -18,16 +19,16 @@ for (j in 1:length(fns)) {
   lssx=''
   for(i in 1:length(lss)){
     if (length(grep('mpg',lss[i])>0)) {
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('mpg',lss[i])[1]+2)
-      }
+      lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg',lss[i])[1]+2)
+    }
     if (length(grep('wmv',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('wmv',lss[i])[1]+2)
+      lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('wmv',lss[i])[1]+2)
     }
     if (length(grep('asf',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('asf',lss[i])[1]+2)
+      lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('asf',lss[i])[1]+2)
     }
     if (length(grep('flv',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('flv',lss[i])[1]+2)
+      lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('flv',lss[i])[1]+2)
     }
   }
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))

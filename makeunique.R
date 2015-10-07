@@ -1,4 +1,5 @@
-rm(list=ls())
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 load('~/xxxx.RData')
 
 source('~/Local.R') #get drive
@@ -24,7 +25,7 @@ for (i in 1:length(fns)) {
   print(fns[i])
   dups=lns[duplicated(lns[nchar(lns)>0])]
   if(length(dups)>0)
-     print(dups)
+    print(dups)
   lnsu=unique(lns)
   for (j in 1:length(removers)){
     if(nchar(removers[j])>0){
@@ -34,7 +35,7 @@ for (i in 1:length(fns)) {
       lsst=lsst[!is.na(lsst)]
     }
   }
- 
+  
   writeLines(lnsu,fns[i])
 }
 
