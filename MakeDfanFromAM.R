@@ -14,7 +14,8 @@ if(exists('obj'))
 
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
+#get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
+get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.info(fnx,extra_cols=FALSE)$ctime),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 
 len=function(x) length(x)
 fi=function(x,y) y[grepl(x,y,fixed=TRUE)] # find within function
