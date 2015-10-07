@@ -4,7 +4,7 @@ setwd('~/')
 rm(list=ls())
 load('~/namer.RData')
 
-setwd('Z:/My Videos/RealPlayer Downloads')
+setwd('Z:/My Videos/RPDNClips')
 
 for(i in 1:nrow(namer))
   file.rename(paste('newnamer',namer[i,'oldnm'],sep=''),as.character(namer[i,'oldnm']))

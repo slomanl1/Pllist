@@ -4,7 +4,7 @@ setwd('~/')
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
 rm(list=ls())
 source("~/Local.R")
-shell('dir "C:\\My Videos\\RealPlayer Downloads" /od/b > ddd.txt')
+shell('dir "C:\\My Videos\\RPDNClips" /od/b > ddd.txt')
 lns=readLines('ddd.txt')
 unlink('ddd.txt')
 last=suppressWarnings(tail(sort(as.numeric(substr(lns,5,9))),1))
@@ -16,7 +16,7 @@ exts=c('blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pna.mp4','
 odr=sample(last:last+length(fns1),length(fns1),replace=T) 
 if(length(odr)!=0){
 load('~/fnfo.RData')
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 ex=file.exists(rownames(fnfo))
 fnfo=fnfo[ex,] #remove non existent files from fnfo
 fns=fns1[order(odr)]
@@ -41,12 +41,12 @@ for (i in 1:length(fns)){
   }else{
 
       last=last+1
-      if(file.exists(paste(drive,"My Videos\\RealPlayer Downloads\\",fn[i],sep=''))){
+      if(file.exists(paste(drive,"My Videos\\RPDNClips\\",fn[i],sep=''))){
         print(paste(fn[i],'exists'))
         next
       }else{
           print(paste(fn[i], 'added'))
-          file.copy(fns[i],paste(drive,"My Videos\\RealPlayer Downloads\\",fn[i],sep=''))
+          file.copy(fns[i],paste(drive,"My Videos\\RPDNClips\\",fn[i],sep=''))
           exist=FALSE
           }
       }
@@ -54,14 +54,14 @@ for (i in 1:length(fns)){
   unlink(fns[i])
 }
 source("~/Local.R")
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 fnfo=rbind(fnfo,file.info(fn))
 save(fnfo,file='~/fnfo.RData')
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 
 setwd(paste(pldrive,'My Playlists',sep=""))
 lss = unique(readLines('wa.wpl'))
-js="            <media src=\"Y:\\My Videos\\RealPlayer Downloads\\%s\"/>"
+js="            <media src=\"Y:\\My Videos\\RPDNClips\\%s\"/>"
 adds=sprintf(js,fn)
 lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
 m3uname <- paste(pldrive,'My Playlists/',sep='')

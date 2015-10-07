@@ -6,7 +6,7 @@ source('~/Local.R') #get drive
 flist=lsst
 #rm(xx,lsst,wpls)
 k=0
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 removers = ""
 for (i in 1:length(flist)) {
   if (!file.exists(flist[i])) {

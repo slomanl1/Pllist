@@ -2,7 +2,7 @@ rm(list=ls())
 load('~/xxxx.RData')
 load('~/fnfo.RData')
 source('~/Local.R') #get drive
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 rn=rownames(fnfo)
 addfnfo=file.info(lsst[(!lsst %in% rn)])
 fnfo=rbind(fnfo,addfnfo)
@@ -30,7 +30,7 @@ for (j in 1:length(fns)) {
       lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('flv',lss[i])[1]+2)
     }
   }
-  setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+  setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   lssy=lssx[!duplicated(lssx) & file.exists(lssx)]
   lss1=lss[!duplicated(lssx) & file.exists(lssx)]
   fnnh=fnn[1:(strt-1)] #wpl header

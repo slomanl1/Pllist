@@ -3,14 +3,14 @@ library(tools)
 setwd('~/')
 rm(list=ls())
 load('~/namer.RData')
-setwd('Z:/My Videos/RealPlayer Downloads')
+setwd('Z:/My Videos/RPDNClips')
 for ( i in 1:nrow(namer)){
   print(i)
-  setwd('Z:/My Videos/RealPlayer Downloads')
+  setwd('Z:/My Videos/RPDNClips')
   #print(paste(namer[i,'oldnm'],namer[i,'newnm']))# file copy goes here
   #file.copy(as.character(namer[i,'oldnm']),paste('E:/',namer[i,'newnm'],sep=''))
-  nmr=paste('RealPlayer Downloads\\',namer[i,'oldnm'],sep='')  
-  newnmr=paste('RealPlayer Downloads\\',namer[i,'newnm'],sep='')
+  nmr=paste('RPDNClips\\',namer[i,'oldnm'],sep='')  
+  newnmr=paste('RPDNClips\\',namer[i,'newnm'],sep='')
   
   setwd(paste(pldrive,'My Playlists',sep=""))
   for(j in 1:length(wpls)){

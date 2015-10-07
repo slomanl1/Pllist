@@ -32,7 +32,7 @@ if (length(selectL > 0)) {
 	if(length(flist2)==0)
 		print('No Records Found')
 	else {
-	  flist = paste(drive,'My Videos/RealPlayer Downloads/',flist2,sep='')
+	  flist = paste(drive,'My Videos/RPDNClips/',flist2,sep='')
     indxs=regexpr('wpl',wpls)[1:length(wpls)]
     fname=""
     for (i in 1:length(wpls)){

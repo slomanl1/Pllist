@@ -6,7 +6,7 @@ source("~/Local.R")
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
 
 source('~/Pllist/pllist.git/combiner.R')
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'),dir(pattern='*.flv'))
 
 setwd(paste(pldrive,'My Playlists',sep=""))
