@@ -14,7 +14,6 @@ if(exists('obj'))
 
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-#get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.info(fnx,extra_cols=FALSE)$ctime),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 
 len=function(x) length(x)
@@ -120,7 +119,7 @@ if (len(fmissing) > 0) {
 ###########################################
 procExtras=function() {
   if(len(extras)>0){
-    exidxs=which(trim(substr(am,10,nchar(am))) %in% substr(extras,10,nchar(extras))) # extra indices in am[]
+    exidxs=which(trim(substr(am,10,nchar(am))) %in% trim(substr(extras,10,nchar(extras)))) # extra indices in am[]
     if(len(exidxs)){
       ttidxs=which(ttl%in%exidxs)
       for (i in 1:len(exidxs)){
@@ -141,7 +140,7 @@ procExtras=function() {
       am=am[!is.na(am)]
       ttl = which(substr(am,1,1) == '=')
       writeLines(am,'allmetadata.txt')
-    }  
+    }
   }
 }
 ####################################
@@ -182,7 +181,7 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan$SubTitle= trim(sub("Subtitle                        :",'',dfan$SubTitle))
   dfan$DMComment=trim(sub("DM Comment                      :",'',dfan$DMComment))
   dfan$DMComment=trim(sub("Description                     :",'',dfan$DMComment))
-
+  
   
   dfan$Title=    gsub("'",'',dfan$Title)
   dfan$Title=    gsub(",",'',dfan$Title)
@@ -190,11 +189,12 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan$SubTitle= gsub("'",'',dfan$SubTitle)
   dfan$DMComment=gsub("'",'',dfan$DMComment)
   save(am,ttl,dts,dfan,file = sfname)
-  save(dfan,file='Dfan.RData')
-  print('Dfan, sfname written')
+  print('sfname written')
   close(pb)
 }
 dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
+save(dfan,file='Dfan.RData')
+print('Dfan.RData written')
 
 tpexist=FALSE
 avail=FALSE
@@ -313,7 +313,7 @@ while(!jerking)
       }
     }
     dfan[dfix,1:4]=fwind[,1:4]
-    print('DFAN CHANGED')
+    print('DFAN CHANGED') # debug only may not need extra print here
     if(nchar(trim(dfan[dfix,'Comment']))==0){
       dfan[dfix,'Comment']='--'
     }else{
@@ -338,6 +338,8 @@ while(!jerking)
       }else
         print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
+    save(dfan,file='Dfan.RData')
+    print('Dfan.Rdata written')
     next #rebuild an from updated dfan
   }
   if(deleted){
@@ -345,6 +347,8 @@ while(!jerking)
     extras=paste("========",ofn) # remove old metadata associated with the old file
     procExtras()
     deleted=FALSE
+    save(dfan,file='Dfan.RData')
+    print('Dfan.Rdata written')
   }
   fns = ssv
   ssv = NULL #clear bones
