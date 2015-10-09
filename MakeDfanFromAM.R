@@ -117,6 +117,7 @@ if (len(fmissing) > 0) {
   am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
   print(paste('missing dups=',sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)))
+  extras=am[ttl][duplicated(am[ttl])]
 }
 ###########################################
 procExtras=function() {
