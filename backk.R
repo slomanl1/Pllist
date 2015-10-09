@@ -26,4 +26,5 @@
       file.copy(copyl[i],copyll[i])
     }
   shell('xcopy D: E: /S/D/Y/J',intern = TRUE)
+  shell('bkrpdnclips.bat')
   print('Done')
