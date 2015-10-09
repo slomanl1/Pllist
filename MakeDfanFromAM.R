@@ -76,7 +76,7 @@ if (file.exists('D:/PNMTALL')) {
       pb = winProgressBar(title = "R progress bar", label = "",
                           min = 1, max = nfiles, initial = 0, width = 300)
       for(dirpath in dirpaths){
-        nf=nf+dirtbl[which(grepl(dirpath,dirtbl$Var1)),'Freq']
+        nf=nf+dirtbl[which(dirpath==basename(as.character(dirtbl$Var1))),'Freq']
         setWinProgressBar(pb, nf, title = paste(dirpath,'-',(nfiles-nf),'files remaining'))
         print(paste(dirpath,dirtbl[which((dirpath==basename(as.character(dirtbl$Var1)))),'Freq']))
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
@@ -149,15 +149,15 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   procExtras()
   dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
   am1 = readLines('allmetadata.txt')
-  am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
+  am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
   am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
-  ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))))
+  ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)
   if(ducc){
     print(paste(ducc,'Duplicates found'))  
     stop('TERMINATED - DUPLICATES FOUND')
   }
-  flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment')
+  flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment','Description')
   pb = winProgressBar(title = "R progress bar", label = "",
                       min = 1, max = length(ttl)-1, initial = 0, width = 300)
   for(i in 1:(len(ttl)-1)){
@@ -169,9 +169,9 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
       if(is.na(tmpp)){ # indicates terminal condition
         break
       }
-      fld=flds[as.integer(attributes(regexpr('Title|Comment|Subtitle|DM Comment',tmpp))[1])]
+      fld=flds[as.integer(attributes(regexpr('Title|Comment|Subtitle|DM Comment|Description',tmpp))[1])]
       if(len(fld)==1){
-        fld=sub('DM Comment','DMComment',fld) # convert DM Comment field name to disallow spaces
+        fld=sub('DM Comment|Description','DMComment',fld) # convert DM Comment field name to disallow spaces
         dfan[i,fld]=tmpp
       }
       j=j+1
@@ -181,6 +181,8 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan$Comment=  trim(sub("Comment                         :",'',dfan$Comment))
   dfan$SubTitle= trim(sub("Subtitle                        :",'',dfan$SubTitle))
   dfan$DMComment=trim(sub("DM Comment                      :",'',dfan$DMComment))
+  dfan$DMComment=trim(sub("Description                     :",'',dfan$DMComment))
+
   
   dfan$Title=    gsub("'",'',dfan$Title)
   dfan$Title=    gsub(",",'',dfan$Title)
@@ -188,6 +190,8 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan$SubTitle= gsub("'",'',dfan$SubTitle)
   dfan$DMComment=gsub("'",'',dfan$DMComment)
   save(am,ttl,dts,dfan,file = sfname)
+  save(dfan,file='Dfan.RData')
+  print('Dfan, sfname written')
   close(pb)
 }
 dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
@@ -322,7 +326,9 @@ while(!jerking)
       cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                  dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
       writeLines(cmdd,'Jester.R') 
-      
+      print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
+      print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
+      print(paste('Added to allmetadata.txt Comment:',dfan[dfix,'Comment']))
       source('jester.R')
       ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
       if(file.exists(ttllorig)){
