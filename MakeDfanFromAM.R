@@ -87,27 +87,28 @@ if (file.exists('D:/PNMTALL')) {
       load(sfname)
       dto = file.mtime(zz) # new file dates
       dmissing = NULL
-      if (len(dts) == len(dto))
+      if (len(dts) == len(dto)){
         dmissing = zz[!dto %in% dts] # add records with new date to dmissing
+      }
       ttl = which(substr(am,1,1) == '=')
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       missing1 = unique(c(dmissing,xmissing))
       fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
-      
     }
   } 
 }   
 if (len(fmissing) > 0) {
   for (i in 1:len(fmissing)) {
-    cmdd = "shell('getm D: >> allmetadata.txt')"
-    fpp = file.path(substr(fmissing[i],1,2),
-                    substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i]))
+    cmdd = "shell('getm D: >> allmetadata.txt',translate=TRUE)"
+    fpp1 = normalizePath(file.path(substr(fmissing[i],1,2),
+                    substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])))
+    fpp=gsub('\\','/',fpp1,fixed=TRUE)
     
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
     suppressWarnings(eval(parse(text = cmdy)))
-    cmdx = sub('D:',fpp,cmdd)
+    cmdx = sub('D:',paste('"',fpp,'"',sep=''),cmdd,fixed=TRUE)
     suppressWarnings(eval(parse(text = cmdx)))
     print(paste('Added   ',fmissing[i],'to allmetadata'))
   }
@@ -115,6 +116,7 @@ if (len(fmissing) > 0) {
   am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
   am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
+  print(paste('missing dups=',sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)))
 }
 ###########################################
 procExtras=function() {
