@@ -196,6 +196,8 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   close(pb)
 }
 dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
+for(cll in 1:ncol(dfan))
+  dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
 save(dfan,file='Dfan.RData')
 print('Dfan.RData written')
 
