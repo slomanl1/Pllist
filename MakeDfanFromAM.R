@@ -32,6 +32,7 @@ delay500=function(){
 extras=NULL
 fmissing=NULL
 deleted=FALSE
+nexistpas=FALSE
 
 dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
@@ -71,6 +72,7 @@ if (file.exists('D:/PNMTALL')) {
     nfiles=sum(dirtbl$Freq)
     nf=0
     if (!file.exists(sfname)) {
+      nexistpas=TRUE
       writeLines('','allmetadata.txt')
       pb = winProgressBar(title = "R progress bar", label = "",
                           min = 1, max = nfiles, initial = 0, width = 300)
@@ -103,7 +105,7 @@ if (len(fmissing) > 0) {
   for (i in 1:len(fmissing)) {
     cmdd = "shell('getm D: >> allmetadata.txt',translate=TRUE)"
     fpp1 = normalizePath(file.path(substr(fmissing[i],1,2),
-                    substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])))
+                                   substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])))
     fpp=gsub('\\','/',fpp1,fixed=TRUE)
     
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
@@ -159,6 +161,9 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
     print(paste(ducc,'Duplicates found'))  
     stop('TERMINATED - DUPLICATES FOUND')
   }
+  save(am,ttl,dts,file = sfname)
+  print('sfname written')
+  
   flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment','Description')
   pb = winProgressBar(title = "R progress bar", label = "",
                       min = 1, max = length(ttl)-1, initial = 0, width = 300)
@@ -191,15 +196,33 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan$Comment=  gsub("'",'',dfan$Comment)
   dfan$SubTitle= gsub("'",'',dfan$SubTitle)
   dfan$DMComment=gsub("'",'',dfan$DMComment)
-  save(am,ttl,dts,dfan,file = sfname)
-  print('sfname written')
+  
+  dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
+  for(cll in 1:ncol(dfan))
+    dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
   close(pb)
 }
-dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
-for(cll in 1:ncol(dfan))
-  dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
-save(dfan,file='Dfan.RData')
-print('Dfan.RData written')
+if(nexistpas){
+  nexistpas = FALSE
+  if(file.exists('dfan.RData')){
+    dfanNew=dfan
+    load('dfan.RData')} # load old dfan to get comments not written into metadata for wmv files
+  ################################## GET THE COMMENTS FROM old dfan and merge with newdfan ###############
+  dfg=merge(dfan,dfanNew[,c('filename','Comment')],by='filename',all.x = TRUE)
+  dfg[!is.na(dfg$Comment.y),'Comment.x']=dfg$Comment.y[!is.na(dfg$Comment.y)]
+  dfan=dfg[,c("filename", "Title", "Comment.x", "SubTitle", "DMComment")]
+  dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
+  for(cll in 1:ncol(dfan))
+    dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
+  names(dfan)=names(dfanNew)
+  save(dfan,dfg,file='dfan.Rdata')
+  print('Dfan.RData written')
+}else{
+  if(!exists('dfan')){
+    load('dfan.RData')}
+}
+
+
 
 tpexist=FALSE
 avail=FALSE
