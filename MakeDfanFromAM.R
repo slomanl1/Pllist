@@ -190,7 +190,6 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan$DMComment=trim(sub("DM Comment                      :",'',dfan$DMComment))
   dfan$DMComment=trim(sub("Description                     :",'',dfan$DMComment))
   
-  
   dfan$Title=    gsub("'",'',dfan$Title)
   dfan$Title=    gsub(",",'',dfan$Title)
   dfan$Comment=  gsub("'",'',dfan$Comment)
@@ -211,10 +210,13 @@ if(nexistpas){
   dfg=merge(dfan,dfanNew[,c('filename','Comment')],by='filename',all.x = TRUE)
   dfg[!is.na(dfg$Comment.y),'Comment.x']=dfg$Comment.y[!is.na(dfg$Comment.y)]
   dfan=dfg[,c("filename", "Title", "Comment.x", "SubTitle", "DMComment")]
+  names(dfan)=names(dfanNew)
+  
   dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
+  dfan[which(nchar(trim(dfan$DMComment))==0),'DMComment']=NA
   for(cll in 1:ncol(dfan))
     dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
-  names(dfan)=names(dfanNew)
+
   save(dfan,dfg,file='dfan.Rdata')
   print('Dfan.RData written')
 }else{
@@ -343,7 +345,7 @@ while(!jerking)
     dfan[dfix,1:4]=fwind[,1:4]
     print('DFAN CHANGED') # debug only may not need extra print here
     if(nchar(trim(dfan[dfix,'Comment']))==0){
-      dfan[dfix,'Comment']='--'
+      dfan[dfix,'Comment']=NA
     }else{
       dfan[dfix,'DMComment']=dfan[dfix,'Comment']
     }
