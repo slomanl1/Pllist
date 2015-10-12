@@ -1,7 +1,7 @@
 idxs=NULL
 for(x in 1:nrow(fnames)) 
   idxs=c(idxs,which(grepl(fnames[x,'fnx'],an[ttl],fixed=TRUE)))
-print(.GlobalEnv$changed)
+
 if (!.GlobalEnv$tpexist) {
   avail = FALSE
   renamed = FALSE
