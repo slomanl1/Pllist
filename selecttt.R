@@ -30,5 +30,5 @@ while(!avail)
 }
 if(isExtant(xw))
   dispose(xw)
-print(flagg)
+
 
