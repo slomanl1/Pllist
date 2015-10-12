@@ -80,8 +80,8 @@ if (file.exists('D:/PNMTALL')) {
                           min = 1, max = nfiles, initial = 0, width = 300)
       for(dirpath in dirpaths){
         nf=nf+dirtbl[which(dirpath==basename(as.character(dirtbl$Var1))),'Freq']
-        setWinProgressBar(pb, nf, title = paste(dirpath,'-',(nfiles-nf),'files remaining'))
-        print(paste(dirpath,dirtbl[which((dirpath==basename(as.character(dirtbl$Var1)))),'Freq']))
+        ng = dirtbl[which((dirpath==basename(as.character(dirtbl$Var1)))),'Freq']
+        setWinProgressBar(pb, nf, title = paste(dirpath,'-',ng,';',(nfiles-nf),'files remaining'))
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
       }
       close(pb)
@@ -216,7 +216,7 @@ if(nexistpas){
   dfg[!is.na(dfg$Comment.y),'Comment.x']=dfg$Comment.y[!is.na(dfg$Comment.y)]
   dfan=dfg[,c("filename", "Title", "Comment.x", "SubTitle", "DMComment")]
   names(dfan)=names(dfanNew)
-  
+  #dfan=dfan[file.exists(dfan[,1]),]
   dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
   dfan[which(nchar(trim(dfan$DMComment))==0),'DMComment']=NA
   for(cll in 1:ncol(dfan))
@@ -226,7 +226,9 @@ if(nexistpas){
   print('Dfan.RData written')
 }else{
   if(!exists('dfan')){
-    load('dfan.RData')}
+    load('dfan.RData')
+    dfanNew=dfan
+    }
 }
 
 
@@ -270,10 +272,13 @@ while(!jerking)
   }else
     Passt=FALSE
   ################ REBUILD an from dfan ################
-  an=paste(ifelse(is.na(dfan$Title)     ,'', paste('Title: ',dfan$Title,sep='')),
-           ifelse(!is.na(dfan$SubTitle)&!nchar(dfan$SubTitle)  ,'', paste('Subtitle: ',dfan$SubTitle,sep='')),
-           ifelse(is.na(dfan$Comment)|!is.na(dfan$DMComment),'',    paste('Comment: ',dfan$Comment,sep='')),
-           ifelse(is.na(dfan$DMComment) ,'', paste('Comment: ',dfan$DMComment,sep='')))
+  if(!exists('dfanNew'))
+     dfanNew=dfan
+  dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
+  an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
+           ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
+           ifelse(is.na(dfanx$Comment)|!is.na(dfanx$DMComment),'',    paste('Comment: ',dfanx$Comment,sep='')),
+           ifelse(is.na(dfanx$DMComment) ,'', paste('Comment: ',dfanx$DMComment,sep='')))
   
   an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
   an=sub("Title:NA",'',an)
@@ -295,7 +300,7 @@ while(!jerking)
     dflt = liner
     save(dflt,file='dfltsave.RData')
     srct=unlist(strsplit(toupper(liner),' '))
-    anttl=paste(dfan$filename,an)
+    anttl=paste(dfanx$filename,an)
     anttlu=toupper(anttl)
     pnoln=NA
     allc=NA
