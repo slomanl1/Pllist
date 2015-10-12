@@ -79,8 +79,8 @@ if (file.exists('D:/PNMTALL')) {
       pb = winProgressBar(title = "R progress bar", label = "",
                           min = 1, max = nfiles, initial = 0, width = 300)
       for(dirpath in dirpaths){
-        nf=nf+dirtbl[which(dirpath==basename(as.character(dirtbl$Var1))),'Freq']
-        ng = dirtbl[which((dirpath==basename(as.character(dirtbl$Var1)))),'Freq']
+        ng = dirtbl[which(dirpath==basename(as.character(dirtbl$Var1))),'Freq']
+        nf = nf+ng
         setWinProgressBar(pb, nf, title = paste(dirpath,'-',ng,';',(nfiles-nf),'files remaining'))
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
       }
@@ -221,14 +221,14 @@ if(nexistpas){
   dfan[which(nchar(trim(dfan$DMComment))==0),'DMComment']=NA
   for(cll in 1:ncol(dfan))
     dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
-
+  
   save(dfan,dfg,file='dfan.Rdata')
   print('Dfan.RData written')
 }else{
   if(!exists('dfan')){
     load('dfan.RData')
     dfanNew=dfan
-    }
+  }
 }
 
 
@@ -273,7 +273,7 @@ while(!jerking)
     Passt=FALSE
   ################ REBUILD an from dfan ################
   if(!exists('dfanNew'))
-     dfanNew=dfan
+    dfanNew=dfan
   dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
   an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
            ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
