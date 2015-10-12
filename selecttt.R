@@ -1,9 +1,11 @@
 flavors <- c("NO","YES")
 avail=FALSE
 vall='NO'
+flagg=TRUE
 f <- function(h,...) {
   .GlobalEnv$avail=TRUE
   .GlobalEnv$vall=svalue(h$obj)
+  .GlobalEnv$flagg=FALSE # if TRUE, indicates xw was destroyed with user close
 }
 
 xw <- gwindow("Delete sfname and rebuild?",height = 20)
@@ -11,8 +13,8 @@ gp <- ggroup(container=xw)
 
 cb <- gcombobox(flavors, editable=TRUE, container=gp, handler=f)
 addHandlerDestroy(xw, handler = function(h,...) {
+  .GlobalEnv$destroyed=.GlobalEnv$flagg
   .GlobalEnv$avail=TRUE
-#  .GlobalEnv$vall=''
 })
 cntt=7
 delay500()
@@ -28,4 +30,5 @@ while(!avail)
 }
 if(isExtant(xw))
   dispose(xw)
+print(flagg)
 

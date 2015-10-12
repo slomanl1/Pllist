@@ -46,6 +46,8 @@ if (file.exists('D:/PNMTALL')) {
     print(paste('VNAME =',vname))
     sfname = paste(substr(vname,1,nchar(vname) - 4),'.RData',sep = '')
     source('~/pllist/pllist.git/selecttt.R')
+    if(destroyed)
+      stop('Aborted')
     YesorNo=vall
     if(YesorNo=='YES'){
       dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
@@ -205,9 +207,12 @@ if(nexistpas){
   nexistpas = FALSE
   if(file.exists('dfan.RData')){
     dfanNew=dfan
-    load('dfan.RData')} # load old dfan to get comments not written into metadata for wmv files
+    load('dfan.RData')
+  }else{ # load old dfan to get comments not written into metadata for wmv files
+    dfanNew=dfan[0,]
+  }
   ################################## GET THE COMMENTS FROM old dfan and merge with newdfan ###############
-  dfg=merge(dfan,dfanNew[,c('filename','Comment')],by='filename',all.x = TRUE)
+  dfg=merge(dfan,dfanNew[,c('filename','Comment')],by='filename',all = TRUE)
   dfg[!is.na(dfg$Comment.y),'Comment.x']=dfg$Comment.y[!is.na(dfg$Comment.y)]
   dfan=dfg[,c("filename", "Title", "Comment.x", "SubTitle", "DMComment")]
   names(dfan)=names(dfanNew)
