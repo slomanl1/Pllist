@@ -12,6 +12,7 @@ xw <- gwindow("Delete sfname and rebuild?",height = 20)
 gp <- ggroup(container=xw)
 
 cb <- gcombobox(flavors, editable=TRUE, container=gp, handler=f)
+enabled(cb)=FALSE
 addHandlerDestroy(xw, handler = function(h,...) {
   .GlobalEnv$destroyed=.GlobalEnv$flagg
   .GlobalEnv$avail=TRUE
@@ -19,7 +20,9 @@ addHandlerDestroy(xw, handler = function(h,...) {
 cntt=7
 delay500()
 shell('nircmd win activate title "Delete sfname and rebuild?"')
+enabled(cb)=TRUE
 focus(cb)=TRUE
+enabled(cb)=TRUE
 while(!avail)
 {
   svalue(xw)=paste("Delete sfname and rebuild?",cntt)
