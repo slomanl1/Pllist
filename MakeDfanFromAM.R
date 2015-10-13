@@ -241,10 +241,8 @@ dflt = ''
 if(file.exists('dfltsave.RData'))
   load('dfltsave.RData')
 Passt=FALSE
-jerking=FALSE
-while(!jerking)
+while(TRUE)
 {
-  
   if(!Passt){
     linerw=gwindow(height = 20, title=lnttl)
     obj <- gedit(text=dflt,container=linerw)
