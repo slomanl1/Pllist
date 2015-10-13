@@ -203,7 +203,7 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
     dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
   close(pb)
 }
-if(nexistpas){
+if(nexistpas){ # sfname does not exist
   nexistpas = FALSE
   if(file.exists('dfan.RData')){
     dfanNew=dfan
@@ -216,7 +216,6 @@ if(nexistpas){
   dfg[!is.na(dfg$Comment.y),'Comment.x']=dfg$Comment.y[!is.na(dfg$Comment.y)]
   dfan=dfg[,c("filename", "Title", "Comment.x", "SubTitle", "DMComment")]
   names(dfan)=names(dfanNew)
-  #dfan=dfan[file.exists(dfan[,1]),]
   dfan[which(nchar(trim(dfan$Title))==0),'Title']=NA
   dfan[which(nchar(trim(dfan$DMComment))==0),'DMComment']=NA
   for(cll in 1:ncol(dfan))
