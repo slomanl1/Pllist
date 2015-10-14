@@ -106,9 +106,10 @@ if (file.exists('D:/PNMTALL')) {
 if (len(fmissing) > 0) {
   for (i in 1:len(fmissing)) {
     cmdd = "shell('getm D: >> allmetadata.txt',translate=TRUE)"
-    fpp = normalizePath(file.path(substr(fmissing[i],1,2),
-                                   substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash='/')
-
+    fpp1 = normalizePath(file.path(substr(fmissing[i],1,2),
+                                   substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])))
+    fpp=gsub('\\','/',fpp1,fixed=TRUE)
+    
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
     suppressWarnings(eval(parse(text = cmdy)))
     cmdx = sub('D:',paste('"',fpp,'"',sep=''),cmdd,fixed=TRUE)
@@ -220,15 +221,11 @@ if(nexistpas){ # sfname does not exist
   for(cll in 1:ncol(dfan))
     dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
   
-  dfan$filename = normalizePath(dfan$filename)
-  dfanNew$filename=normalizePath(dfanNew$filename)
-  dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
   save(dfan,dfg,file='dfan.Rdata')
   print('Dfan.RData written')
 }else{
   if(!exists('dfan')){
     load('dfan.RData')
-    dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
     dfanNew=dfan
   }
 }
@@ -272,9 +269,8 @@ while(TRUE)
   }else
     Passt=FALSE
   ################ REBUILD an from dfan ################
-  if(!exists('dfanNew')){
+  if(!exists('dfanNew'))
     dfanNew=dfan
-  }
   dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
   an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
            ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
@@ -315,16 +311,13 @@ while(TRUE)
       avail=FALSE
       next
     }
-#    pnoln=dfan[idxs,'filename'] # how many match criteria?
-    fnoln1=anttl[idxs] # how many match criteria?
-    fnoln=substr(fnoln1,1,regexpr('.',fnoln1,fixed=TRUE)+3)
-    pnoln=dfan[dfan$filename %in% fnoln,'filename']
+    pnoln=dfan[idxs,'filename'] # how many match criteria?
     fns = NULL  
   }else
     break
-
+  
   gdfopen=FALSE
-  gdframe = get_list_content(pnoln,an[idxs][fnoln %in% pnoln])
+  gdframe = get_list_content(pnoln,an[idxs])
   unsorted=TRUE
   fnames=gdframe[order(gdframe$Date,decreasing = unsorted),]
   fnames$comments=trim(fnames$comments)
@@ -366,10 +359,9 @@ while(TRUE)
     if(file.ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
       gmessage('Cannot write metadata to wmv or flv files')
     }else{
-      fnc=normalizePath(dfan[dfix,'filename'],winslash = '/')
-      print(paste('Updating Metadata in',fnc))
+      print(paste('Updating Metadata in',dfan[dfix,'filename']))
       cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
-                 dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
+                 dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',dfan[dfix,'filename'],"')",sep='')
       writeLines(cmdd,'Jester.R') 
       print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
       print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
@@ -383,7 +375,6 @@ while(TRUE)
       }else
         print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
-    dfan$filename = normalizePath(dfan$filename)
     save(dfan,file='Dfan.RData')
     print('Dfan.Rdata written')
     next #rebuild an from updated dfan
@@ -393,7 +384,6 @@ while(TRUE)
     extras=paste("========",ofn) # remove old metadata associated with the old file
     procExtras()
     deleted=FALSE
-    dfan$filename = normalizePath(dfan$filename)
     save(dfan,file='Dfan.RData')
     print('Dfan.Rdata written')
   }
