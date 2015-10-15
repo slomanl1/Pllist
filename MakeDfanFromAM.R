@@ -220,8 +220,8 @@ if(nexistpas){ # sfname does not exist
   for(cll in 1:ncol(dfan))
     dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
   
-  dfan$filename = normalizePath(dfan$filename)
-  dfanNew$filename=normalizePath(dfanNew$filename)
+  dfan$filename = normalizePath(dfan$filename,winslash = '/')
+  dfanNew$filename=normalizePath(dfanNew$filename,winslash = '/')
   dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
   save(dfan,dfg,file='dfan.Rdata')
   print('Dfan.RData written')
@@ -353,7 +353,7 @@ while(TRUE)
         }
       }
     }
-    dfan[dfix,1:4]=fwind[,1:4]
+    dfan[dfix,1:4]=trim(fwind[,1:4])
     print('DFAN CHANGED') # debug only may not need extra print here
     if(nchar(trim(dfan[dfix,'Comment']))==0){
       dfan[dfix,'Comment']=NA
@@ -380,7 +380,7 @@ while(TRUE)
       }else
         print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
-    dfan$filename = normalizePath(dfan$filename)
+    dfan$filename = normalizePath(dfan$filename,winslash = '/')
     save(dfan,file='Dfan.RData')
     print('Dfan.Rdata written')
     next #rebuild an from updated dfan
@@ -390,7 +390,7 @@ while(TRUE)
     extras=paste("========",ofn) # remove old metadata associated with the old file
     procExtras()
     deleted=FALSE
-    dfan$filename = normalizePath(dfan$filename)
+    dfan$filename = normalizePath(dfan$filename,winslash = '/')
     save(dfan,file='Dfan.RData')
     print('Dfan.Rdata written')
   }
