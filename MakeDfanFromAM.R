@@ -304,7 +304,7 @@ while(TRUE)
     anttl=paste(dfanx$filename,an)
     anttlu=toupper(anttl)
     pnoln=NA
-    allc=NA
+    allc=NULL
     
     for (i in 1:len(srct))
       allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
@@ -315,16 +315,13 @@ while(TRUE)
       avail=FALSE
       next
     }
-#    pnoln=dfan[idxs,'filename'] # how many match criteria?
-    fnoln1=anttl[idxs] # how many match criteria?
-    fnoln=substr(fnoln1,1,regexpr('.',fnoln1,fixed=TRUE)+3)
-    pnoln=dfan[dfan$filename %in% fnoln,'filename']
+    pnoln=dfanx[idxs,]$filename
     fns = NULL  
   }else
     break
 
   gdfopen=FALSE
-  gdframe = get_list_content(pnoln,an[idxs][fnoln %in% pnoln])
+  gdframe = get_list_content(pnoln,an[idxs])
   unsorted=TRUE
   fnames=gdframe[order(gdframe$Date,decreasing = unsorted),]
   fnames$comments=trim(fnames$comments)
