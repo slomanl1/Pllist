@@ -101,8 +101,9 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
-    print(svalue(tab))
-    cmdd=paste('shell("exx.bat',svalue(tab),'",mustWork=NA,translate=TRUE)')
+    svt=normalizePath(svalue(tab),winslash = '/')
+    print(svt)
+    cmdd=paste('shell("exx.bat',svt,'",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
   }
