@@ -148,5 +148,3 @@ if (!.GlobalEnv$tpexist) {
 }else
   visible(w)=TRUE
 
-#exiftool BSBMp4Tester.mp4 -Subtitle="asdasd"
-#exiftool BSBMp4Tester.mp4 -Title="askndppp"
