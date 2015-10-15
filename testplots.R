@@ -109,6 +109,7 @@ if (!.GlobalEnv$tpexist) {
   )
   
   wm <- gwindow("Metadata",width=400)
+  visible(wm) <- FALSE
   gpm<- ggroup(horizontal=FALSE, container=wm)
   tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
                  handler = NULL)
@@ -122,17 +123,18 @@ if (!.GlobalEnv$tpexist) {
           dispose(w)
         .GlobalEnv$avail = TRUE})
   gbutton("dismiss", container=bgm, handler = function(h,...) {visible(wm) <- FALSE;    if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
-  visible(wm) <- FALSE
-  
+
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
-    print(svalue(tab))
-    cmdd=paste('shell("exiftool.exe',svalue(tab),' >meta.txt",mustWork=NA,translate=TRUE)')
+    svt=normalizePath(svalue(tab),winslash = '/')
+    print(svt)
+    cmdd=paste('shell("exiftool.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
     .GlobalEnv$meta=readLines('meta.txt')
-    tabm[,]=meta
     visible(wm) <- TRUE
+    tabm[,]=meta
+
   }
   )
   
