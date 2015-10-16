@@ -96,8 +96,7 @@ if (file.exists('D:/PNMTALL')) {
       }
       ttl = which(substr(am,1,1) == '=')
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
-      missing1 = unique(c(dmissing,xmissing))
-      fmissing = suppressWarnings(normalizePath(missing1, winslash = "/"))
+      fmissing = suppressWarnings(normalizePath(xmissing, winslash = "/"))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
     }
@@ -107,8 +106,8 @@ if (len(fmissing) > 0) {
   for (i in 1:len(fmissing)) {
     cmdd = "shell('getm D: >> allmetadata.txt',translate=TRUE)"
     fpp = normalizePath(file.path(substr(fmissing[i],1,2),
-                                   substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash='/')
-
+                                  substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash='/')
+    
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
     suppressWarnings(eval(parse(text = cmdy)))
     cmdx = sub('D:',paste('"',fpp,'"',sep=''),cmdd,fixed=TRUE)
@@ -117,10 +116,10 @@ if (len(fmissing) > 0) {
   }
   am1 = readLines('allmetadata.txt')
   am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
-  am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
+  am=trim(am[!is.na(am) & nchar(am)>0] ) # clean up na and empty metadata)
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
   print(paste('missing dups=',sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)))
-  extras=am[ttl][duplicated(am[ttl])]
+  extras=c(extras,am[ttl][duplicated(am[ttl])])
 }
 ###########################################
 procExtras=function() {
@@ -155,7 +154,7 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
   am1 = readLines('allmetadata.txt')
   am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
-  am=am[!is.na(am) & nchar(am)>0] # clean up na and empty metadata
+  am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
   ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)
   if(ducc){
@@ -249,6 +248,24 @@ while(TRUE)
   if(!Passt){
     linerw=gwindow(height = 20, title=lnttl)
     obj <- gedit(text=dflt,container=linerw)
+    
+    ANDButton=gbutton("AND", container = linerw, handler = function(h,...) {
+      font(ANDButton) <- c(color="red" , style="bold")
+      font(ORButton)  <- c(color="blue", style="bold")
+      .GlobalEnv$ANDflag = TRUE
+    }
+    )
+    font(ANDButton) <- c(color="red" , style="bold") # initial RED to indicate 'AND' condition
+    .GlobalEnv$ANDflag = TRUE
+    
+    ORButton=gbutton("OR", container = linerw, handler = function(h,...) {
+      font(ANDButton) <- c(color="blue" , style="bold") 
+      font(ORButton)  <- c(color="red", style="bold")
+      .GlobalEnv$ANDflag = FALSE
+    }
+    )
+    font(ORButton) <- c(color="blue", style="bold") # initial    
+    
     shell('nircmd win activate title "Enter Search Criteria"')
     focus(obj)=TRUE
     addhandlerchanged(obj, handler=function(h,...)
@@ -275,6 +292,7 @@ while(TRUE)
   if(!exists('dfanNew')){
     dfanNew=dfan
   }
+  dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/')
   dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
   an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
            ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
@@ -308,7 +326,12 @@ while(TRUE)
     
     for (i in 1:len(srct))
       allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
-    idxs=as.integer(names(which(table(allc)==len(srct))))
+    
+    if(ANDflag)
+      idxs=as.integer(names(which(table(allc)==len(srct)))) # 'AND' condition
+    else
+      idxs=as.integer(names(which(table(allc)>0))) # 'OR' condition
+    
     if(len(idxs)==0)
     {
       print('Non found')
@@ -319,7 +342,7 @@ while(TRUE)
     fns = NULL  
   }else
     break
-
+  
   gdfopen=FALSE
   gdframe = get_list_content(pnoln,an[idxs])
   unsorted=TRUE
@@ -335,11 +358,14 @@ while(TRUE)
       enabled(mbutton)=(len(svalue(tab))!=0)
     }
   }
+
   if(changed | deleted){
     dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     ofn=dfan[dfix,'filename']
     dispose(w)
   }
+
+  renamed=FALSE
   if(changed){
     changed=FALSE
     print(paste("dfix=",dfix,fnames[idx,'fnx']))
@@ -350,11 +376,12 @@ while(TRUE)
           print(paste("file rename FAILED from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
         }else{
           print(paste("file rename SUCCESSFUL from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
+          renamed=TRUE
         }
       }
     }
-    dfan[dfix,1:4]=trim(fwind[,1:4])
-    print('DFAN CHANGED') # debug only may not need extra print here
+    dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
+    print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
     if(nchar(trim(dfan[dfix,'Comment']))==0){
       dfan[dfix,'Comment']=NA
     }else{
@@ -375,12 +402,19 @@ while(TRUE)
       ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
       if(file.exists(ttllorig)){
         unlink(ttllorig)
-        extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
-        procExtras()
+#       if(renamed){
+#         extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
+#         procExtras()
+#        }
       }else
         print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
     dfan$filename = normalizePath(dfan$filename,winslash = '/')
+    if(renamed){
+      dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
+      extras=paste("========",ofn) # remove old metadata associated with the old file
+      procExtras()
+    }
     save(dfan,file='Dfan.RData')
     print('Dfan.Rdata written')
     next #rebuild an from updated dfan
