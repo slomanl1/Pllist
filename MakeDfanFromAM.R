@@ -293,6 +293,7 @@ while(TRUE)
     dfanNew=dfan
   }
   dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/')
+  dfan$filename = normalizePath(dfan$filename,winslash = '/')
   dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
   an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
            ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
