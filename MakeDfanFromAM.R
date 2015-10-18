@@ -28,6 +28,15 @@ delay500=function(){
       break
   }
 }
+nmp=function(pth,wsh='/') {
+  for(ptth in 1:len(pth)){
+    if(file.exists(pth[ptth])){
+      return(normalizePath(pth[ptth],wsh))
+    }else{
+      return(pth[ptth])
+    }
+  }
+}
 
 extras=NULL
 fmissing=NULL
@@ -95,9 +104,9 @@ if (file.exists('D:/PNMTALL')) {
         dmissing = zz[!dto %in% dts] # add records with new date to dmissing
       }
       ttl = which(substr(am,1,1) == '=')
-      xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
-      fmissing = suppressWarnings(normalizePath(xmissing, winslash = "/"))
-      extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
+      xmissing = zz[!suppressWarnings(nmp(zz)) %in% suppressWarnings(nmp(substr(am[ttl],10,1000)))]
+      fmissing = suppressWarnings(nmp(xmissing))
+      extras = am[ttl][!suppressWarnings(nmp(substr(am[ttl],10,1000))) %in% suppressWarnings(nmp(zz))]
       dts = dto # replace old dates
     }
   } 
@@ -105,8 +114,8 @@ if (file.exists('D:/PNMTALL')) {
 if (len(fmissing) > 0) {
   for (i in 1:len(fmissing)) {
     cmdd = "shell('getm D: >> allmetadata.txt',translate=TRUE)"
-    fpp = normalizePath(file.path(substr(fmissing[i],1,2),
-                                  substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash='/')
+    fpp = nmp(file.path(substr(fmissing[i],1,2),
+                        substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])))
     
     cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
     suppressWarnings(eval(parse(text = cmdy)))
@@ -114,11 +123,12 @@ if (len(fmissing) > 0) {
     suppressWarnings(eval(parse(text = cmdx)))
     print(paste('Added   ',fmissing[i],'to allmetadata'))
   }
+  amo=am
   am1 = readLines('allmetadata.txt')
   am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
   am=trim(am[!is.na(am) & nchar(am)>0] ) # clean up na and empty metadata)
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
-  print(paste('missing dups=',sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)))
+  print(paste('missing dups=',sum(duplicated(suppressWarnings(nmp(substr(am[ttl],10,1000)))),na.rm = FALSE)))
   extras=c(extras,am[ttl][duplicated(am[ttl])])
 }
 ###########################################
@@ -156,10 +166,15 @@ if(len(extras) | len(fmissing) | !file.exists(sfname)){
   am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
   am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
   ttl = c(which(substr(am,1,1) == '='),len(am)+1)
-  ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)
+  ducc=sum(duplicated(suppressWarnings(nmp(substr(am[ttl],10,1000)))),na.rm = FALSE)
   if(ducc){
     print(paste(ducc,'Duplicates found'))  
     stop('TERMINATED - DUPLICATES FOUND')
+  }
+  if(exists('amo')){
+    adtx=am[!am %in% amo]
+    if(len(adtx))
+      cat(paste('Added',adtx, 'to allmetadata\n'))
   }
   save(am,ttl,dts,file = sfname)
   print('sfname written')
@@ -219,8 +234,8 @@ if(nexistpas){ # sfname does not exist
   for(cll in 1:ncol(dfan))
     dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
   
-  dfan$filename    = suppressWarnings(normalizePath(dfan$filename,winslash = '/'))
-  dfanNew$filename = suppressWarnings(normalizePath(dfanNew$filename,winslash = '/'))
+  dfan$filename    = suppressWarnings(nmp(dfan$filename))
+  dfanNew$filename = suppressWarnings(nmp(dfanNew$filename))
   dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
   save(dfan,dfg,file='dfan.Rdata')
   print('Dfan.RData written')
@@ -281,7 +296,7 @@ while(TRUE)
     liner=NULL
     while(!avail)
     {}
-#    lnttl='Enter Search Criteria'
+    #    lnttl='Enter Search Criteria'
     if(isExtant(obj)){
       liner=svalue(obj)
       dispose(obj)
@@ -296,8 +311,8 @@ while(TRUE)
   if(!exists('dfanNew')){
     dfanNew=dfan
   }
-  dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/')
-  dfan$filename = normalizePath(dfan$filename,winslash = '/')
+  dfanNew$filename = nmp(dfanNew$filename)
+  dfan$filename = nmp(dfan$filename)
   dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
   an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
            ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
@@ -363,13 +378,13 @@ while(TRUE)
       enabled(mbutton)=(len(svalue(tab))!=0)
     }
   }
-
+  
   if(changed | deleted){
     dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     ofn=dfan[dfix,'filename']
     dispose(w)
   }
-
+  
   renamed=FALSE
   if(changed){
     changed=FALSE
@@ -395,7 +410,7 @@ while(TRUE)
     if(file.ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
       gmessage('Cannot write metadata to wmv or flv files')
     }else{
-      fnc=normalizePath(dfan[dfix,'filename'],winslash = '/')
+      fnc=nmp(dfan[dfix,'filename'])
       print(paste('Updating Metadata in',fnc))
       cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                  dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
@@ -407,14 +422,14 @@ while(TRUE)
       ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
       if(file.exists(ttllorig)){
         unlink(ttllorig)
-#       if(renamed){
-#         extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
-#         procExtras()
-#        }
+        #       if(renamed){
+        #         extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
+        #         procExtras()
+        #        }
       }else
         print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
-    dfan$filename = normalizePath(dfan$filename,winslash = '/')
+    dfan$filename = nmp(dfan$filename)
     if(renamed){
       dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
       extras=paste("========",ofn) # remove old metadata associated with the old file
@@ -429,7 +444,7 @@ while(TRUE)
     extras=paste("========",ofn) # remove old metadata associated with the old file
     procExtras()
     deleted=FALSE
-    dfan$filename = normalizePath(dfan$filename,winslash = '/')
+    dfan$filename = nmp(dfan$filename)
     save(dfan,file='Dfan.RData')
     print('Dfan.Rdata written')
   }
