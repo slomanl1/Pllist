@@ -219,8 +219,8 @@ if(nexistpas){ # sfname does not exist
   for(cll in 1:ncol(dfan))
     dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
   
-  dfan$filename = normalizePath(dfan$filename,winslash = '/')
-  dfanNew$filename=normalizePath(dfanNew$filename,winslash = '/')
+  dfan$filename    = suppressWarnings(normalizePath(dfan$filename,winslash = '/'))
+  dfanNew$filename = suppressWarnings(normalizePath(dfanNew$filename,winslash = '/'))
   dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
   save(dfan,dfg,file='dfan.Rdata')
   print('Dfan.RData written')
@@ -238,7 +238,7 @@ tpexist=FALSE
 avail=FALSE
 changed=FALSE
 
-lnttl='Enter Search Criteria'
+lnttl='Enter Search Criteria, Close to Exit'
 dflt = ''
 if(file.exists('dfltsave.RData'))
   load('dfltsave.RData')
@@ -264,8 +264,12 @@ while(TRUE)
       .GlobalEnv$ANDflag = FALSE
     }
     )
-    font(ORButton) <- c(color="blue", style="bold") # initial    
+    font(ORButton) <- c(color="blue", style="bold") # initial 
     
+    DONEButton=gbutton("DONE", container = linerw, handler = function(h,...) {
+      .GlobalEnv$avail = TRUE
+    }
+    )    
     shell('nircmd win activate title "Enter Search Criteria"')
     focus(obj)=TRUE
     addhandlerchanged(obj, handler=function(h,...)
@@ -277,7 +281,7 @@ while(TRUE)
     liner=NULL
     while(!avail)
     {}
-    lnttl='Enter Search Criteria'
+#    lnttl='Enter Search Criteria'
     if(isExtant(obj)){
       liner=svalue(obj)
       dispose(obj)
