@@ -1,34 +1,33 @@
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 source("~/Local.R")
 library(tools)
 setwd('~/')
-rm(list=ls())
-shell('dir "Z:\\My Videos\\RPDNClips" /od/b > ddd.txt')
+shell('dir "C:\\My Videos\\RPDNClips" /od/b > ddd.txt')
 lns=readLines('ddd.txt')
 unlink('ddd.txt')
-setwd(paste(pldrive,'My Playlists',sep=""))
-wpls=dir()
-setwd('Z:/My Videos/RPDNClips')
-fnfo=file.info(lns)
-fnf=fnfo[order(fnfo$mtime),]
-namer=data.frame(oldnm=rownames(fnf),newnm=paste(1:nrow(fnf),'.wmv',sep=''))
+setwd('C:/My Videos/RPDNClips')
+fnfn=file.info(lns)
+fnfn$matcher=paste(fnfn$mtime,fnfn$size)
+fnfn$fname=rownames(fnfn)
+load('~/fnfoold.RData') # old fnfo
+fnfo$fname=rownames(fnfo)
+fnfo$matcher=paste(fnfo$mtime,fnfo$size)
+mtch=merge(fnfn,fnfo,by='matcher')
+mth=mtch[,c('fname.y','fname.x')]
+names(mth)=c('oldfn','newfn')
+load('~/xxxxold.RData')
+mgg=merge(mth,data.frame(oldfn=lsst,xx),by='oldfn')
+save(mth,mgg,file='mth.RData')
+lsst=mgg$newfn
+xx=mgg$xx
+missing=lns[which(!lns %in% lsst)]
+save(lsst,removers,wpls,xx,missing,file='~/xxxx.RData')
 
-setwd(paste(pldrive,'My Playlists',sep=""))
-
-ttx=NA
-for(i in 1:length(wpls))
-{
-  print(i)
-  ttx[i]=length(readLines(wpls[i]))
-  
-}
-
-dff=data.frame(matrix(NA,max(ttx),length(wpls)))
-colnames(dff)=wpls
-for(i in 1:length(wpls))
-{
-  print(i)
-  tt=readLines(wpls[i])
-  dff[,i]=c(tt,rep(NA,max(ttx)-length(tt)))
-}
-save(namer,wpls,dff,file='~/namer.RData')
+fmfo=file.info(missing)
+fmfo$fn=rownames(fmfo)
+fnfo$fn=rownames(fnfo)
+sz=fmfo[fmfo$size %in% fnfo$size,c(1,4,5)]
+mgm=merge(fmfo,fnfo,by='size')
+mgx=mgm[,c('fn.x','fn.y','size','mtime.x','mtime.y','ctime.x','ctime.y')]
 
