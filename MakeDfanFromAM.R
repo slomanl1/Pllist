@@ -16,9 +16,6 @@ scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.info(fnx,extra_cols=FALSE)$ctime),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 
-len=function(x) length(x)
-fi=function(x,y) y[grepl(x,y,fixed=TRUE)] # find within function
-file.ext=function(x) substr(x,nchar(x)-2,nchar(x))
 delay500=function(){
   x=1000000
   while(TRUE)
@@ -250,8 +247,8 @@ while(TRUE)
     obj <- gedit(text=dflt,container=linerw)
     
     ANDButton=gbutton("AND", container = linerw, handler = function(h,...) {
-      font(ANDButton) <- c(color="red" , style="bold")
-      font(ORButton)  <- c(color="blue", style="bold")
+      font(ANDButton) <- c(color="red" , style="italic")
+      font(ORButton)  <- c(color="blue", style="normal")
       .GlobalEnv$ANDflag = TRUE
     }
     )
@@ -259,17 +256,22 @@ while(TRUE)
     .GlobalEnv$ANDflag = TRUE
     
     ORButton=gbutton("OR", container = linerw, handler = function(h,...) {
-      font(ANDButton) <- c(color="blue" , style="bold") 
-      font(ORButton)  <- c(color="red", style="bold")
+      font(ANDButton) <- c(color="blue" , style="normal") 
+      font(ORButton)  <- c(color="red", style="italic")
       .GlobalEnv$ANDflag = FALSE
     }
     )
     font(ORButton) <- c(color="blue", style="bold") # initial 
     
-    DONEButton=gbutton("DONE", container = linerw, handler = function(h,...) {
+    DONEButton=gbutton("-GO-", container = linerw, handler = function(h,...) {
       .GlobalEnv$avail = TRUE
     }
-    )    
+    ) 
+    EXITButton=gbutton("-EXIT-", container = linerw, handler = function(h,...) {
+      dispose(linerw)
+    }
+    ) 
+    font(EXITButton) <- c(color="red", style="bold") # initial 
     shell('nircmd win activate title "Enter Search Criteria"')
     focus(obj)=TRUE
     addhandlerchanged(obj, handler=function(h,...)
@@ -392,7 +394,7 @@ while(TRUE)
     }else{
       dfan[dfix,'DMComment']=dfan[dfix,'Comment']
     }
-    if(file.ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
+    if(file_ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
       gmessage('Cannot write metadata to wmv or flv files')
     }else{
       fnc=normalizePath(dfan[dfix,'filename'],winslash = '/')
