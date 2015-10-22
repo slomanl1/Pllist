@@ -5,7 +5,6 @@ require(tcltk)
 source("~/Local.R")
 
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
-  
   source('~/Pllist/pllist.git/combiner.R')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'),dir(pattern='*.flv'))
@@ -24,10 +23,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   }
   
   for(i in 1:length(lss)){
-    if (length(grep('mpg',lss[i])>0))
-      lss[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg',lss[i])[1]+2)
-    else
-      lss[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('wmv',lss[i])[1]+2)
+    lss[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|wmv',lss[i])[1]+2)
   }
   
   lnst = unique(allall)
