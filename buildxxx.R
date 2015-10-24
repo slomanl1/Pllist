@@ -30,10 +30,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   lss = c(lss,lnst)
   lnsw = c(lnsw,array(length(wpls)+1,length(lnst)))
   lnswp = 2^(lnsw-1)
-  filtt = grep('wmv',lss)
-  filtc = grep('mpg',lss)
-  filtd = grep('flv',lss)
-  lsst = unique(c(lss[filtt],lss[filtc],lss[filtd]))
+  lsst=unique(subset(lss,grepl('wmv|mpg|flv',lss)))
   nclsst=nchar(lsst)
   print('Phase 1 done')
   xx=array(0,dim=length(lsst))
@@ -55,7 +52,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     }
   }
   setWinProgressBar(pb, i, title = paste('R progress bar','Finalizing...', label = NULL))
-  xx <- bitOr(xx,2^(length(wpls)+1))
+  xx <- bitOr(xx,2^(length(wpls)-1)) #set bit 21 of 1-21 "0x100000"
   setwd("~/")
   save(xx,lsst,wpls,file='xxxx.RData')
   print('MAKEUNIQUE')
