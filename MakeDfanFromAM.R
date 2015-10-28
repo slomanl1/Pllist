@@ -454,5 +454,10 @@ while(TRUE)
   }
 }
 
-
-
+######################## close all windows (ignore errors) ##################
+xx=ls()
+classes=sapply(1:length(xx),function(x) eval(parse(text=paste('class(',xx,')')[x])))
+wdws1=xx[which(classes=='gWindow')]
+wdws=wdws1[sapply(1:length(wdws1),function(x) eval(parse(text=paste('isExtant(',wdws1,')')[x])))]
+if(len(wdws))
+  classes=sapply(1:length(wdws),function(x) eval(parse(text=paste('dispose(',wdws,')')[x])))
