@@ -1,7 +1,7 @@
 idxs=NULL
 for(x in 1:nrow(fnames)) 
   idxs=c(idxs,which(grepl(fnames[x,'fnx'],an[ttl],fixed=TRUE)))
-print(.GlobalEnv$changed)
+
 if (!.GlobalEnv$tpexist) {
   avail = FALSE
   renamed = FALSE
@@ -31,7 +31,7 @@ if (!.GlobalEnv$tpexist) {
   }) 
   
   heit=min(100+(nrow(fnames)*30),750)
-  w <- gwindow(paste(liner,"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
+  w <- gwindow(paste(liner,nrow(fnames),"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
@@ -51,7 +51,10 @@ if (!.GlobalEnv$tpexist) {
         print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
         nfn=NULL  # supply select idx item in editing window fwinf
-        fwind[,] = dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),1:4]
+        tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+        if(!is.na(tmpdf$DMComment))
+          tmpdf$Comment=tmpdf$DMComment
+        fwind[,] = tmpdf[,1:4]
         visible(fw) <- TRUE
         enabled(fw) <- TRUE
         visible(w) <- FALSE
@@ -67,6 +70,8 @@ if (!.GlobalEnv$tpexist) {
       if(isExtant(fwind))
         dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
+      if(isExtant(wm))
+        visible(wm) <- FALSE
     }
   )
   print('bghello')
@@ -78,25 +83,62 @@ if (!.GlobalEnv$tpexist) {
     answ=gconfirm('Are you Sure?')
     if(answ){
       print(paste('Deleting',svalue(tab)))
+      .GlobalEnv$idx=which(grepl(as.character(svalue(tab)),fnames$fnx,fixed=TRUE))
+      print(paste('idx=',.GlobalEnv$idx))
       if(unlink(svalue(tab)))
         print('delete FAILED')
       else{
-        .GlobalEnv$changed=TRUE
+        .GlobalEnv$deleted=TRUE
         .GlobalEnv$avail=TRUE
         .GlobalEnv$Passt=TRUE
         visible(w) <- FALSE
         tpexist=FALSE
+        writeLines(svalue(tab),'file.tmp')
+        file.append('deletelog.txt','file.tmp') # update delete log
+        unlink('file.tmp')
       }
     }
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
-    print(svalue(tab))
-    cmdd=paste('shell("exx.bat',svalue(tab),'",mustWork=NA,translate=TRUE)')
+    svt=normalizePath(svalue(tab),winslash = '/')
+    print(svt)
+    cmdd=paste('shell("exx.bat',svt,'",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
   }
   )
+  
+  wm <- gwindow("Metadata",width=400)
+  visible(wm) <- FALSE
+  gpm<- ggroup(horizontal=FALSE, container=wm)
+  tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
+                 handler = NULL)
+  bgm <- ggroup(container=gpm)
+  addSpring(bgm)
+  addHandlerDestroy(
+    tabm, handler = function(h,...) {
+      print('destroyed tabm');
+      if(exists('w')) 
+        if(isExtant(w)) 
+          dispose(w)
+        .GlobalEnv$avail = TRUE})
+  gbutton("dismiss", container=bgm, handler = function(h,...) {visible(wm) <- FALSE;    if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
+
+  mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
+    enabled(w) <- FALSE
+    svt=normalizePath(svalue(tab),winslash = '/')
+    print(svt)
+    cmdd=paste('shell("exiftool.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
+    print(cmdd)
+    eval(parse(text=cmdd))
+    .GlobalEnv$meta=readLines('meta.txt')
+    visible(wm) <- TRUE
+    tabm[,]=meta
+
+  }
+  )
+  
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
     .GlobalEnv$avail = TRUE
@@ -109,5 +151,3 @@ if (!.GlobalEnv$tpexist) {
 }else
   visible(w)=TRUE
 
-#exiftool BSBMp4Tester.mp4 -Subtitle="asdasd"
-#exiftool BSBMp4Tester.mp4 -Title="askndppp"

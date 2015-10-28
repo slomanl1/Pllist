@@ -13,3 +13,4 @@ vignettes/*.html
 vignettes/*.pdf
 Pllist.git.Rproj
 /jester.R
+.Rproj.user

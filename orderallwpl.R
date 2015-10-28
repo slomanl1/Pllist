@@ -1,8 +1,9 @@
-rm(list=ls())
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 load('~/xxxx.RData')
 load('~/fnfo.RData')
 source('~/Local.R') #get drive
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 rn=rownames(fnfo)
 addfnfo=file.info(lsst[(!lsst %in% rn)])
 fnfo=rbind(fnfo,addfnfo)
@@ -17,20 +18,9 @@ for (j in 1:length(fns)) {
   lss=fnn[strt:(length(fnn)-3)]
   lssx=''
   for(i in 1:length(lss)){
-    if (length(grep('mpg',lss[i])>0)) {
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('mpg',lss[i])[1]+2)
-      }
-    if (length(grep('wmv',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('wmv',lss[i])[1]+2)
+      lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|mp4|flv|asf|wmv',lss[i])[1]+2)
     }
-    if (length(grep('asf',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('asf',lss[i])[1]+2)
-    }
-    if (length(grep('flv',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('flv',lss[i])[1]+2)
-    }
-  }
-  setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
+  setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   lssy=lssx[!duplicated(lssx) & file.exists(lssx)]
   lss1=lss[!duplicated(lssx) & file.exists(lssx)]
   fnnh=fnn[1:(strt-1)] #wpl header
@@ -42,8 +32,7 @@ for (j in 1:length(fns)) {
   lssg=data.frame(fname=lssy,lss1)
   lssj=merge(lssg,fnfoz,by='fname')
   lssz=as.character(lssj[order(lssj$mtime),'lss1'])
-  fnno1=c(fnnh,lssz,fnnt)
-  fnno=sub('Y:','C:',fnno1)
+  fnno=c(fnnh,lssz,fnnt)
   setwd(paste(pldrive,'My Playlists',sep=""))
   writeLines(fnno,fns[j])
 }
