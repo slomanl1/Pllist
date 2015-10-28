@@ -15,7 +15,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('C:\\RealPlayerDownloads')
   fns1=dir(pattern='*.mp4')
   fns1=fns1[!grepl('.mp4.',fns1)]
-  exts=c('blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pna.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4')
+  exts=c('blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pna.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4')
   odr=sample(last:last+length(fns1),length(fns1),replace=T) 
   if(length(odr)!=0){
     load('~/fnfo.RData')
@@ -63,12 +63,12 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
     
     setwd(paste(pldrive,'My Playlists',sep=""))
-    lss = unique(readLines('wa.wpl'))
-    js="            <media src=\"Y:\\My Videos\\RPDNClips\\%s\"/>"
+    lss = unique(readLines('wa1.wpl'))
+    js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
     adds=sprintf(js,fn)
     lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
     m3uname <- paste(pldrive,'My Playlists/',sep='')
-    write(lsx1,paste(m3uname,'wa.wpl',sep=''))
+    write(lsx1,paste(m3uname,'wa1.wpl',sep=''))
     
   }else print('No new files found')
 } else print('CANNOT OPEN FLK')
