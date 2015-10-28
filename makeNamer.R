@@ -22,7 +22,7 @@ save(mth,mgg,file='mth.RData')
 lsst=mgg$newfn
 xx=mgg$xx
 missing=lns[which(!lns %in% lsst)]
-save(lsst,removers,wpls,xx,missing,file='~/xxxx.RData')
+save(lsst,wpls,xx,missing,file='~/xxxx.RData')
 
 fmfo=file.info(missing)
 fmfo$fn=rownames(fmfo)

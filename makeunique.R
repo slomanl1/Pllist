@@ -40,5 +40,5 @@ for (i in 1:length(fns)) {
 }
 
 setwd("~/")
-save(xx,lsst,wpls,removers,file='xxxx.RData')
+save(xx,lsst,wpls,file='xxxx.RData')
 removers
