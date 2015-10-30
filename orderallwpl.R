@@ -1,12 +1,16 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-load('~/xxxx.RData')
 load('~/fnfo.RData')
 source('~/Local.R') #get drive
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 rn=rownames(fnfo)
+lsst=fnfo$lsst
 addfnfo=file.info(lsst[(!lsst %in% rn)])
-fnfo=rbind(fnfo,addfnfo)
+if(nrow(addfnfo)>0){
+  addfnfo$lsst=NA
+  addfnfo$xx=NA
+  fnfo=rbind(fnfo,addfnfo)
+}
 save(fnfo,file='~/fnfo.RData')
 #flist=lsst
 setwd(paste(pldrive,'My Playlists',sep=""))
@@ -18,8 +22,8 @@ for (j in 1:length(fns)) {
   lss=fnn[strt:(length(fnn)-3)]
   lssx=''
   for(i in 1:length(lss)){
-      lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|mp4|flv|asf|wmv',lss[i])[1]+2)
-    }
+    lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|mp4|flv|asf|wmv',lss[i])[1]+2)
+  }
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   lssy=lssx[!duplicated(lssx) & file.exists(lssx)]
   lss1=lss[!duplicated(lssx) & file.exists(lssx)]

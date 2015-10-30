@@ -9,7 +9,6 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   lns=readLines('ddd.txt')
   unlink('ddd.txt')
   bn=gsub('[a-z|A-Z]','',lns)
-#  last=suppressWarnings(tail(sort(as.numeric(substr(lns,1,(nchar(lns)-4)))),1))
   last=as.integer(tail(bn,1))
   
   setwd('C:\\RealPlayerDownloads')
@@ -58,7 +57,10 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     }
     source("~/Local.R")
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-    fnfo=rbind(fnfo,file.info(fn))
+    addfnfo=file.info(fn)
+    addfnfo$lsst=fn
+    addfnfo$xx=0 # no playlists assgned yet
+    fnfo=rbind(fnfo,addinfo)
     save(fnfo,file='~/fnfo.RData')
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
     

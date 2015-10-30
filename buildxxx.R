@@ -53,8 +53,13 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   }
   setWinProgressBar(pb, i, title = paste('R progress bar','Finalizing...', label = NULL))
   xx <- bitOr(xx,2^(length(wpls)-1)) #set bit 21 of 1-21 "0x100000"
+  setwd('c:/my videos/rpdnclips')
+  fnfo=file.info(lsst)
   setwd("~/")
-  save(xx,lsst,wpls,file='xxxx.RData')
+  #save(xx,lsst,wpls,file='xxxx.RData')
+  fnfo$lsst=lsst
+  fnfo$xx=xx
+  save(fnfo,file='fnfo.RData')
   print('MAKEUNIQUE')
   close(pb)
   source('~/Pllist/pllist.git/makeunique.R')
