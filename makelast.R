@@ -60,7 +60,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo=file.info(fn)
     addfnfo$lsst=fn
     addfnfo$xx=0 # no playlists assgned yet
-    fnfo=rbind(fnfo,addinfo)
+    fnfo=rbind(fnfo,addfnfo)
     save(fnfo,wpls,file='~/fnfo.RData')
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
     
