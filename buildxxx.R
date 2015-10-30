@@ -59,7 +59,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   #save(xx,lsst,wpls,file='xxxx.RData')
   fnfo$lsst=lsst
   fnfo$xx=xx
-  save(fnfo,file='fnfo.RData')
+  save(fnfo,wpls,file='fnfo.RData')
   print('MAKEUNIQUE')
   close(pb)
   source('~/Pllist/pllist.git/makeunique.R')

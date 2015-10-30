@@ -11,7 +11,7 @@ if(nrow(addfnfo)>0){
   addfnfo$xx=NA
   fnfo=rbind(fnfo,addfnfo)
 }
-save(fnfo,file='~/fnfo.RData')
+save(fnfo,wpls,file='~/fnfo.RData')
 #flist=lsst
 setwd(paste(pldrive,'My Playlists',sep=""))
 fns=dir(pattern='*.wpl')
