@@ -56,7 +56,6 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('c:/my videos/rpdnclips')
   fnfo=file.info(lsst)
   setwd("~/")
-  #save(xx,lsst,wpls,file='xxxx.RData')
   fnfo$lsst=lsst
   fnfo$xx=xx
   save(fnfo,wpls,file='fnfo.RData')
