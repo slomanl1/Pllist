@@ -12,12 +12,11 @@ if(nrow(addfnfo)>0){
   fnfo=rbind(fnfo,addfnfo)
 }
 save(fnfo,wpls,file='~/fnfo.RData')
-#flist=lsst
 setwd(paste(pldrive,'My Playlists',sep=""))
-fns=dir(pattern='*.wpl')
-for (j in 1:length(fns)) {
-  print(fns[j])
-  fnn=readLines(fns[j])
+
+for (j in 1:length(wpls)) {
+  print(wpls[j])
+  fnn=readLines(wpls[j])
   strt=grep('media',fnn)[1]
   lss=fnn[strt:(length(fnn)-3)]
   lssx=''
@@ -38,6 +37,6 @@ for (j in 1:length(fns)) {
   lssz=as.character(lssj[order(lssj$mtime),'lss1'])
   fnno=c(fnnh,sub('..\\My','C:\\My',lssz,fixed = TRUE),fnnt)
   setwd(paste(pldrive,'My Playlists',sep=""))
-  writeLines(fnno,fns[j])
+  writeLines(fnno,wpls[j])
 }
 
