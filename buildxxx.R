@@ -10,7 +10,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'),dir(pattern='*.flv'))
   
   setwd(paste(pldrive,'My Playlists',sep=""))
-  wpls = dir(pattern = '*.wpl')
+  wpls = sort(dir(pattern = '*.wpl'))
   
   lss  = ""
   lns  = NA
@@ -64,7 +64,6 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   source('~/Pllist/pllist.git/makeunique.R')
   print('ORDERALL')
   source('~/Pllist/pllist.git/orderallwpl.R')
-  
   
 } else print('CANNOT OPEN FLK')
 
