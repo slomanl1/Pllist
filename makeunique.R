@@ -1,28 +1,27 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-load('~/xxxx.RData')
+load('~/fnfo.RData')
 
 source('~/Local.R') #get drive
 
-flist=lsst
-#rm(xx,lsst,wpls)
+lsst=as.character(fnfo$lsst)
 k=0
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 removers = ""
-for (i in 1:length(flist)) {
-  if (!file.exists(flist[i])) {
+for (i in 1:length(lsst)) {
+  if (!file.exists(lsst[i])) {
     k=k+1
-    removers[k] = flist[i]
-    print(c('removers',flist[i]))
+    removers[k] = lsst[i]
+    print(c('removers',lsst[i]))
   }
 }
 
 setwd(paste(pldrive,'My Playlists',sep=""))
-fns=dir(pattern='*.wpl')
-for (i in 1:length(fns)) {
-  lss=readLines(fns[i])
+
+for (i in 1:length(wpls)) {
+  lss=readLines(wpls[i])
   lns=lss
-  print(fns[i])
+  print(wpls[i])
   dups=lns[duplicated(lns[nchar(lns)>0])]
   if(length(dups)>0)
     print(dups)
@@ -36,9 +35,11 @@ for (i in 1:length(fns)) {
     }
   }
   
-  writeLines(lnsu,fns[i])
+  writeLines(lnsu,wpls[i])
 }
 
 setwd("~/")
-save(xx,lsst,wpls,file='xxxx.RData')
-removers
+fnfo=fnfo[fnfo$lsst %in% lsst,]
+save(fnfo,wpls,file='~/fnfo.RData')
+print(paste('Removed -',removers))
+
