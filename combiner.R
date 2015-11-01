@@ -1,6 +1,5 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-#load('~/xxxx.RData')
 print('Combiner')
 source('~/Local.R') #get drive
 setwd(paste(pldrive,'My Playlists',sep=""))
