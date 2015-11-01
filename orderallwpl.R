@@ -4,7 +4,7 @@ load('~/fnfo.RData')
 source('~/Local.R') #get drive
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 rn=rownames(fnfo)
-lsst=fnfo$lsst
+lsst=as.character(fnfo$lsst)
 addfnfo=file.info(lsst[(!lsst %in% rn)])
 if(nrow(addfnfo)>0){
   addfnfo$lsst=NA
