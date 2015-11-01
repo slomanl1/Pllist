@@ -4,10 +4,10 @@ require(bitops)
 source("~/Local.R")
 
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
-  
   setwd('~/')
-  load('xxxx.RData')
-  lsst=sub('        <media src=\"..\\My Videos\\RPDNClips\\','',lsst,fixed=TRUE)
+  load('fnfo.RData')
+  lsst=sub('        <media src=\"..\\My Videos\\RPDNClips\\','',fnfo$lsst,fixed=TRUE)
+  xx=fnfo$xx
   selectL = select.list(c('AND','OR','NOT'),graphics=TRUE)
   print(selectL)
   if (length(selectL > 0)) { 
