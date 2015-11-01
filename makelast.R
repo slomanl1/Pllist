@@ -56,10 +56,12 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       unlink(fns[i])
     }
     source("~/Local.R")
+    setwd(paste(pldrive,'My Playlists',sep=""))
+    wpls = sort(dir(pattern = '*.wpl'))
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
     addfnfo=file.info(fn)
     addfnfo$lsst=fn
-    addfnfo$xx=0 # no playlists assgned yet
+    addfnfo$xx=2^(length(wpls)-1) # wa1.wpl
     fnfo=rbind(fnfo,addfnfo)
     save(fnfo,wpls,file='~/fnfo.RData')
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
