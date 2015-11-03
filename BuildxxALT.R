@@ -6,6 +6,7 @@ source("~/Local.R")
 
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   source('~/Pllist/pllist.git/combiner.R')
+  print('Combiner Done')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'),dir(pattern='*.flv'))
   
@@ -26,6 +27,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     dx=rbind(dx,data.frame(lss=lss,xx=2^(i-1),wpl=wpls[i],stringsAsFactors = FALSE))
   }
   dxu=dx[nchar(dx$lss)>0,]
+  print('build dx Done')
   dx=dxu[order(as.numeric(gsub('[a-z]','',dxu$lss))),]
   tl1=data.frame(table(dx$lss))
   tl=tl1[order(as.numeric(gsub('[a-z]','',tl1$Var1))),]
@@ -35,6 +37,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     ts[i]=ts[i-1]+tl[i-1,'Freq']
   }
   ts[i+1]=ts[i]
+  print('Build ts Done')
   xo=sapply(1:(nrow(tl)), function(x) dx[ts[x]:(ts[x+1]-1),'xx'])
   xn=sapply(1:(nrow(tl)), function(x) {
     xx=unlist(xo[[x]])
@@ -43,6 +46,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       xy=bitOr(xy,xx[i]) 
     return(xy)
   }) 
+  print('Build xo/xn Done')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   fnfo=file.info(as.character(tl$Var1))
   fnfo$xx=xn
@@ -51,5 +55,6 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   source('~/Pllist/pllist.git/makeunique.R')
   print('ORDERALL')
   source('~/Pllist/pllist.git/orderallwpl.R')
+  print('Build Done')
 }
 
