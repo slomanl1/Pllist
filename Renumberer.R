@@ -2,7 +2,7 @@ scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 require(bitops)
 source("~/Local.R")
-setwd('~/')
+setwd('c:/my videos/rpdnclips')
 load('~/fnfo.RData') # load fnfo, lsst, wpls and xx
 lsst=fnfo$lsst
 bn=gsub('[a-z|A-Z]','',lsst)
@@ -13,11 +13,14 @@ namer$bn=bn
 namer$info=bc
 namer=namer[order(namer$mtime),]
 namer$nfn=1:nrow(namer)
-namer$nfn=gsub('.','_New.',paste(namer$nfn,namer$info,sep=''),fixed=TRUE)
+if(grepl('_New',lsst[1])){
+  namer$nfn=gsub('_New.','.',paste(namer$nfn,namer$info,sep=''),fixed=TRUE)
+}else{
+  namer$nfn=gsub('.','_New.',paste(namer$nfn,namer$info,sep=''),fixed=TRUE)
+}
 lsst=namer$nfn
 answ=gconfirm('RENAME .wpl - Are you Sure?')
 if(answ){
-  setwd('c:/my videos/rpdnclips')
   rnmd=file.rename(as.character(namer$lsst),as.character(namer$nfn))
   if(any(!rnmd))
   {
@@ -34,7 +37,7 @@ if(answ){
     setwd(paste(pldrive,'My NewPlaylists',sep=""))
     wpls = sort(dir(pattern = '*.wpl'))
     save(fnfo,wpls,file='~/fnfo.RData')
-    save(namer,fnfo,fnfo,wpls,file=paste('~/namer',gsub(':','_',Sys.time(),fixed=TRUE),'.RData',sep=''))
+    save(namer,fnfo,wpls,file=paste('~/namer',gsub(':','_',Sys.time(),fixed=TRUE),'.RData',sep=''))
     source('~/pllist/pllist.git/makeWPLS.R')
   }
 }else{
