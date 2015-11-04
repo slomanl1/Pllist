@@ -61,12 +61,7 @@ ms=(lsst[!lsst %in% sls]) # missing
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 rn=rownames(fnfo)
 lsst=as.character(fnfo$lsst)
-addfnfo=file.info(lsst[(!lsst %in% rn)])
-if(nrow(addfnfo)>0){
-  addfnfo$lsst=NA
-  addfnfo$xx=NA
-  fnfo=rbind(fnfo,addfnfo)
-}
+rownames(fnfo)=lsst
 save(fnfo,wpls,file='~/fnfo.RData')
 setwd(paste(pldrive,'My NewPlaylists',sep=""))
 
