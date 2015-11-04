@@ -28,9 +28,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   }
   dxu=dx[nchar(dx$lss)>0,]
   print('build dx Done')
-  dx=dxu[order(as.numeric(gsub('[a-z]','',dxu$lss))),]
+  dx=dxu[order(as.numeric(gsub('[a-z]|_','',dxu$lss,ignore.case = TRUE))),]
   tl1=data.frame(table(dx$lss))
-  tl=tl1[order(as.numeric(gsub('[a-z]','',tl1$Var1))),]
+  tl=tl1[order(as.numeric(gsub('[a-z]|_','',tl1$Var1,ignore.case = TRUE))),]
   ts=1
   for(i in 2:nrow(tl))
   {
