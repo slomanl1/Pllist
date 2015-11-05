@@ -93,7 +93,8 @@ if (file.exists('D:/PNMTALL')) {
       }
       ttl = which(substr(am,1,1) == '=')
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
-      fmissing = suppressWarnings(normalizePath(xmissing, winslash = "/"))
+      fmss = suppressWarnings(normalizePath(xmissing, winslash = "/"))
+      fmissing=subset(fmss,!grepl('_New',fmss))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
     }
@@ -226,7 +227,10 @@ if(nexistpas){ # sfname does not exist
     load('dfan.RData')
     dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
     dfanNew=dfan
-  }
+  }else{
+    save(dfan,file='dfan.Rdata')
+    print('Dfan.RData written') # added to save newly added files to dfan
+    }
 }
 
 
