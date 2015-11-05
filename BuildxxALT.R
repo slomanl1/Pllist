@@ -48,6 +48,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   }) 
   print('Build xo/xn Done')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+  print('Refreshing fnfo')
   fnfo=file.info(as.character(tl$Var1))
   fnfo$xx=xn
   fnfo$lsst=tl$Var1

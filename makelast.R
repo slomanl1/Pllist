@@ -28,8 +28,8 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     for (i in 1:length(fns)){
       cc=''
       for (j in 1:length(exts)){
-        if (grepl(exts[j],fns[i]))
-          cc=substr(exts[j],1,nchar(exts[j])-4)
+        if (grepl(exts[j],fns[i])){
+          cc=substr(exts[j],1,nchar(exts[j])-4)}
       }
       exist=TRUE
       while (exist){
