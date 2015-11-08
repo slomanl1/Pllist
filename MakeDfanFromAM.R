@@ -30,6 +30,7 @@ extras=NULL
 fmissing=NULL
 deleted=FALSE
 nexistpas=FALSE
+fnsave=''
 
 dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
@@ -251,26 +252,28 @@ while(TRUE)
     obj <- gedit(text=dflt,container=linerw)
     
     ANDButton=gbutton("AND", container = linerw, handler = function(h,...) {
-      font(ANDButton) <- c(color="red" , style="italic")
-      font(ORButton)  <- c(color="blue", style="normal")
+#       font(ANDButton) <- c(color="red" , style="italic")
+#       font(ORButton)  <- c(color="blue", style="normal")
       .GlobalEnv$ANDflag = TRUE
+      .GlobalEnv$avail = TRUE
     }
     )
     font(ANDButton) <- c(color="red" , style="bold") # initial RED to indicate 'AND' condition
     .GlobalEnv$ANDflag = TRUE
     
     ORButton=gbutton("OR", container = linerw, handler = function(h,...) {
-      font(ANDButton) <- c(color="blue" , style="normal") 
-      font(ORButton)  <- c(color="red", style="italic")
+#       font(ANDButton) <- c(color="blue" , style="normal") 
+#       font(ORButton)  <- c(color="red", style="italic")
       .GlobalEnv$ANDflag = FALSE
+      .GlobalEnv$avail = TRUE
     }
     )
     font(ORButton) <- c(color="blue", style="bold") # initial 
     
-    DONEButton=gbutton("-GO-", container = linerw, handler = function(h,...) {
-      .GlobalEnv$avail = TRUE
-    }
-    ) 
+#     DONEButton=gbutton("-GO-", container = linerw, handler = function(h,...) {
+#       .GlobalEnv$avail = TRUE
+#     }
+#     ) 
     EXITButton=gbutton("-EXIT-", container = linerw, handler = function(h,...) {
       dispose(linerw)
     }
@@ -359,6 +362,8 @@ while(TRUE)
   unsorted=TRUE
   fnames=gdframe[order(gdframe$Date,decreasing = unsorted),]
   fnames$comments=trim(fnames$comments)
+  fnames$sell=''
+  fnames[fnames$fnx==fnsave,'sell']='++++'
   source('~/pllist/pllist.git/testplots.R')
   while(!avail)
   {
@@ -440,6 +445,7 @@ while(TRUE)
     print('Dfan.Rdata written')
   }
   fns = ssv
+  fnsave=ssv
   ssv = NULL #clear bones
   avail = FALSE
   if (len(fns) > 0) { # null HAS LENGTH 0
