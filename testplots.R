@@ -38,10 +38,11 @@ if (!.GlobalEnv$tpexist) {
 
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
-                  print(svalue(h$obj))
+                  idx=svalue(h$obj,index=TRUE)
+                  print(paste('Idx=',idx))
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
                   print(paste('hdl isunsorted=',.GlobalEnv$unsorted))
-                  .GlobalEnv$ssv = as.character(svalue(h$obj))
+                  .GlobalEnv$ssv = as.character(.GlobalEnv$fnames[idx,'fnx'])
                   .GlobalEnv$avail = TRUE
                 }
   )
@@ -103,32 +104,16 @@ if (!.GlobalEnv$tpexist) {
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
     svt=normalizePath(svalue(tab),winslash = '/')
+    startt=NULL
     print(svt)
-    while(TRUE){
-      startt <- dlgInput(paste("Enter Start Time (secs) or (mm:ss)\n"))$res;
-      if(len(startt)>0){
-        if(!is.na(as.integer(startt))){
-          break # good integer
-        }else{
-          cpos=regexpr(':',startt)
-          if(cpos>0){
-            f1=as.integer(substr(startt,1,cpos-1))
-            f2=as.integer(substr(startt,cpos+1,nchar(startt)))
-            if (f1>=0 & f1<60 & f2>=0 & f2<60){
-              break # good mm:ss
-            }
-          }
-            
-        }
-      }else{
-        break # bad integer
-      }
-    }
+    startt=EnterStartStop()
+    endtt=EnterStartStop("Enter End Time (secs) or (mm:ss)\n")
+    print(len(startt))
     if(len(startt)>0){
       unlink('~/temppt.mp4')
       file.rename(svt,'~/temppt.mp4')
       svtt=gsub(' ','',svt) # remove spaces for ffmpeg (does not accept " in filename's)
-      cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/LarrySloman/Documents/temppt.mp4','-t 10000 -c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
+      cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/LarrySloman/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
       print(cmdd)
       eval(parse(text=cmdd))
       file.rename(svtt,svt)
@@ -154,7 +139,7 @@ if (!.GlobalEnv$tpexist) {
   
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
-    svt=normalizePath(svalue(tab),winslash = '/')
+    svt=normalizePath(fnames[svalue(tab,index=TRUE),'fnx'],winslash = '/')
     print(svt)
     cmdd=paste('shell("exiftool.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
     print(cmdd)
@@ -177,4 +162,28 @@ if (!.GlobalEnv$tpexist) {
   )
 }else
   visible(w)=TRUE
+
+EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n"){
+  while(TRUE){
+    startt <- dlgInput(x)$res;
+    if(len(startt)>0){
+      if(!is.na(as.integer(startt))){
+        break # good integer
+      }else{
+        cpos=regexpr(':',startt)
+        if(cpos>0){
+          f1=as.integer(substr(startt,1,cpos-1))
+          f2=as.integer(substr(startt,cpos+1,nchar(startt)))
+          if (f1>=0 & f1<60 & f2>=0 & f2<60){
+            break # good mm:ss
+          }
+        }
+        
+      }
+    }else{
+      break # bad integer
+    }
+  }
+  return(startt)
+}
 
