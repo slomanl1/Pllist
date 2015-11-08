@@ -38,18 +38,16 @@ if (!.GlobalEnv$tpexist) {
 
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
-                  idx=svalue(h$obj,index=TRUE)
-                  print(paste('Idx=',idx))
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
                   print(paste('hdl isunsorted=',.GlobalEnv$unsorted))
-                  .GlobalEnv$ssv = as.character(.GlobalEnv$fnames[idx,'fnx'])
+                  .GlobalEnv$ssv = getFnx()
                   .GlobalEnv$avail = TRUE
                 }
   )
   addHandlerRightclick(
     tab, handler = function(h,...) {
       if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
-        .GlobalEnv$idx=which(grepl(basename(as.character(svalue(h$obj)))[1],fnames$fnx,fixed = TRUE))
+        .GlobalEnv$idx=svalue(h$obj,index = TRUE)
         print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
         nfn=NULL  # supply select idx item in editing window fwinf
@@ -76,7 +74,7 @@ if (!.GlobalEnv$tpexist) {
         visible(wm) <- FALSE
     }
   )
-  print('bghello')
+
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
@@ -84,10 +82,10 @@ if (!.GlobalEnv$tpexist) {
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
     if(answ){
-      print(paste('Deleting',svalue(tab)))
-      .GlobalEnv$idx=which(grepl(as.character(svalue(tab)),fnames$fnx,fixed=TRUE))
+      print(paste('Deleting',getFnx()))
+      .GlobalEnv$idx=svalue(tab,index=TRUE)
       print(paste('idx=',.GlobalEnv$idx))
-      if(unlink(svalue(tab)))
+      if(unlink(getFnx()))
         print('delete FAILED')
       else{
         .GlobalEnv$deleted=TRUE
@@ -95,7 +93,7 @@ if (!.GlobalEnv$tpexist) {
         .GlobalEnv$Passt=TRUE
         visible(w) <- FALSE
         tpexist=FALSE
-        writeLines(svalue(tab),'file.tmp')
+        writeLines(getFnx(),'file.tmp')
         file.append('deletelog.txt','file.tmp') # update delete log
         unlink('file.tmp')
       }
@@ -103,7 +101,7 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
-    svt=normalizePath(svalue(tab),winslash = '/')
+    svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
     print(svt)
     startt=EnterStartStop()
@@ -139,7 +137,7 @@ if (!.GlobalEnv$tpexist) {
   
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
-    svt=normalizePath(fnames[svalue(tab,index=TRUE),'fnx'],winslash = '/')
+    svt=normalizePath(getFnx(),winslash = '/')
     print(svt)
     cmdd=paste('shell("exiftool.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
     print(cmdd)
@@ -187,3 +185,4 @@ EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n"){
   return(startt)
 }
 
+getFnx = function() return(fnames[svalue(tab,index=TRUE),'fnx'])
