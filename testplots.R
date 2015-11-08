@@ -35,6 +35,7 @@ if (!.GlobalEnv$tpexist) {
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
+
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   print(svalue(h$obj))
@@ -103,9 +104,35 @@ if (!.GlobalEnv$tpexist) {
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
     svt=normalizePath(svalue(tab),winslash = '/')
     print(svt)
-    cmdd=paste('shell("exx.bat',svt,'",mustWork=NA,translate=TRUE)')
-    print(cmdd)
-    eval(parse(text=cmdd))
+    while(TRUE){
+      startt <- dlgInput(paste("Enter Start Time (secs) or (mm:ss)\n"))$res;
+      if(len(startt)>0){
+        if(!is.na(as.integer(startt))){
+          break # good integer
+        }else{
+          cpos=regexpr(':',startt)
+          if(cpos>0){
+            f1=as.integer(substr(startt,1,cpos-1))
+            f2=as.integer(substr(startt,cpos+1,nchar(startt)))
+            if (f1>=0 & f1<60 & f2>=0 & f2<60){
+              break # good mm:ss
+            }
+          }
+            
+        }
+      }else{
+        break # bad integer
+      }
+    }
+    if(len(startt)>0){
+      unlink('~/temppt.mp4')
+      file.rename(svt,'~/temppt.mp4')
+      svtt=gsub(' ','',svt) # remove spaces for ffmpeg (does not accept " in filename's)
+      cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/LarrySloman/Documents/temppt.mp4','-t 10000 -c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
+      print(cmdd)
+      eval(parse(text=cmdd))
+      file.rename(svtt,svt)
+    }
   }
   )
   
@@ -122,9 +149,9 @@ if (!.GlobalEnv$tpexist) {
       if(exists('w')) 
         if(isExtant(w)) 
           dispose(w)
-        .GlobalEnv$avail = TRUE})
+      .GlobalEnv$avail = TRUE})
   gbutton("dismiss", container=bgm, handler = function(h,...) {visible(wm) <- FALSE;    if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
-
+  
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
     svt=normalizePath(svalue(tab),winslash = '/')
@@ -135,7 +162,7 @@ if (!.GlobalEnv$tpexist) {
     .GlobalEnv$meta=readLines('meta.txt')
     visible(wm) <- TRUE
     tabm[,]=meta
-
+    
   }
   )
   
