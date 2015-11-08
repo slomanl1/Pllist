@@ -364,6 +364,7 @@ while(TRUE)
   fnames$comments=trim(fnames$comments)
   fnames$sell=''
   fnames[fnames$fnx==fnsave,'sell']='++++'
+  fnames=fnames[,c(5,1,2,3,4)]
   source('~/pllist/pllist.git/testplots.R')
   while(!avail)
   {
