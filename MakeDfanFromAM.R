@@ -52,6 +52,7 @@ if (file.exists('D:/PNMTALL')) {
       if(len(dirpaths)==0)
         stop('Aborted')
       unlink(sfname)
+      unlink('dfltsave.RData') # clear search selections
       save(dirpaths,file='dirpaths.RData')
     }else{
       if(YesorNo=='')
@@ -242,6 +243,7 @@ changed=FALSE
 
 lnttl='Enter Search Criteria, Close to Exit'
 dflt = ''
+dfltidx=1
 if(file.exists('dfltsave.RData'))
   load('dfltsave.RData')
 Passt=FALSE
@@ -249,8 +251,7 @@ while(TRUE)
 {
   if(!Passt){
     linerw=gwindow(height = 20, title=lnttl)
-    obj <- gedit(text=dflt,container=linerw)
-    
+    obj =  gcombobox(dflt, editable=TRUE, container = linerw)
     ANDButton=gbutton("AND", container = linerw, handler = function(h,...) {
 #       font(ANDButton) <- c(color="red" , style="italic")
 #       font(ORButton)  <- c(color="blue", style="normal")
@@ -269,11 +270,7 @@ while(TRUE)
     }
     )
     font(ORButton) <- c(color="blue", style="bold") # initial 
-    
-#     DONEButton=gbutton("-GO-", container = linerw, handler = function(h,...) {
-#       .GlobalEnv$avail = TRUE
-#     }
-#     ) 
+ 
     EXITButton=gbutton("-EXIT-", container = linerw, handler = function(h,...) {
       dispose(linerw)
     }
@@ -290,10 +287,10 @@ while(TRUE)
     liner=NULL
     while(!avail)
     {}
-#    lnttl='Enter Search Criteria'
-    if(isExtant(obj)){
+
+    if(isExtant(linerw)){
       liner=svalue(obj)
-      dispose(obj)
+      dispose(linerw)
       if(exists('w'))
         if(isExtant(w))
           dispose(w)
@@ -330,8 +327,13 @@ while(TRUE)
   
   if (nchar(liner) > 0)
   {
-    dflt = liner
-    save(dflt,file='dfltsave.RData')
+    dflt[len(dflt)+1] = liner
+    dflt=unique(dflt[nchar(dflt)>0])
+    dfltidx=which(dflt==liner)
+    if(dfltidx>1)
+      dflt=dflt[c(dfltidx,1:(dfltidx-1))]
+    dfltidx=which(dflt==liner)
+    save(dflt,dfltidx,file='dfltsave.RData')
     srct=unlist(strsplit(toupper(liner),' '))
     anttl=paste(dfanx$filename,an)
     anttlu=toupper(anttl)
@@ -419,10 +421,6 @@ while(TRUE)
       ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
       if(file.exists(ttllorig)){
         unlink(ttllorig)
-#       if(renamed){
-#         extras=trim(paste("========",ofn)) # remove old metadata associated with the old file
-#         procExtras()
-#        }
       }else
         print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
     }
