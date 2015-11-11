@@ -254,8 +254,6 @@ while(TRUE)
     linerw=gwindow(height = 20, title=lnttl)
     obj =  gcombobox(dflt, editable=TRUE, container = linerw)
     ANDButton=gbutton("AND", container = linerw, handler = function(h,...) {
-#       font(ANDButton) <- c(color="red" , style="italic")
-#       font(ORButton)  <- c(color="blue", style="normal")
       .GlobalEnv$ANDflag = TRUE
       .GlobalEnv$avail = TRUE
     }
@@ -264,8 +262,6 @@ while(TRUE)
     .GlobalEnv$ANDflag = TRUE
     
     ORButton=gbutton("OR", container = linerw, handler = function(h,...) {
-#       font(ANDButton) <- c(color="blue" , style="normal") 
-#       font(ORButton)  <- c(color="red", style="italic")
       .GlobalEnv$ANDflag = FALSE
       .GlobalEnv$avail = TRUE
     }
