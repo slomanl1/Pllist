@@ -332,7 +332,7 @@ while(TRUE)
     dflt=unique(dflt[nchar(dflt)>0])
     dfltidx=which(dflt==liner)
     if(dfltidx>1)
-      dflt=dflt[c(dfltidx,1:(dfltidx-1))]
+      dflt=unique(dflt[c(dfltidx,1:len(dflt))])
     dfltidx=which(dflt==liner)
     save(dflt,dfltidx,file='dfltsave.RData')
     srct=unlist(strsplit(toupper(liner),' '))
