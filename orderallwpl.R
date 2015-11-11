@@ -9,9 +9,10 @@ addfnfo=file.info(lsst[(!lsst %in% rn)])
 if(nrow(addfnfo)>0){
   addfnfo$lsst=NA
   addfnfo$xx=NA
+  addfnfo$md5s=md5sum(lsst[(!lsst %in% rn)])
   fnfo=rbind(fnfo,addfnfo)
+  save(fnfo,wpls,file='~/fnfo.RData')
 }
-save(fnfo,wpls,file='~/fnfo.RData')
 setwd(paste(pldrive,'My Playlists',sep=""))
 
 for (j in 1:length(wpls)) {
