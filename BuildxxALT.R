@@ -49,9 +49,17 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   print('Build xo/xn Done')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   print('Refreshing fnfo')
-  fnfo=file.info(as.character(tl$Var1))
-  fnfo$xx=xn
-  fnfo$lsst=tl$Var1
+  load('~/fnfo.RData')
+  setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+  rn=rownames(fnfo)
+  lsst=as.character(tl$Var1)
+  tl$xx=xn
+  addfnfo=file.info(lsst[(!lsst %in% rn)])
+  if(nrow(addfnfo)>0){
+    addfnfo$xx=xn[(!lsst %in% rn)] ########### CHECK CORRECT index to get xn ############
+    addfnfo$md5s=md5sum(fn)
+    fnfo=rbind(fnfo,addfnfo)
+  }
   save(fnfo,wpls,file='~/fnfo.RData')
   source('~/Pllist/pllist.git/makeunique.R')
   print('ORDERALL')
