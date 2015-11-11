@@ -62,10 +62,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo=file.info(fn)
     addfnfo$lsst=fn
     addfnfo$xx=2^(length(wpls)-1) # wa1.wpl
+    addfnfo$md5s=md5sum(fn)
     fnfo=rbind(fnfo,addfnfo)
     save(fnfo,wpls,file='~/fnfo.RData')
-    setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-    
     setwd(paste(pldrive,'My Playlists',sep=""))
     lss = unique(readLines('wa1.wpl'))
     js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
