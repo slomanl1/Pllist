@@ -35,7 +35,7 @@ if (!.GlobalEnv$tpexist) {
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
-
+  
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
@@ -74,7 +74,7 @@ if (!.GlobalEnv$tpexist) {
         visible(wm) <- FALSE
     }
   )
-
+  
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
@@ -105,16 +105,27 @@ if (!.GlobalEnv$tpexist) {
     startt=NULL
     print(svt)
     startt=EnterStartStop()
-    endtt=EnterStartStop("Enter End Time (secs) or (mm:ss)\n")
+    
     print(len(startt))
     if(len(startt)>0){
+      endtt=EnterStartStop("Enter End Time (secs) or (mm:ss)\n")
       unlink('~/temppt.mp4')
       file.rename(svt,'~/temppt.mp4')
-      svtt=gsub(' ','',svt) # remove spaces for ffmpeg (does not accept " in filename's)
+      svtt1=gsub(' ','',svt) # remove spaces for ffmpeg (does not accept " in filename's)
+      svtt='c:/RealPlayerDownloads/trimmed.mp4'
+      entf=FALSE
+      if(len(endtt)==0){
+        entf=TRUE
+        endtt=10000
+      }
       cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/LarrySloman/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
       print(cmdd)
       eval(parse(text=cmdd))
-      file.rename(svtt,svt)
+      if(entf){
+        file.rename(svtt,svt) # replace svt has trimmed with start to end
+      }else{
+        file.rename('~/temppt.mp4',svt)  # put back original, svtt has trimmed
+      }
     }
   }
   )
@@ -161,28 +172,6 @@ if (!.GlobalEnv$tpexist) {
 }else
   visible(w)=TRUE
 
-EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n"){
-  while(TRUE){
-    startt <- dlgInput(x)$res;
-    if(len(startt)>0){
-      if(!is.na(as.integer(startt))){
-        break # good integer
-      }else{
-        cpos=regexpr(':',startt)
-        if(cpos>0){
-          f1=as.integer(substr(startt,1,cpos-1))
-          f2=as.integer(substr(startt,cpos+1,nchar(startt)))
-          if (f1>=0 & f1<60 & f2>=0 & f2<60){
-            break # good mm:ss
-          }
-        }
-        
-      }
-    }else{
-      break # bad integer
-    }
-  }
-  return(startt)
-}
 
-getFnx = function() return(fnames[svalue(tab,index=TRUE),'fnx'])
+
+getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
