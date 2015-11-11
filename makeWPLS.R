@@ -18,7 +18,7 @@ makeWpl=function(flist,slctor){
   m3uname <- paste(pldrive,'My NewPlaylists/',sep='')
   write(lsx1,paste(m3uname,slctor,sep=''))
 }
-
+wpls = sort(dir('c:/my Playlists',pattern = '*.wpl'))
 flist1=NULL
 for(selector in  wpls){
   print(selector)
