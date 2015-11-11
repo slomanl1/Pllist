@@ -1,12 +1,14 @@
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 source('~/pllist/pllist.git/EnterStartStop.R')
+cd('~/')
 svt=normalizePath(file.choose(),winslash = '/')
-writeLines(svt,'svt') # Write playlist
 load('~/headfoot.RData')
 writeLines(as.character(c(
   header,paste('<media src="',svt,'"/>'),footer
 ),sep = ''),'~/svt.wpl')
 shell("wmplayer c:\\Users\\LarrySloman\\Documents\\svt.wpl")
-
+unlink('~/svt.wpl')
 startt=NULL
 print(svt)
 startt=EnterStartStop()
