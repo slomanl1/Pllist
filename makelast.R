@@ -72,6 +72,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
     m3uname <- paste(pldrive,'My Playlists/',sep='')
     write(lsx1,paste(m3uname,'wa1.wpl',sep=''))
+    shell('wmplayer "c:\\My Playlists\\wa1.wpl')
     
   }else print('No new files found')
 } else print('CANNOT OPEN FLK')
