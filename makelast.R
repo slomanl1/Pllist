@@ -8,7 +8,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   shell('dir "C:\\My Videos\\RPDNClips" /od/b > ddd.txt')
   lns=readLines('ddd.txt')
   unlink('ddd.txt')
-  bn=gsub('[a-z|A-Z]','',lns)
+  bn=gsub('[a-z|A-Z|_]','',lns)
   last=as.integer(tail(bn,1))
   
   setwd('C:\\RealPlayerDownloads')
