@@ -34,7 +34,7 @@ if(answ){
     fnfoh=fnfog[,nms]
     names(fnfoh)=gsub('.x','',names(fnfoh),fixed=TRUE)
     fnfo=fnfoh[,names(fnfo)]
-    setwd(paste(pldrive,'My NewPlaylists',sep=""))
+    setwd(paste(pldrive,'My Playlists',sep=""))
     wpls = sort(dir(pattern = '*.wpl'))
     save(fnfo,wpls,file='~/fnfo.RData')
     save(namer,fnfo,wpls,file=paste('~/namer',gsub(':','_',Sys.time(),fixed=TRUE),'.RData',sep=''))
