@@ -19,7 +19,12 @@ dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted 
 #dfa=dfa[order(dfa$sz,decreasing=TRUE),]
 #dfa=dfa[dfa$sz>tail(dfn,1)$sz,] # remove already processed files(to get rid of the <100length results already determeind)
 dfa=dfa[order(dfa$sz,decreasing=FALSE),] # for clips #***************
+bads=NULL
+badx=1
+if(file.exists('~bads.RData'))
+  load('~bads.RData')
 
+dfa=dfa[!dfa$cls %in% bads,]
 if(!file.exists('~/msgis.txt')){
   writeLines('','~/msgis.txt')
   }
@@ -44,6 +49,10 @@ for(fn in dfa$cls)
       file.copy('~/out.mp4',nfn)
       print(paste(fn,file.size(fn)))
       print(paste(nfn,file.size(nfn)))
+    }else{
+      bads[badx]=fn
+      badx=badx+1
+      save(bads,badx,file='~bads.RData')
     }
     writeLines(msgi,'~/temp.txt')
     msgi=readLines('~/temp.txt') # convert CR to CRLF
