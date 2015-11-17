@@ -8,6 +8,9 @@ load('fnfo.RData') # load lsst, wpls and xx
 makeWpl=function(flist,slctor){
   setwd(paste(pldrive,'My Playlists',sep=""))
   lss = unique(readLines(slctor))
+  setwd(paste(pldrive,'My OldPlaylists',sep=""))
+  writeLines(lss,slctor) # save old playlist
+  setwd(paste(pldrive,'My Playlists',sep=""))
   strt=grep('media',lss)[1]
   fnnh=lss[1:(strt-1)] #wpl header
   fnnt=lss[(length(lss)-2):length(lss)] #wpl footer
@@ -15,7 +18,7 @@ makeWpl=function(flist,slctor){
   js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
   adds=sprintf(js,basename(flist))
   lsx1=c(fnnh,adds,fnnt)
-  m3uname <- paste(pldrive,'My NewPlaylists/',sep='')
+  m3uname <- paste(pldrive,'My Playlists/',sep='')
   write(lsx1,paste(m3uname,slctor,sep=''))
 }
 wpls = sort(dir('c:/my Playlists',pattern = '*.wpl'))
@@ -63,7 +66,7 @@ rn=rownames(fnfo)
 lsst=as.character(fnfo$lsst)
 rownames(fnfo)=lsst
 save(fnfo,wpls,file='~/fnfo.RData')
-setwd(paste(pldrive,'My NewPlaylists',sep=""))
+setwd(paste(pldrive,'My Playlists',sep=""))
 
 ###################### orderall ######################
 for (j in 1:length(wpls)) {
@@ -88,7 +91,7 @@ for (j in 1:length(wpls)) {
   lssj=merge(lssg,fnfoz,by='fname')
   lssz=as.character(lssj[order(lssj$mtime),'lss1'])
   fnno=c(fnnh,sub('..\\My','C:\\My',lssz,fixed = TRUE),fnnt)
-  setwd(paste(pldrive,'My NewPlaylists',sep=""))
+  setwd(paste(pldrive,'My Playlists',sep=""))
   writeLines(fnno,wpls[j])
 }
 
