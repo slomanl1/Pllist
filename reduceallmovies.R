@@ -1,5 +1,6 @@
 cd('~/')
 cls=NULL
+ptn=function(x) prettyNum(x,big.mark = ",")
 #cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
 #cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
 cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
@@ -21,8 +22,8 @@ dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted 
 dfa=dfa[order(dfa$sz,decreasing=FALSE),] # for clips #***************
 bads=NULL
 badx=1
-if(file.exists('~bads.RData'))
-  load('~bads.RData')
+if(file.exists('~/bads.RData'))
+  load('~/bads.RData')
 
 dfa=dfa[!dfa$cls %in% bads,]
 if(!file.exists('~/msgis.txt')){
@@ -31,7 +32,7 @@ if(!file.exists('~/msgis.txt')){
 for(fn in dfa$cls)
 { 
   nfn=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
-  print(paste(fn,file.size(fn),'nfn-',nfn))
+  print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
   if(file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$cls==fn),'sz']){
     if(file.exists('~/out.mp4')){
       shell('tasklist > tl.txt')
@@ -47,12 +48,12 @@ for(fn in dfa$cls)
     print(tail(msgi))
     if(file.size('~/out.mp4')>100){
       file.copy('~/out.mp4',nfn)
-      print(paste(fn,file.size(fn)))
-      print(paste(nfn,file.size(nfn)))
+      print(paste(fn,ptn(file.size(fn))))
+      print(paste(nfn,ptn(file.size(nfn))))
     }else{
       bads[badx]=fn
       badx=badx+1
-      save(bads,badx,file='~bads.RData')
+      save(bads,badx,file='~/bads.RData')
     }
     writeLines(msgi,'~/temp.txt')
     msgi=readLines('~/temp.txt') # convert CR to CRLF
