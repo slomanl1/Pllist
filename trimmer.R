@@ -1,16 +1,20 @@
+args <- commandArgs(TRUE)
+save(args,file='~/args.RData')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
+load('~/args.RData')
+print(args)
 source('~/pllist/pllist.git/EnterStartStop.R')
 cd('~/')
-svt=normalizePath(file.choose(),winslash = '/')
+#svt=normalizePath(file.choose(),winslash = '/')
+svt=args[1]
 load('~/headfoot.RData')
-writeLines(as.character(c(
-  header,paste('<media src="',svt,'"/>'),footer
-),sep = ''),'~/svt.wpl')
-shell("wmplayer c:\\Users\\LarrySloman\\Documents\\svt.wpl")
+writeLines(as.character(c(header,paste('<media src="',svt,'"/>'),footer),sep = ''),'~/svt.wpl')
+#shell("wmplayer c:\\Users\\LarrySloman\\Documents\\svt.wpl")
 unlink('~/svt.wpl')
 startt=NULL
 print(svt)
+
 startt=EnterStartStop()
 print(len(startt))
 if(len(startt)>0){
@@ -33,3 +37,4 @@ if(len(startt)>0){
     file.rename('~/temppt.mp4',svt)  # put back original, trimmed.mp4 has trimmed
   }
 }
+
