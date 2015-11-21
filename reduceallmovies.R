@@ -17,9 +17,8 @@ dfn=dfn[!is.na(dfn$sz),]
 nfns=paste(file_path_sans_ext(cls),'_New.',file_ext(cls),sep='')
 dfa=data.frame(cls,sz=file.size(cls),nfns)
 dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted to _New
-#dfa=dfa[order(dfa$sz,decreasing=TRUE),]
-#dfa=dfa[dfa$sz>tail(dfn,1)$sz,] # remove already processed files(to get rid of the <100length results already determeind)
-dfa=dfa[order(dfa$sz,decreasing=FALSE),] # for clips #***************
+dfa=dfa[order(dfa$sz,decreasing=TRUE),]
+#dfa=dfa[order(dfa$sz,decreasing=FALSE),] # for clips #***************
 bads=NULL
 badx=1
 if(file.exists('~/bads.RData'))
@@ -28,9 +27,11 @@ if(file.exists('~/bads.RData'))
 dfa=dfa[!dfa$cls %in% bads,]
 if(!file.exists('~/msgis.txt')){
   writeLines('','~/msgis.txt')
-  }
+}
 for(fn in dfa$cls)
 { 
+  print(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
+              ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)),'bytes Remaining'))
   nfn=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
   print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
   if(file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$cls==fn),'sz']){
@@ -42,18 +43,29 @@ for(fn in dfa$cls)
       if(!file.remove('~/out.mp4')){
         stop('Cannot Remove out.mp4, kill ffmpeg.exe')}
     }
-
-    msgi=shell(paste('c:/users/LarrySloman/converth265.bat "',
-                fn,'" c:/users/LarrySloman/Documents/out.mp4',sep=''),translate = TRUE,intern=TRUE)
+    
+    msgi=shell(paste('c:/users/LarrySloman/Documents/hexDump/bin/converth265.bat "',
+                     fn,'" c:/users/LarrySloman/Documents/out.mp4',sep=''),translate = TRUE,intern=TRUE)
     print(tail(msgi))
     if(file.size('~/out.mp4')>100){
-      file.copy('~/out.mp4',nfn)
-      print(paste(fn,ptn(file.size(fn))))
-      print(paste(nfn,ptn(file.size(nfn))))
+      shell("exiftool c:/users/LarrySloman/Documents/out.mp4 > exifdata.txt")
+      exif=readLines('~/exifdata.txt')
+      if(any(grepl('Lavf56',exif))){
+        file.copy('~/out.mp4',nfn)
+        print(paste(fn,ptn(file.size(fn))))
+        print(paste(nfn,ptn(file.size(nfn))))
+        file.remove(fn)
+      }else{
+        bads[badx]=fn
+        badx=badx+1
+        save(bads,badx,file='~/bads.RData')
+        print('bad metadata')
+      }
     }else{
       bads[badx]=fn
       badx=badx+1
       save(bads,badx,file='~/bads.RData')
+      print('Bad size')
     }
     writeLines(msgi,'~/temp.txt')
     msgi=readLines('~/temp.txt') # convert CR to CRLF
