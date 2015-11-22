@@ -1,6 +1,6 @@
   shell('dir D:\\ /S/B > zz.txt')
   shell('dir c:\\PNMTALL /S/B >> zz.txt')
-  shell('dir E:\\ /S/B > yy.txt')
+  shell('dir E:\\PNMTALL /S/B > yy.txt')
   zz = readLines('zz.txt')
   yy = readLines('yy.txt')
   unlink('zz.txt')
