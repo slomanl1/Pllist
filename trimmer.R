@@ -1,29 +1,5 @@
 len=function(x) length(x)
-EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n"){
-  .GlobalEnv$ss=NULL
-  while(TRUE){
-    ginput(x, icon="question", title=svt, handler = function(h,...) .GlobalEnv$ss=h$input)
-    startt= .GlobalEnv$ss   
-    if(len(startt)>0){
-      if(!is.na(as.integer(startt))){
-        break # good integer
-      }else{
-        cpos=regexpr(':',startt)
-        if(cpos>0){
-          f1=as.integer(substr(startt,1,cpos-1))
-          f2=as.integer(substr(startt,cpos+1,nchar(startt)))
-          if (f1>=0 & f1<60 & f2>=0 & f2<60){
-            break # good mm:ss
-          }
-        }
-        
-      }
-    }else{
-      break # bad integer
-    }
-  }
-  return(startt)
-}
+source('~/pllist/pllist.git/EnterStartStop.R')
 StartMyGUI <- function(handler=function(h,...) {
   dispose(h$obj)
 }) {
@@ -41,12 +17,14 @@ StartMyGUI <- function(handler=function(h,...) {
     cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/LarrySloman/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
-    svtO=paste(file_path_sans_ext(svt),'_New.',file_ext(svt),sep='') # add _New to original filename
+    svt1=sub('TRIM','',svt)
+    svtO=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') # add _New to original filename
     file.rename(svtt,svtO) # replace svt has trimmed with start to end
     file.rename('~/temppt.mp4',svt) # keep original file
     }
   return()
 } 
+shell('nircmd win min process rscript.exe')
 options("guiToolkit"="RGtk2")
 library(RGtk2)
 library(gWidgets)
@@ -59,4 +37,4 @@ if(is.na(svt))
   svt=file.choose()
 print(paste('svt=',svt))
 StartMyGUI()
-#gtkMain()
+
