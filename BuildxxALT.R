@@ -54,10 +54,13 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   rn=rownames(fnfo)
   lsst=as.character(tl$Var1)
   tl$xx=xn
-  addfnfo=file.info(lsst[(!lsst %in% rn)])
+  fn=allall[(!allall %in% rn)]
+  addfnfo=file.info(fn)
   if(nrow(addfnfo)>0){
-    addfnfo$xx=xn[(!lsst %in% rn)] ########### CHECK CORRECT index to get xn ############
+    addfnfo$lsst=fn
+    addfnfo$xx=0 # not in any playlist
     addfnfo$md5s=md5sum(fn)
+    addfnfo=addfnfo[,names(fnfo)]
     fnfo=rbind(fnfo,addfnfo)
   }
   save(fnfo,wpls,file='~/fnfo.RData')
