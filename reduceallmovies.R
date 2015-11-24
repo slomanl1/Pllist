@@ -31,7 +31,7 @@ if(!file.exists('~/msgis.txt')){
 for(fn in dfa$cls)
 { 
   print(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
-              ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)),'bytes Remaining'))
+              ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)),'bytes Remaining',Sys.time()))
   nfn=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
   print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
   if(file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$cls==fn),'sz']){
