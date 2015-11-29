@@ -118,7 +118,7 @@ if (!.GlobalEnv$tpexist) {
         entf=TRUE
         endtt=10000
       }
-      cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/LarrySloman/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
+      cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
       print(cmdd)
       eval(parse(text=cmdd))
       if(entf){
