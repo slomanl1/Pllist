@@ -1,6 +1,6 @@
 library(gWidgets)
 options(guiToolkit = "RGtk2") 
-source('~/pllist/pllist.git/EnterStartStop.R')
+source('~/pllist.git/EnterStartStop.R')
 
 setwd('~/')
 if(exists('w'))
@@ -44,7 +44,7 @@ if (file.exists('D:/PNMTALL')) {
     vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
     print(paste('VNAME =',vname))
     sfname = paste(substr(vname,1,nchar(vname) - 4),'.RData',sep = '')
-    source('~/pllist/pllist.git/selecttt.R')
+    source('~/pllist.git/selecttt.R')
     if(destroyed)
       stop('Aborted')
     YesorNo=vall
@@ -365,7 +365,7 @@ while(TRUE)
   fnames[fnames$fnx==fnsave,'sell']='++++'
   fnames=fnames[,c(5,1,2,3,4)]
   fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
-  source('~/pllist/pllist.git/testplots.R')
+  source('~/pllist.git/testplots.R')
   while(!avail)
   {
     delay500()
@@ -452,7 +452,7 @@ while(TRUE)
     writeLines(as.character(c(
       header,paste('<media src="',fns,'"/>'),footer
     ),sep = ''),'fns.wpl')
-    shell("wmplayer c:\\Users\\LarrySloman\\Documents\\fns.wpl")
+    shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
     Passt=TRUE
     unsorted=FALSE
     avail=FALSE
