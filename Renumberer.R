@@ -38,7 +38,7 @@ if(answ){
     wpls = sort(dir(pattern = '*.wpl'))
     save(fnfo,wpls,file='~/fnfo.RData')
     save(namer,fnfo,wpls,file=paste('~/namer',gsub(':','_',Sys.time(),fixed=TRUE),'.RData',sep=''))
-    source('~/pllist/pllist.git/makeWPLS.R')
+    source('~/pllist.git/makeWPLS.R')
   }
 }else{
   print('RENAME CANCELLED')
