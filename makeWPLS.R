@@ -3,7 +3,7 @@ source(scriptStatsRemoveAll) #clear bones
 require(bitops)
 source("~/Local.R")
 setwd('~/')
-load('fnfo.RData') # load lsst, wpls and xx
+load('mfnfo.RData') # load lsst, wpls and xx
 
 makeWpl=function(flist,slctor){
   setwd(paste(pldrive,'My Playlists',sep=""))
@@ -30,7 +30,8 @@ for(selector in  wpls){
   bits = bitOr(bits,2^(b-1))
   print(bits)
   flisto=flist1
-  flist1 = fnfo$lsst[bitAnd(fnfo$xx,bits) == bits]
+  flist1a = mfnfo[bitAnd(mfnfo$xx,bits) == bits & is.na(mfnfo$md5sn),]$lsst
+  flist1=c(flist1a,mfnfo[bitAnd(mfnfo$xx,bits) == bits & !is.na(mfnfo$md5sn),]$nfn)
   if(selector=='wa1.wpl'){
     flist1=flist1[!flist1 %in% flisto]
   }
@@ -58,14 +59,13 @@ slss=capture.output(cat(tdf[1:(tt[1]),'selector']))
 for( i in 2:len(sls)){
   slss[i]=capture.output(cat(tdf[tt[i-1]:(tt[i]-1),'selector']))
 }
-lsst=as.character(fnfo$lsst)
+lsst1=mfnfo[is.na(mfnfo$md5sn),]$lsst
+lsst=c(lsst1,mfnfo[!is.na(mfnfo$md5sn),]$nfn)
 ms=(lsst[!lsst %in% sls]) # missing
+writeLines(paste('C:/My Videos/RPDNClips/',ms,sep=''),'missing.M3U')
 
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-rn=rownames(fnfo)
-lsst=as.character(fnfo$lsst)
-rownames(fnfo)=lsst
-save(fnfo,wpls,file='~/fnfo.RData')
+save(mfnfo,wpls,file='~/fnfo.RData')
 setwd(paste(pldrive,'My Playlists',sep=""))
 
 ###################### orderall ######################
@@ -79,17 +79,12 @@ for (j in 1:length(wpls)) {
     lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|mp4|flv|asf|wmv',lss[i])[1]+2)
   }
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-  lssy=lssx[!duplicated(lssx) & file.exists(lssx)]
-  lss1=lss[!duplicated(lssx) & file.exists(lssx)]
+  lssy=sub('_New','',lssx)
+  dxx=data.frame(lsst=lssy,lss)
+  lssj=merge(dxx,mfnfo[,c('lsst','mtime')])
+  lssz=as.character(lssj[order(lssj$mtime),'lss'])
   fnnh=fnn[1:(strt-1)] #wpl header
   fnnt=fnn[(length(fnn)-2):length(fnn)] #wpl footer
-  fnfox=fnfo[rownames(fnfo) %in% lssy,]
-  fnfoy=file.info(lssy[!(lssy %in% rownames(fnfo))])
-  fnfoz=rbind(fnfox,fnfoy)
-  fnfoz$fname=rownames(fnfoz)
-  lssg=data.frame(fname=lssy,lss1)
-  lssj=merge(lssg,fnfoz,by='fname')
-  lssz=as.character(lssj[order(lssj$mtime),'lss1'])
   fnno=c(fnnh,sub('..\\My','C:\\My',lssz,fixed = TRUE),fnnt)
   setwd(paste(pldrive,'My Playlists',sep=""))
   writeLines(fnno,wpls[j])
