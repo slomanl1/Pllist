@@ -9,7 +9,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   lns=readLines('ddd.txt')
   unlink('ddd.txt')
   bn=gsub('[a-z|A-Z|_]','',lns)
-  last=as.integer(tail(bn,1))
+  last=tail(sort(as.integer(bn)),1)
   
   setwd('C:\\RealPlayerDownloads')
   fns1=dir(pattern='*.mp4')
@@ -17,10 +17,11 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   exts=c('blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pna.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4')
   odr=sample(last:last+length(fns1),length(fns1),replace=T) 
   if(length(odr)!=0){
-    load('~/fnfo.RData')
+    load('~/mfnfo.RData')
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-    ex=file.exists(rownames(fnfo))
-    fnfo=fnfo[ex,] #remove non existent files from fnfo
+    ex=file.exists(mfnfo$lsst)
+    exn=file.exists(paste(file_path_sans_ext(mfnfo$lsst),'_New.wmv',sep=''))
+    mfnfo=mfnfo[ex|exn,] #remove non existent files from fnfo
     fns=fns1[order(odr)]
     fn=fns
     setwd('C:\\RealPlayerDownloads')
@@ -35,8 +36,8 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       while (exist){
         fn[i]=paste(as.character(last),cc,'.wmv',sep='')
         fs=file.info(fns[i])
-        if(fs$size %in% fnfo$size &
-           identical(md5sum(fns[i]), md5sum(fns[fs$size %in% fnfo$size]))){
+        if(fs$size %in% mfnfo$size &
+           identical(md5sum(fns[i]), md5sum(fns[fs$size %in% mfnfo$size]))){
           exist=FALSE
           print(c(fns[i],'Dup file found'))
           next
@@ -63,16 +64,21 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo$lsst=fn
     addfnfo$xx=2^(length(wpls)-1) # wa1.wpl
     addfnfo$md5s=md5sum(fn)
-    fnfo=rbind(fnfo,addfnfo)
-    save(fnfo,wpls,file='~/fnfo.RData')
+    addfnfo$nfn=paste(file_path_sans_ext(fn),'_New.wmv',sep='')
+    addfnfo$md5sn=NA
+    mfnfo=rbind(mfnfo,addfnfo)
+    save(mfnfo,wpls,file='~/mfnfo.RData')
     setwd(paste(pldrive,'My Playlists',sep=""))
     lss = unique(readLines('wa1.wpl'))
     js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
     adds=sprintf(js,fn)
     lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
     m3uname <- paste(pldrive,'My Playlists/',sep='')
-    write(lsx1,paste(m3uname,'wa1.wpl',sep=''))
-    shell('wmplayer "c:\\My Playlists\\wa1.wpl')
+    write(lsx1,paste(m3uname,'wa1.wpl',sep='')) # add new clips to wa1.wpl
+    lsx2=c(lss[1:15],adds,tail(lss,n=3))
+    write(lsx2,paste('C:/My Videos/','fns.wpl',sep=''))
+    shell('wmplayer "c:\\My Videos\\fns.wpl')
+    unlink('c:/my Videos/fns.wpl')
     
   }else print('No new files found')
 } else print('CANNOT OPEN FLK')
