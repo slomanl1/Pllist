@@ -1,12 +1,13 @@
 len=function(x) length(x)
-source('~/pllist/pllist.git/EnterStartStop.R')
+source('~/pllist.git/EnterStartStop.R')
 StartMyGUI <- function(handler=function(h,...) {
   dispose(h$obj)
 }) {
   startt=EnterStartStop()
   print(len(startt))
   if(len(startt)>0){
-    endtt=EnterStartStop("Enter Time Duration (secs) or (mm:ss), or Esc for End of File\n")
+    endtt=EnterStartStop("Enter Time Duration (secs) or (mm:ss), or Enter/Esc for End of File\n",TRUE)
+    print(len(endtt))
     svtt='c:/RealPlayerDownloads/trimmed.mp4'
     unlink('~/temppt.mp4')
     unlink(svtt)
@@ -14,7 +15,7 @@ StartMyGUI <- function(handler=function(h,...) {
     if(len(endtt)==0){
       endtt=10000
     }
-    cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/LarrySloman/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
+    cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
     svt1=sub('TRIM','',svt)
