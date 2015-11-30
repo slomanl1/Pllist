@@ -5,10 +5,10 @@ require(tcltk)
 source("~/Local.R")
 
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
-  source('~/Pllist/pllist.git/combiner.R')
+  source('~/pllist.git/combiner.R')
   print('Combiner Done')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-  allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'),dir(pattern='*.flv'))
+  allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'))
   
   setwd(paste(pldrive,'My Playlists',sep=""))
   wpls = sort(dir(pattern = '*.wpl'))
@@ -49,24 +49,24 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   print('Build xo/xn Done')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   print('Refreshing fnfo')
-  load('~/fnfo.RData')
+  load('~/mfnfo.RData')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-  rn=rownames(fnfo)
-  lsst=as.character(tl$Var1)
-  tl$xx=xn
+  rn=c(mfnfo$lsst,paste(file_path_sans_ext(mfnfo$lsst),'_New.wmv',sep=''))
   fn=allall[(!allall %in% rn)]
   addfnfo=file.info(fn)
   if(nrow(addfnfo)>0){
-    addfnfo$lsst=fn
+    addfnfo$lsst=sub('_New','',fn)
     addfnfo$xx=0 # not in any playlist
-    addfnfo$md5s=md5sum(fn)
-    addfnfo=addfnfo[,names(fnfo)]
-    fnfo=rbind(fnfo,addfnfo)
+    addfnfo$md5s=md5sum(addfnfo$lsst)
+    addfnfo$nfn=paste(file_path_sans_ext(addfnfo$lsst),'_New.wmv',sep='')
+    addfnfo$md5sn=md5sum(addfnfo$nfn)
+    addfnfo=addfnfo[,names(mfnfo)]
+    mfnfo=rbind(mfnfo,addfnfo)
   }
-  save(fnfo,wpls,file='~/fnfo.RData')
-  source('~/Pllist/pllist.git/makeunique.R')
+  save(mfnfo,wpls,file='~/mfnfo.RData')
+  source('~/pllist.git/makeunique.R')
   print('ORDERALL')
-  source('~/Pllist/pllist.git/orderallwpl.R')
+  source('~/pllist.git/orderallwpl.R')
   print('Build Done')
 }
 
