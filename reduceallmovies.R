@@ -4,7 +4,7 @@ ptn=function(x) prettyNum(x,big.mark = ",")
 #cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
 #cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
 cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
-#cls=c(cls,dir('c:/Users/LarrySloman/Downloads',recursive = TRUE,full.names = TRUE))
+#cls=c(cls,dir('c:/Users/Larry/Downloads',recursive = TRUE,full.names = TRUE))
 fna=cls # all files (including _New's)
 cls=cls[which(!grepl('_New',cls))]
 cla=fna[which(grepl('_New',fna))]
@@ -19,12 +19,12 @@ dfa=data.frame(cls,sz=file.size(cls),nfns)
 dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted to _New
 dfa=dfa[order(dfa$sz,decreasing=TRUE),]
 #dfa=dfa[order(dfa$sz,decreasing=FALSE),] # for clips #***************
-bads=NULL
-badx=1
+
+bads=data.frame(fname=NA,errorC=NA)
 if(file.exists('~/bads.RData'))
   load('~/bads.RData')
 
-dfa=dfa[!dfa$cls %in% bads,]
+dfa=dfa[!dfa$cls %in% bads$fname,]
 if(!file.exists('~/msgis.txt')){
   writeLines('','~/msgis.txt')
 }
@@ -44,28 +44,38 @@ for(fn in dfa$cls)
         stop('Cannot Remove out.mp4, kill ffmpeg.exe')}
     }
     
-    msgi=shell(paste('c:/users/LarrySloman/Documents/hexDump/bin/converth265.bat "',
-                     fn,'" c:/users/LarrySloman/Documents/out.mp4',sep=''),translate = TRUE,intern=TRUE)
+    msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
+                     fn,'" c:/Users/Larry/Documents/out.mp4',sep=''),translate = TRUE,intern=TRUE)
     print(tail(msgi))
-    if(file.size('~/out.mp4')>100){
-      shell("exiftool c:/users/LarrySloman/Documents/out.mp4 > exifdata.txt")
+    if(file.exists('~/out.mp4')){
+    if(file.size('~/out.mp4')>1000){
+      shell("c:/Users/Larry/Documents/HexDump/bin/exiftool c:/Users/Larry/Documents/out.mp4 > exifdata.txt")
       exif=readLines('~/exifdata.txt')
-      if(any(grepl('Lavf56',exif))){
+      if(any(grepl('Lavf56|Lavf57',exif))){
         file.copy('~/out.mp4',nfn)
         print(paste(fn,ptn(file.size(fn))))
         print(paste(nfn,ptn(file.size(nfn))))
         file.remove(fn)
       }else{
-        bads[badx]=fn
+        bads[badx,]$fname=fn
+        bads[badx,]$errorC='Bad Metadata'
         badx=badx+1
         save(bads,badx,file='~/bads.RData')
         print('bad metadata')
       }
     }else{
-      bads[badx]=fn
+      bads[badx,]$fname=fn
+      bads[badx,'errorC']='Bad Size'
       badx=badx+1
       save(bads,badx,file='~/bads.RData')
       print('Bad size')
+    }
+    }else{
+      bads[badx,]$fname=fn
+      bads[badx,'errorC']='Bad Moov'
+      badx=badx+1
+      save(bads,badx,file='~/bads.RData')
+      print('Bad Moov')
     }
     writeLines(msgi,'~/temp.txt')
     msgi=readLines('~/temp.txt') # convert CR to CRLF
