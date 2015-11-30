@@ -1,7 +1,8 @@
-EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n"){
+EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FALSE){
   .GlobalEnv$ss=NULL
   while(TRUE){
-    ginput(x, icon="question", title=svt, handler = function(h,...) .GlobalEnv$ss=h$input)
+    ginput(x, icon="question", title=.GlobalEnv$svt, handler = function(h,...) 
+      .GlobalEnv$ss=h$input)
     startt= .GlobalEnv$ss   
     if(len(startt)>0){
       if(!is.na(as.integer(startt))){
@@ -14,6 +15,12 @@ EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n"){
           if (f1>=0 & f1<60 & f2>=0 & f2<60){
             break # good mm:ss
           }
+        }else{
+              if(allowEnter){
+                startt=10000
+                break;
+              }
+
         }
       }
     }else{
