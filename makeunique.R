@@ -1,10 +1,10 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-load('~/fnfo.RData')
+load('~/mfnfo.RData')
 
 source('~/Local.R') #get drive
 
-lsst=as.character(fnfo$lsst)
+lsst=c(mfnfo[is.na(mfnfo$md5sn),'lsst'],mfnfo[!is.na(mfnfo$md5sn),'nfn'])
 k=0
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 removers = ""
@@ -39,7 +39,7 @@ for (i in 1:length(wpls)) {
 }
 
 setwd("~/")
-fnfo=fnfo[fnfo$lsst %in% lsst,]
-save(fnfo,wpls,file='~/fnfo.RData')
+mfnfo=rbind(mfnfo[mfnfo$lsst %in% lsst,],mfnfo[mfnfo$nfn %in% lsst,])
+save(mfnfo,wpls,file='~/mfnfo.RData')
 print(paste('Removed -',removers))
 
