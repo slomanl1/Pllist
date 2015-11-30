@@ -101,9 +101,9 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
-    svt=normalizePath(getFnx(),winslash = '/')
+    .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
-    print(svt)
+    print(paste('svt=',.GlobalEnv$svt))
     startt=EnterStartStop()
     
     print(len(startt))
