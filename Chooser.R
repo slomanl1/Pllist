@@ -5,9 +5,9 @@ source("~/Local.R")
 
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('~/')
-  load('fnfo.RData')
-  lsst=sub('        <media src=\"..\\My Videos\\RPDNClips\\','',fnfo$lsst,fixed=TRUE)
-  xx=fnfo$xx
+  load('mfnfo.RData')
+  lsst=sub('        <media src=\"..\\My Videos\\RPDNClips\\','',mfnfo$lsst,fixed=TRUE)
+  xx=mfnfo$xx
   selectL = select.list(c('AND','OR','NOT'),graphics=TRUE)
   print(selectL)
   if (length(selectL > 0)) { 
@@ -33,7 +33,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       if(length(flist2)==0)
         print('No Records Found')
       else {
-        flist = paste(drive,'My Videos/RPDNClips/',flist2,sep='')
+        flist3 = paste(drive,'My Videos/RPDNClips/',flist2,sep='')
+        flistn= paste(file_path_sans_ext(flist3),'_New.',file_ext(flist3),sep='')
+        flist=c(flist3[file.exists(flist3)],flistn[file.exists(flistn)])
         indxs=regexpr('wpl',wpls)[1:length(wpls)]
         fname=""
         for (i in 1:length(wpls)){
