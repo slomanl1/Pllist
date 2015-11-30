@@ -1,10 +1,10 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 setwd('c:/my videos/rpdnclips')
-unlink('c:/users/LarrySloman/mimes.txt')
+unlink('c:/users/Larry/mimes.txt')
 shell('exiftool *.* | findstr /I "Name Extension Mime" > c:\\users\\LarrySloman\\mimes.txt')
-mn=readLines('c:/users/LarrySloman/mimes.txt')
-#unlink('c:/users/LarrySloman/mimes.txt')
+mn=readLines('c:/users/Larry/mimes.txt')
+#unlink('c:/users/Larry/mimes.txt')
 fname=mn[grepl('File Name',mn)]
 fext=mn[grepl('File Type Extension',mn)]
 mimet=mn[grepl('MIME Type',mn)]
