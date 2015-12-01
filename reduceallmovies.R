@@ -18,7 +18,6 @@ nfns=paste(file_path_sans_ext(cls),'_New.',file_ext(cls),sep='')
 dfa=data.frame(cls,sz=file.size(cls),nfns)
 dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted to _New
 dfa=dfa[order(dfa$sz,decreasing=TRUE),]
-#dfa=dfa[order(dfa$sz,decreasing=FALSE),] # for clips #***************
 
 bads=data.frame(fname=NA,errorC=NA)
 if(file.exists('~/bads.RData'))
