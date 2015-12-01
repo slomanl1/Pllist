@@ -66,6 +66,7 @@ if (file.exists('D:/PNMTALL')) {
     shell(paste('dir', 'D:\\PNMTALL',' /S/B/OD >  zz.txt'))
     shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
     zz1 = readLines('zz.txt')
+    unlink('zz.txt')
     zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
                       !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
                       toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
