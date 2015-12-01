@@ -56,7 +56,6 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       }
       unlink(fns[i])
     }
-    source("~/Local.R")
     setwd(paste(pldrive,'My Playlists',sep=""))
     wpls = sort(dir(pattern = '*.wpl'))
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
