@@ -18,7 +18,8 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       a=1:length(wpls)
       for (i in 1:length(selector)){
         b=a[selector[i]==wpls]
-        if (!is.na(b)) bits = bitOr(bits,2^(b-1))
+        if (!is.na(b)) 
+          bits = bitOr(bits,2^(b-1))
       }
       if (selectL == 'AND')
         flist1 = lsst[bitAnd(xx,bits) == bits]
