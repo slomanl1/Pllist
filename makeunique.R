@@ -22,9 +22,9 @@ for (i in 1:length(wpls)) {
   lss=readLines(wpls[i])
   lns=lss
   print(wpls[i])
-  dups=lns[duplicated(lns[nchar(lns)>0])]
-  if(length(dups)>0)
-    print(dups)
+  dupp=dups(lns[nchar(lns)>0])
+  if(length(dupp)>0)
+    print(paste(length(dupp),'dups found in',wpls[i]))
   lnsu=unique(lns)
   for (j in 1:length(removers)){
     if(nchar(removers[j])>0){
