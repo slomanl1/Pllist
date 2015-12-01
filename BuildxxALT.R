@@ -47,11 +47,17 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     return(xy)
   }) 
   print('Build xo/xn Done')
+  tl$xx=xn
+  tl$lsst=sub('_New','',tl$Var1)
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   print('Refreshing fnfo')
   load('~/mfnfo.RData')
+  mgno=merge(tl,mfnfo,by='lsst',all.x = TRUE)
+  mgno$xx=mgno$xx.x
+  mfnfo=mgno[,names(mfnfo)]
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-  rn=c(mfnfo$lsst,paste(file_path_sans_ext(mfnfo$lsst),'_New.wmv',sep=''))
+  rn1=c(mfnfo$lsst,paste(file_path_sans_ext(mfnfo$lsst),'_New.wmv',sep=''))
+  rn=rn1[file.exists(rn1)]
   fn=allall[(!allall %in% rn)]
   addfnfo=file.info(fn)
   if(nrow(addfnfo)>0){
@@ -61,9 +67,17 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo$nfn=paste(file_path_sans_ext(addfnfo$lsst),'_New.wmv',sep='')
     addfnfo$md5sn=md5sum(addfnfo$nfn)
     addfnfo=addfnfo[,names(mfnfo)]
-    mfnfo=rbind(mfnfo,addfnfo)
+    load('~/fnfo11-16-2016.RData')
+    mgx=merge(addfnfo,fnfo[,c('lsst','xx','md5s')],by='lsst',all.x = TRUE)
+    mgx$xx=mgx$xx.y
+    mgx$md5s=mgx$md5s.y
+    mgy=mgx[,names(mfnfo)]
+    mfnfo=rbind(mfnfo,mgy)
+    print(paste(nrow(addfnfo),'records added'))
+    source('~/pllist.git/EnterStartStop.R')
+  }else{
+    save(mfnfo,wpls,file='~/mfnfo.RData')
   }
-  save(mfnfo,wpls,file='~/mfnfo.RData')
   source('~/pllist.git/makeunique.R')
   print('ORDERALL')
   source('~/pllist.git/orderallwpl.R')
