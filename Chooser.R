@@ -2,7 +2,9 @@ scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 require(bitops)
 source("~/Local.R")
-
+if(all(file.info(dir(pattern='*.wpl',path='c:/my playlists',full.names = TRUE))$mtime <= 
+       file.info('~/mfnfo.RData')$mtime))
+{
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('~/')
   load('mfnfo.RData')
@@ -49,4 +51,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     }
   }
 } else
-  print('No flk')
+  print
+}else{
+  print('new entries found in wpls, re-run BuildxxALT.R')
+}
