@@ -73,8 +73,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     mgx$md5s=mgx$md5s.y
     mgy=mgx[,names(mfnfo)]
     mfnfo=rbind(mfnfo,mgy)
+    save(mfnfo,wpls,file='~/mfnfo.RData')
     print(paste(nrow(addfnfo),'records added'))
-    source('~/pllist.git/EnterStartStop.R')
+    source('~/pllist.git/makeWPLS.R')
   }else{
     save(mfnfo,wpls,file='~/mfnfo.RData')
   }
