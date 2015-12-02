@@ -22,4 +22,5 @@ for (j in 1:length(wpls)) {
   fnno=c(fnnh,sub('..\\My','C:\\My',lssz,fixed = TRUE),fnnt)
   setwd(paste(pldrive,'My Playlists',sep=""))
   writeLines(fnno,wpls[j])
+  save(mfnfo,wpls,file='~/mfnfo.RData') # update file mtime for chooser time test if mfnfo to date
 }
