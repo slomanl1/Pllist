@@ -13,14 +13,16 @@ while(TRUE){
       xx=mfnfo$xx
       selectL = select.list(c('AND','OR','NOT'),graphics=TRUE)
       print(selectL)
-      if (length(selectL > 0)) { 
+      if(nchar(selectL)> 0) { 
+        print(nchar(selectL))
         selector = select.list(wpls,multiple=TRUE,graphics=TRUE)
         if (length(selector) > 0) {
           print(selector)
           bits=0
           a=1:length(wpls)
           for (i in 1:length(selector)){
-            b=a[selector[i]==wpls]
+            #b=a[selector[i]==wpls]
+            b=which(selector[i]==wpls)
             if (!is.na(b)) 
               bits = bitOr(bits,2^(b-1))
           }
@@ -52,6 +54,8 @@ while(TRUE){
         }else{
           break
         }
+      }else{
+        break
       }
     }
     break
