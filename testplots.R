@@ -39,7 +39,7 @@ if (!.GlobalEnv$tpexist) {
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
-                  print(paste('hdl isunsorted=',.GlobalEnv$unsorted))
+                  #print(paste('hdl isunsorted=',.GlobalEnv$unsorted))
                   .GlobalEnv$ssv = getFnx()
                   .GlobalEnv$avail = TRUE
                 }
@@ -66,7 +66,7 @@ if (!.GlobalEnv$tpexist) {
       .GlobalEnv$ssv = NULL
       .GlobalEnv$avail = TRUE
       .GlobalEnv$tpexist <- FALSE
-      print('tab destroyed handler')
+      #print('tab destroyed handler')
       if(isExtant(fwind))
         dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
