@@ -56,6 +56,8 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   mgno$xx=mgno$xx.x
   mfnfo=mgno[,names(mfnfo)]
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+  msdn=which(file.exists(mfnfo$nfn) & is.na(mfnfo$md5sn))
+  mfnfo[msdn,'md5sn']=md5sum(mfnfo[msdn,'nfn'])
   rn1=c(mfnfo$lsst,paste(file_path_sans_ext(mfnfo$lsst),'_New.wmv',sep=''))
   rn=rn1[file.exists(rn1)]
   fn=allall[(!allall %in% rn)]
@@ -67,12 +69,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo$nfn=paste(file_path_sans_ext(addfnfo$lsst),'_New.wmv',sep='')
     addfnfo$md5sn=md5sum(addfnfo$nfn)
     addfnfo=addfnfo[,names(mfnfo)]
-    load('~/fnfo11-16-2016.RData')
-    mgx=merge(addfnfo,fnfo[,c('lsst','xx','md5s')],by='lsst',all.x = TRUE)
-    mgx$xx=mgx$xx.y
-    mgx$md5s=mgx$md5s.y
-    mgy=mgx[,names(mfnfo)]
-    mfnfo=rbind(mfnfo,mgy)
+    mfnfo=rbind(mfnfo,addfnfo)
     save(mfnfo,wpls,file='~/mfnfo.RData')
     print(paste(nrow(addfnfo),'records added'))
     source('~/pllist.git/makeWPLS.R')
