@@ -62,6 +62,7 @@ for( i in 2:len(sls)){
 lsst1=mfnfo[is.na(mfnfo$md5sn),]$lsst
 lsst=c(lsst1,mfnfo[!is.na(mfnfo$md5sn),]$nfn)
 ms=(lsst[!lsst %in% sls]) # missing
+unlink('missing.m3u')
 if(length(ms)>0)
   writeLines(paste('C:/My Videos/RPDNClips/',ms,sep=''),'missing.M3U')
 
