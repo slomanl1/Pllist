@@ -6,6 +6,7 @@ StartMyGUI <- function() {
   startt=EnterStartStop()
   print(len(startt))
   if(len(startt)>0){
+    endtt=0
     if(!.GlobalEnv$ToEnd)
       endtt=EnterStartStop("Enter Time Duration (secs) or (mm:ss), 
                            or Enter/Esc for End of File\n",TRUE)
