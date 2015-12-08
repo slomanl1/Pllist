@@ -1,8 +1,10 @@
+source('~/pllist.git/testnewginput.R')
 EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FALSE){
   .GlobalEnv$ss=NULL
   while(TRUE){
-    ginput(x, icon="question", title=.GlobalEnv$svt, handler = function(h,...) 
-      .GlobalEnv$ss=h$input)
+#     ginput(x, icon="question", title=.GlobalEnv$svt, handler = function(h,...) 
+#       .GlobalEnv$ss=h$input)
+    ALTGinput(x,allowEnter)
     startt= .GlobalEnv$ss   
     if(len(startt)>0){
       if(!is.na(as.integer(startt))){
