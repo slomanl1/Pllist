@@ -66,6 +66,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo$nfn=paste(file_path_sans_ext(fn),'_New.wmv',sep='')
     addfnfo$md5sn=NA
     mfnfo=rbind(mfnfo,addfnfo)
+    tod=format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+    lastr=nrow(mfnfo)
+    mfnfo[(lastr-len(fn)+1):lastr,c(7,8,9)]=tod
     save(mfnfo,wpls,file='~/mfnfo.RData')
     setwd(paste(pldrive,'My Playlists',sep=""))
     lss = unique(readLines('wa1.wpl'))
