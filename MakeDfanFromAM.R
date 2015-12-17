@@ -1,6 +1,7 @@
 library(gWidgets)
 options(guiToolkit = "RGtk2") 
 source('~/pllist.git/EnterStartStop.R')
+source('~/pllist.git/StartMyGuiTrimmer.R')
 
 setwd('~/')
 if(exists('w'))
@@ -32,6 +33,7 @@ fmissing=NULL
 deleted=FALSE
 nexistpas=FALSE
 fnsave=''
+convert=FALSE
 
 dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
@@ -98,7 +100,8 @@ if (file.exists('D:/PNMTALL')) {
       ttl = which(substr(am,1,1) == '=')
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       fmss = suppressWarnings(normalizePath(xmissing, winslash = "/"))
-      fmissing=subset(fmss,!grepl('_New',fmss))
+      #fmissing=subset(fmss,!grepl('_New',fmss))
+      fmissing=fmss
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
     }
@@ -448,12 +451,13 @@ while(TRUE)
   avail = FALSE
   if (len(fns) > 0) { # null HAS LENGTH 0
     dispose(w)
-    writeLines(fns,'fns.m3u') # Write playlist
+    #writeLines(fns,'fns.m3u') # Write playlist
     load('headfoot.RData')
     writeLines(as.character(c(
       header,paste('<media src="',fns,'"/>'),footer
     ),sep = ''),'fns.wpl')
     shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
+    unlink('~/fns.wpl')
     Passt=TRUE
     unsorted=FALSE
     avail=FALSE
