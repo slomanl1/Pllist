@@ -20,8 +20,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     load('~/mfnfo.RData')
     setwd(paste(drive,'My Videos/RPDNClips',sep=""))
     ex=file.exists(mfnfo$lsst)
-    exn=file.exists(paste(file_path_sans_ext(mfnfo$lsst),'_New.wmv',sep=''))
-    mfnfo=mfnfo[ex|exn,] #remove non existent files from fnfo
+    mfnfo=mfnfo[ex,] #remove non existent files from fnfo
     fns=fns1[order(odr)]
     fn=fns
     setwd('C:\\RealPlayerDownloads')
@@ -63,7 +62,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo$lsst=fn
     addfnfo$xx=2^(length(wpls)-1) # wa1.wpl
     addfnfo$md5s=md5sum(fn)
-    addfnfo$nfn=paste(file_path_sans_ext(fn),'_New.wmv',sep='')
+    #addfnfo$nfn=paste(file_path_sans_ext(fn),'_New.wmv',sep='')
     addfnfo$md5sn=NA
     mfnfo=rbind(mfnfo,addfnfo)
     tod=format(Sys.time(), "%Y-%m-%d %H:%M:%S")
@@ -77,7 +76,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
     m3uname <- paste(pldrive,'My Playlists/',sep='')
     write(lsx1,paste(m3uname,'wa1.wpl',sep='')) # add new clips to wa1.wpl
-    lsx2=c(lss[1:15],adds,tail(lss,n=3))
+    lsx2=c(lss[1:(which(trim(lss)=='<seq>')[1])],adds,tail(lss,n=3))
     write(lsx2,paste('C:/My Videos/','fns.wpl',sep=''))
     shell('wmplayer "c:\\My Videos\\fns.wpl')
     unlink('c:/my Videos/fns.wpl')
