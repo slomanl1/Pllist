@@ -13,8 +13,8 @@ for (j in 1:length(wpls)) {
     lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|mp4|flv|asf|wmv',lss[i])[1]+2)
   }
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-  lssy=sub('_New','',lssx)
-  dxx=data.frame(lsst=lssy,lss)
+  lssy=sub('_','',lssx)
+  dxx=data.frame(lsst=lssx,lss)
   lssj=merge(dxx,mfnfo[,c('lsst','mtime')])
   lssz=as.character(lssj[order(lssj$mtime),'lss'])
   fnnh=fnn[1:(strt-1)] #wpl header
@@ -22,5 +22,6 @@ for (j in 1:length(wpls)) {
   fnno=c(fnnh,sub('..\\My','C:\\My',lssz,fixed = TRUE),fnnt)
   setwd(paste(pldrive,'My Playlists',sep=""))
   writeLines(fnno,wpls[j])
-  save(mfnfo,wpls,file='~/mfnfo.RData') # update file mtime for chooser time test if mfnfo to date
 }
+
+save(mfnfo,wpls,file='~/mfnfo.RData') # update file mtime for chooser time test if mfnfo to date
