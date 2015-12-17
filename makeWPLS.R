@@ -3,25 +3,20 @@ source(scriptStatsRemoveAll) #clear bones
 require(bitops)
 source("~/Local.R")
 setwd('~/')
-load('mfnfo.RData') # load lsst, wpls and xx
+load('~/mfnfo.RData') # load lsst, wpls and xx
 
 makeWpl=function(flist,slctor){
   setwd(paste(pldrive,'My Playlists',sep=""))
-  lss = unique(readLines(slctor))
-  setwd(paste(pldrive,'My OldPlaylists',sep=""))
-  writeLines(lss,slctor) # save old playlist
-  setwd(paste(pldrive,'My Playlists',sep=""))
-  strt=grep('media',lss)[1]
-  fnnh=lss[1:(strt-1)] #wpl header
-  fnnt=lss[(length(lss)-2):length(lss)] #wpl footer
-  
+  load('~/headFoot.RData')
+  header=sub('fns',file_path_sans_ext(slctor),header)
+  header=sub('3611',len(flist),header)
   js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
   adds=sprintf(js,basename(flist))
-  lsx1=c(fnnh,adds,fnnt)
+  lsx1=c(header,adds,footer)
   m3uname <- paste(pldrive,'My Playlists/',sep='')
   write(lsx1,paste(m3uname,slctor,sep=''))
 }
-wpls = sort(dir('c:/my Playlists',pattern = '*.wpl'))
+
 flist1=NULL
 for(selector in  wpls){
   print(selector)
@@ -30,8 +25,7 @@ for(selector in  wpls){
   bits = bitOr(bits,2^(b-1))
   print(bits)
   flisto=flist1
-  flist1a = mfnfo[bitAnd(mfnfo$xx,bits) == bits & is.na(mfnfo$md5sn),]$lsst
-  flist1=c(flist1a,mfnfo[bitAnd(mfnfo$xx,bits) == bits & !is.na(mfnfo$md5sn),]$nfn)
+  flist1 = mfnfo[bitAnd(mfnfo$xx,bits) == bits,]$lsst
   if(selector=='wa1.wpl'){
     flist1=flist1[!flist1 %in% flisto]
   }
@@ -59,15 +53,14 @@ slss=capture.output(cat(tdf[1:(tt[1]),'selector']))
 for( i in 2:len(sls)){
   slss[i]=capture.output(cat(tdf[tt[i-1]:(tt[i]-1),'selector']))
 }
-lsst1=mfnfo[is.na(mfnfo$md5sn),]$lsst
-lsst=c(lsst1,mfnfo[!is.na(mfnfo$md5sn),]$nfn)
+lsst=mfnfo$lsst
 ms=(lsst[!lsst %in% sls]) # missing
 unlink('missing.m3u')
 if(length(ms)>0)
   writeLines(paste('C:/My Videos/RPDNClips/',ms,sep=''),'missing.M3U')
 
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-save(mfnfo,wpls,file='~/fnfo.RData')
+save(mfnfo,wpls,file='~/mfnfo.RData')
 setwd(paste(pldrive,'My Playlists',sep=""))
 
 ###################### orderall ######################
