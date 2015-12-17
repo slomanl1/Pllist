@@ -4,7 +4,7 @@ load('~/mfnfo.RData')
 
 source('~/Local.R') #get drive
 
-lsst=c(mfnfo[is.na(mfnfo$md5sn),'lsst'],mfnfo[!is.na(mfnfo$md5sn),'nfn'])
+lsst=as.character(mfnfo$lsst)
 k=0
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
 removers = ""
@@ -39,7 +39,7 @@ for (i in 1:length(wpls)) {
 }
 
 setwd("~/")
-mfnfo=rbind(mfnfo[mfnfo$lsst %in% lsst,],mfnfo[mfnfo$nfn %in% lsst,])
+mfnfo=mfnfo[mfnfo$lsst %in% lsst,]
 save(mfnfo,wpls,file='~/mfnfo.RData')
 print(paste('Removed -',removers))
 
