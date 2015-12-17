@@ -41,7 +41,11 @@ while(TRUE){
           else {
             flist3 = paste(drive,'My Videos/RPDNClips/',flist2,sep='')
             flistn= paste(file_path_sans_ext(flist3),'_New.',file_ext(flist3),sep='')
-            flist=c(flist3[file.exists(flist3)],flistn[file.exists(flistn)])
+            flist1=c(flist3[file.exists(flist3)],flistn[file.exists(flistn)])
+            fl=data.frame(lsst=basename(flist1),fn=flist1)
+            mgno=merge(fl,mfnfo[,c('lsst','mtime')])
+            mgn=mgno[order(mgno$mtime),]
+            flist=as.character(mgn$fn)
             indxs=regexpr('wpl',wpls)[1:length(wpls)]
             fname=""
             for (i in 1:length(wpls)){
