@@ -1,17 +1,24 @@
 StartMyGUI <- function() {
+  print('Gui Started')
   startt=EnterStartStop()
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
     print('Convert H265')
-    unlink('~/out.mp4')
+    of=paste(basename(tempfile()),'.mp4',sep='')
+    print(of)
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
-                svt,'" c:/Users/Larry/Documents/out.mp4',sep=''),translate = TRUE)
-    if(!file.rename('out.mp4',svt))
+                svt,'" ',of,',' ,sep=''),translate = TRUE)
+    #     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
+    #                 svt,'" c:/Users/Larry/Documents/out.mp4',sep=''),translate = TRUE)
+    if(!file.rename(of,svt)){
       print('file rename back to orig failed')
+    }else{
+      unlink(of)
+    }
     startt=NULL
   }
   
-  print(len(startt))
+  print(paste('len startt=',len(startt)))
   if(len(startt)>0){
     endtt=0
     if(!.GlobalEnv$ToEnd)
