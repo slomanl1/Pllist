@@ -104,29 +104,30 @@ if (!.GlobalEnv$tpexist) {
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
     print(paste('svt=',.GlobalEnv$svt))
-    startt=EnterStartStop()
-    
-    print(len(startt))
-    if(len(startt)>0){
-      endtt=EnterStartStop("Enter End Time (secs) or (mm:ss)\n")
-      unlink('~/temppt.mp4')
-      file.rename(svt,'~/temppt.mp4')
-      svtt1=gsub(' ','',svt) # remove spaces for ffmpeg (does not accept " in filename's)
-      svtt='c:/RealPlayerDownloads/trimmed.mp4'
-      entf=FALSE
-      if(len(endtt)==0){
-        entf=TRUE
-        endtt=10000
-      }
-      cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
-      print(cmdd)
-      eval(parse(text=cmdd))
-      if(entf){
-        file.rename(svtt,svt) # replace svt has trimmed with start to end
-      }else{
-        file.rename('~/temppt.mp4',svt)  # put back original, svtt has trimmed
-      }
-    }
+    StartMyGUI()
+#     startt=EnterStartStop()
+#     
+#     print(len(startt))
+#     if(len(startt)>0){
+#       endtt=EnterStartStop("Enter End Time (secs) or (mm:ss)\n")
+#       unlink('~/temppt.mp4')
+#       file.rename(svt,'~/temppt.mp4')
+#       svtt1=gsub(' ','',svt) # remove spaces for ffmpeg (does not accept " in filename's)
+#       svtt='c:/RealPlayerDownloads/trimmed.mp4'
+#       entf=FALSE
+#       if(len(endtt)==0){
+#         entf=TRUE
+#         endtt=10000
+#       }
+#       cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
+#       print(cmdd)
+#       eval(parse(text=cmdd))
+#       if(entf){
+#         file.rename(svtt,svt) # replace svt has trimmed with start to end
+#       }else{
+#         file.rename('~/temppt.mp4',svt)  # put back original, svtt has trimmed
+#       }
+#     }
   }
   )
   
