@@ -48,28 +48,30 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   }) 
   print('Build xo/xn Done')
   tl$xx=xn
-  tl$lsst=sub('_New','',tl$Var1)
+  tl$lsst=sub('_REN','',tl$Var1)
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   print('Refreshing fnfo')
   load('~/mfnfo.RData')
-  mgno=merge(tl,mfnfo,by='lsst',all.x = TRUE)
-  mgno$xx=mgno$xx.x
-  mfnfo=mgno[,names(mfnfo)]
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-  msdn=which(file.exists(mfnfo$nfn) & is.na(mfnfo$md5sn))
-  mfnfo[msdn,'md5sn']=md5sum(mfnfo[msdn,'nfn'])
-  rn1=c(mfnfo$lsst,paste(file_path_sans_ext(mfnfo$lsst),'_New.wmv',sep=''))
+  mg1=merge(mfnfo,tl[,c('Var1','xx')],by.x='lsst',by.y='Var1')
+  mg1$xx=mg1$xx.y
+  mfnfo=mg1[,names(mfnfo)]
+  rn1=as.character(mfnfo$lsst)
   rn=rn1[file.exists(rn1)]
   fn=allall[(!allall %in% rn)]
   addfnfo=file.info(fn)
   if(nrow(addfnfo)>0){
-    addfnfo$lsst=sub('_New','',fn)
+    addfnfo$lsst=sub('REN_New','',fn)
     addfnfo$xx=0 # not in any playlist
+    #addfnfo$nfn=NA
     addfnfo$md5s=md5sum(addfnfo$lsst)
-    addfnfo$nfn=paste(file_path_sans_ext(addfnfo$lsst),'_New.wmv',sep='')
-    addfnfo$md5sn=md5sum(addfnfo$nfn)
+    #addfnfo$nfn=paste(file_path_sans_ext(addfnfo$lsst),'_New.wmv',sep='')
+    addfnfo$md5sn=md5s
     addfnfo=addfnfo[,names(mfnfo)]
     mfnfo=rbind(mfnfo,addfnfo)
+    tod=format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+    lastr=nrow(mfnfo)
+    mfnfo[(lastr-len(fn)+1):lastr,c(7,8,9)]=tod
     save(mfnfo,wpls,file='~/mfnfo.RData')
     print(paste(nrow(addfnfo),'records added'))
     source('~/pllist.git/makeWPLS.R')
