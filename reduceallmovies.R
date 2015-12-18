@@ -1,11 +1,12 @@
 cd('~/')
 cls=NULL
-ptn=function(x) prettyNum(x,big.mark = ",")
 cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
-#cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
-#cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
-cls=c(cls,dir('c:/Users/Larry/Downloads',recursive = TRUE,full.names = TRUE))
-cls=cls[which(!grepl('crdownload|ini',cls))]
+cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
+cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
+dwnlds1=dir('c:/Users/Larry/Downloads',recursive = TRUE,full.names = TRUE)
+dwnlds=dwnlds1[grepl('REDUCE',dwnlds1)]
+cls=c(cls,dwnlds)
+cls=cls[which(!grepl('crdownload|ini|_REN',cls))]
 fna=cls # all files (including _New's)
 cls=cls[which(!grepl('_New',cls))]
 cla=fna[which(grepl('_New',fna))]
@@ -30,33 +31,26 @@ if(!file.exists('~/msgis.txt')){
 }
 for(fn in dfa$cls)
 { 
+  print('')
   print(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
-              ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)),'bytes Remaining',Sys.time()))
+              ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
   nfn=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
   print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
-  ddd=shell(paste('mediainfo',fn),intern = TRUE)
+  ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
   hevcFlag=any(grepl('HEVC',ddd))
   if(file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$cls==fn),'sz']){
-    if(file.exists('~/out.mp4')){
-      shell('tasklist > tl.txt')
-      tl=readLines('tl.txt')
-      if(any(grepl('ffmpeg.exe',tl,fixed=TRUE)))
-        shell('taskkill /F /IM  ffmpeg.exe')
-      if(!file.remove('~/out.mp4')){
-        stop('Cannot Remove out.mp4, kill ffmpeg.exe')}
-    }
     if(!hevcFlag){
       print(subset(ddd,grepl('Duration',ddd))[1])
+      of=paste(basename(tempfile()),'.mp4',sep='')
+      print(of)
       msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
-                       fn,'" c:/Users/Larry/Documents/out.mp4',sep=''),translate = TRUE,intern=TRUE)
+                       fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
       print(tail(msgi))
-      
-      if(file.exists('~/out.mp4')){
-        if(file.size('~/out.mp4')>1000){
-          #       shell("c:/Users/Larry/Documents/HexDump/bin/exiftool c:/Users/Larry/Documents/out.mp4 > exifdata.txt")
-          #       exif=readLines('~/exifdata.txt')
+      if(file.exists(of)){
+        if(file.size(of)>1000){
           if(any(grepl('hevc',msgi))){
-            file.copy('~/out.mp4',nfn)
+            if(file.copy(of,nfn))
+              unlink(of)
             print(paste(fn,ptn(file.size(fn))))
             print(paste(nfn,ptn(file.size(nfn))))
             file.remove(fn)
@@ -94,4 +88,3 @@ for(fn in dfa$cls)
     }
   }
 }
-  
