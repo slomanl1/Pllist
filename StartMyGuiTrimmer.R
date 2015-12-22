@@ -20,12 +20,14 @@ StartMyGUI <- function() {
   
   print(paste('len startt=',len(startt)))
   if(len(startt)>0){
+    print(paste('startt=',startt))
     endtt=0
     if(!.GlobalEnv$ToEnd)
       endtt=EnterStartStop("Enter Time Duration (secs) or (mm:ss), 
                            or Enter/Esc for End of File\n",TRUE)
     
-    if(startt > 0 & len(endtt)){
+    #if(startt > 0 & len(endtt)){
+      if(len(endtt)){
       svtt='c:/RealPlayerDownloads/trimmed.mp4'
       unlink('~/temppt.mp4')
       unlink(svtt)

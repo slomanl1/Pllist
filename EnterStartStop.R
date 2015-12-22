@@ -13,12 +13,25 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       gtkMainQuit()
     }else{
       print(svalue(h$obj))
+      .GlobalEnv$ToEnd=FALSE
       .GlobalEnv$ss=svalue(h$obj)}
   })
   addHandlerDestroy(obj, handler = function(h,...) {
     if(!.GlobalEnv$bOK)
       .GlobalEnv$ss=NULL
     gtkMainQuit()})
+  
+  obutton=gbutton("OK", container=ww,handler=function(h,...)
+  {
+    .GlobalEnv$bOK=FALSE
+    if(ss >= 0){
+      .GlobalEnv$bOK=TRUE
+      dispose(ww)
+      gtkMainQuit()
+    }else{
+      focus(obj)=TRUE
+    }
+  })
   
   tbutton=gbutton("ToEnd", container=ww,handler=function(h,...)
   {
@@ -30,23 +43,6 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       focus(obj)=TRUE
     }
   })
-  obutton=gbutton("OK", container=ww,handler=function(h,...)
-  {
-    .GlobalEnv$bOK=FALSE
-    if(ss > 0){
-      .GlobalEnv$bOK=TRUE
-      dispose(ww)
-      gtkMainQuit()
-    }else{
-      focus(obj)=TRUE
-    }
-  })
-  xbutton=gbutton("Cancel", container=ww,handler=function(h,...) 
-  {
-    .GlobalEnv$ss=NULL
-    dispose(ww)
-    gtkMainQuit()
-  })
   
   if(!allowEnter)
     tbutton=gbutton("Convert", container=ww,handler=function(h,...){
@@ -54,6 +50,14 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       dispose(ww)
       gtkMainQuit()
     })
+
+  xbutton=gbutton("Cancel", container=ww,handler=function(h,...) 
+  {
+    .GlobalEnv$ss=NULL
+    dispose(ww)
+    gtkMainQuit()
+  })
+
   
   focus(obj)=TRUE
   gtkMain()
@@ -62,8 +66,6 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
 EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FALSE){
   .GlobalEnv$ss=NULL
   while(TRUE){
-#     ginput(x, icon="question", title=.GlobalEnv$svt, handler = function(h,...) 
-#       .GlobalEnv$ss=h$input)
     ALTGinput(x,allowEnter)
     startt= .GlobalEnv$ss   
     if(len(startt)>0){
