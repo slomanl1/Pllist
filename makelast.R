@@ -14,7 +14,8 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('C:\\RealPlayerDownloads')
   fns1=dir(pattern='*.mp4')
   fns1=fns1[!grepl('.mp4.',fns1)]
-  exts=c('blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pna.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4')
+  exts1=c('blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pn.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4')
+  exts=gsub('.mp4','',exts1,fixed=TRUE)
   odr=sample(last:last+length(fns1),length(fns1),replace=T) 
   if(length(odr)!=0){
     load('~/mfnfo.RData')
@@ -29,8 +30,10 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       cc=''
       for (j in 1:length(exts)){
         if (grepl(exts[j],fns[i])){
-          cc=substr(exts[j],1,nchar(exts[j])-4)}
+          cc=paste(cc,exts[j],sep='')}
       }
+      for(i in 1:len(exts))
+          cc=sub(paste(exts[i],exts[i],sep=''),exts[i],cc)
       exist=TRUE
       while (exist){
         fn[i]=paste(as.character(last),cc,'.wmv',sep='')
