@@ -84,7 +84,7 @@ if (file.exists('D:/PNMTALL')) {
       for(dirpath in dirpaths){
         ng = dirtbl[which(dirpath==basename(as.character(dirtbl$Var1))),'Freq']
         nf = nf+ng
-        setWinProgressBar(pb, nf, title = paste(dirpath,'-',ng,';',(nfiles-nf),'files remaining'))
+        setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng,';',(nfiles-nf),'files remaining'))
         shell(paste('getm',dirs[basename(dirs) %in% dirpath],' >>  allmetadata.txt')) 
       }
       close(pb)
