@@ -60,6 +60,7 @@ for(fn in dfa$cls)
             badx=badx+1
             save(bads,badx,file='~/bads.RData')
             print('bad metadata')
+            unlink(of)
           }
         }else{
           bads[badx,]$fname=fn
@@ -67,6 +68,7 @@ for(fn in dfa$cls)
           badx=badx+1
           save(bads,badx,file='~/bads.RData')
           print('Bad size')
+          unlink(of)
         }
       }else{
         bads[badx,]$fname=fn
