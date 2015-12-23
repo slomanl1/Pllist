@@ -52,8 +52,11 @@ while(TRUE){
               if (bitAnd(bits,2^(i-1))>0)    
                 fname = paste(fname,substr(wpls[i],1,indxs[i]-2),sep='_')
             }
-            m3uname <- paste(pldrive,'My Playlists/',sep='')
-            write(flist,paste(m3uname,selectL,fname,'.M3U',sep='_'))
+            #m3uname <- paste(pldrive,'My Playlists/',sep='')
+            write(flist,paste('~/',selectL,fname,'.M3U',sep='_'))
+            write(flist,'~/fns.M3U')
+            shell('wmplayer "c:\\Users\\Larry\\Documents\\fns.m3u')
+            unlink('~/fns.M3U')
           }
         }else{
           break
