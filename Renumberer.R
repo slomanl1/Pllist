@@ -5,20 +5,29 @@ source("~/Local.R")
 setwd('c:/my videos/rpdnclips')
 load('~/mfnfo.RData') # load fnfo, lsst, wpls and xx
 lsst=mfnfo$lsst
-bn=gsub('[a-z|A-Z]','',lsst)
-bc=gsub('[0-9]','',lsst)
+lsstn=gsub('_REN','',lsst)
+bn=gsub('[a-z|A-Z]','',lsstn)
+bc=gsub('[0-9]','',lsstn)
 bn=substr(bn,1,nchar(bn)-2)
 namer=mfnfo
 namer$bn=as.integer(bn)
 namer$info=bc
 namer=namer[order(namer$mtime),]
-#namer=namer[order(namer$bn),]
+while(any(duplicated(namer$mtime))){ # ensure that no two entires are equal, sep by 1 second
+  namer$mtime=namer$mtime+duplicated(namer$mtime)
+}
+
 namer$newfn=1:nrow(namer)
 namer$newfn=paste(namer$newfn,'_REN',namer$info,sep='')
 namer$ofn=NA
 namer[file.exists(namer$lsst),]$ofn=namer[file.exists(namer$lsst),]$lsst
 namer[file.exists(namer$newfn),]$ofn=namer[file.exists(namer$newfn),]$newfn
-
+rens=which(grepl('_REN',namer$ofn))
+norens=which(!grepl('_REN',namer$ofn))
+# if(len(norens))
+#   namer[norens,]$newfn=paste(namer[norens,]$newfn,'_REN',namer[norens,]$info,sep='')
+if(len(rens))
+  namer[rens,]$newfn=gsub('_REN','',namer[rens,]$newfn)
 answ=gconfirm('RENAME .wpl - Are you Sure?')
 if(answ){
   rnmd=file.rename(as.character(namer$ofn),as.character(namer$newfn))
