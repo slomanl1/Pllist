@@ -131,7 +131,7 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   
-  wm <- gwindow("Metadata",width=400)
+  wm <- gwindow("Metadata",width=700)
   visible(wm) <- FALSE
   gpm<- ggroup(horizontal=FALSE, container=wm)
   tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
@@ -151,14 +151,17 @@ if (!.GlobalEnv$tpexist) {
     enabled(w) <- FALSE
     svt=normalizePath(getFnx(),winslash = '/')
     print(svt)
-    cmdd=paste('shell("exiftool.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
+    cmdd=paste('shell("mediainfo.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
     .GlobalEnv$meta=readLines('meta.txt')
     visible(wm) <- TRUE
-    tabm[,]=meta
-    
-  }
+    mm=matrix(NA,len(meta),2)
+    mm[,1]=substr(meta,1,41)
+    mm[,2]=substr(meta,42,nchar(meta))
+    mg=data.frame(mm,stringsAsFactors = FALSE)
+    tabm[,]=mg
+    }
   )
   
   gbutton("dismiss", container = bg, handler = function(h,...) {
