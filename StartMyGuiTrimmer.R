@@ -10,8 +10,8 @@ StartMyGUI <- function() {
                 svt,'" ',of,',' ,sep=''),translate = TRUE)
     #     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
     #                 svt,'" c:/Users/Larry/Documents/out.mp4',sep=''),translate = TRUE)
-    if(!file.rename(of,svt)){
-      print('file rename back to orig failed')
+    if(!file.rename(of,sub('REDUCE','',svt))){
+      print('file rename back to orig failed - REDUCE')
     }else{
       unlink(of)
     }
