@@ -155,6 +155,7 @@ if (!.GlobalEnv$tpexist) {
     print(cmdd)
     eval(parse(text=cmdd))
     .GlobalEnv$meta=readLines('meta.txt')
+    unlink('meta.txt')
     visible(wm) <- TRUE
     mm=matrix(NA,len(meta),2)
     mm[,1]=substr(meta,1,41)
