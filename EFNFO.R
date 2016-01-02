@@ -5,7 +5,7 @@ source(scriptStatsRemoveAll) #clear bones
 load('~/efnfo.RData')
 load('~/dfan.RData')
 load('~/mssg.RData')
-dff=data.frame(filename=dfan$filename,bn=basename(sub('_New','',dfan$filename)),dtitle=dfan$Title)
+dff=data.frame(filename=dfan$filename,bn=basename(sub('_New','',dfan$filename)),dtitle=dfan$Title,stringsAsFactors = FALSE)
 mgdf=merge(efnfo,dff,by='bn',all.y = TRUE)
 mgdf$Dmtime=file.mtime(as.character(mgdf$filename.y))
 mgdf$Msize=file.size(as.character(mgdf$filename.y))
@@ -29,12 +29,30 @@ mgdn2[is.na(mgdn2$filename.x.x),'mtime.x']=mgdn2[is.na(mgdn2$filename.x.x),'mtim
 mgdn=mgdn2[,c('bn','filename.x.x',"size","isdir","mode","mtime.x","ctime","atime",
               "exe","filename.y.x","dtitle.x","Dmtime.x" )]
 #names(mgdn)=names(mgdn1) ########
-mgdn3=mgdn[is.na(mgdn$filename.x.x),]
+mgdn3=mgdn[is.na(mgdn$filename.x),]
 agg=mgdn3[which(sapply(1:(nrow(mgdn3)),
                        function(x) return(agrepl(mgdn3$dtitle[x],mgdn3$bn[x],ignore.case = TRUE,
-                                                 max.distance = .6)))==1),c('dtitle.x','bn')]
-
+                                                 max.distance = .6)))==1),c('filename.y.x','dtitle.x','bn')]
+#-----------------------------------------------------------------------------------------
 print(agg)
+agg=agg[!agg$bn %in% mssg$bn,]
+j=nrow(agg)
+i=nrow(mssg)+1
+k=1
+while(j>0){
+  mssg[i,]=NA
+  mssg[i,]$bn=agg[k,]$bn
+  mssg[i,]$filename.y=normalizePath(as.character(agg[k,]$filename.y.x),winslash = '/')
+  mssg[i,]$dtitle=agg[k,]$dtitle.x
+  mssg[i,]$Dmtime=file.mtime(as.character(mssg[i,]$filename.y))
+  i=i+1
+  j=j-1
+  k=k+1
+  save(mssg,file='~/mssg.RData')
+}
+
+# consider adding agg to mssg to allow mtile entry manual or from matching E: dates
+
 mgdnx=mgdn[!is.na(mgdn$mtime.x),]
 ### GET title from EDrive backup of originals of e:/PNMTALL of bn in print expression above
 reverter=mgdnx[abs(as.POSIXlt(mgdnx$mtime.x)-as.POSIXlt(mgdnx$Dmtime.x))>40,c('filename.y.x','mtime.x','Dmtime.x')]
