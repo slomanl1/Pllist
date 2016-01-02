@@ -22,7 +22,7 @@ if(nrow(mssg)>0){
   save(mssg,file='~/mssg.RData')
 }
 mgdn2=merge(mgdn1,mssg,by='bn',all.x = TRUE)
-mgdn2$mtime.x=as.character(mgdn2$mtime.x)
+mgdn2$mtime.x=as.character(mgdn2$mtime.y)
 # get e: filenames and mtime from filename.x.y and mtime.y
 mgdn2[is.na(mgdn2$filename.x.x),'filename.x.x']=mgdn2[is.na(mgdn2$filename.x.x),'filename.x.y']
 mgdn2[is.na(mgdn2$filename.x.x),'mtime.x']=mgdn2[is.na(mgdn2$filename.x.x),'mtime.y']
