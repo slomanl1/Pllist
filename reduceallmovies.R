@@ -1,5 +1,6 @@
 cd('~/')
 cls=NULL
+dwnlds=NULL
 cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
 cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
 cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
@@ -25,7 +26,7 @@ bads=data.frame(fname=NA,errorC=NA)
 if(file.exists('~/bads.RData'))
   load('~/bads.RData')
 
-dfa=dfa[!dfa$cls %in% bads$fname,]
+dfa=dfa[!toupper(dfa$cls) %in% toupper(bads$fname),]
 if(!file.exists('~/msgis.txt')){
   writeLines('','~/msgis.txt')
 }
@@ -34,7 +35,8 @@ for(fn in dfa$cls)
   print('')
   print(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
               ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
-  nfn=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
+  nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
+  nfn=sub('REDUCE','',nfn1)
   print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
   ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
   hevcFlag=any(grepl('HEVC',ddd))
