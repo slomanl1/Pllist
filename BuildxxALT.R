@@ -50,7 +50,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   tl$xx=xn
   tl$lsst=sub('_REN','',tl$Var1)
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-  print('Refreshing fnfo')
+  print('Refreshing mfnfo')
   load('~/mfnfo.RData')
   setwd(paste(drive,'My Videos/RPDNClips',sep=""))
   mg1=merge(mfnfo,tl[,c('Var1','xx')],by.x='lsst',by.y='Var1')
