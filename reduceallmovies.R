@@ -2,7 +2,7 @@ cd('~/')
 cls=NULL
 dwnlds=NULL
 #cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
-#cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
+cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
 cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
 dwnlds1=dir('c:/Users/Larry/Downloads',recursive = TRUE,full.names = TRUE)
 dwnlds=dwnlds1[grepl('REDUCE',dwnlds1)]
@@ -52,9 +52,18 @@ for(fn in dfa$cls)
   print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
   ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
   hevcFlag=any(grepl('HEVC',ddd))
+  
+  if(clflag & hevcFlag){
+    bads[badx, ]$fname = fn
+    bads[badx, "errorC"] = "Already HEVC"
+    badx = badx + 1
+    save(bads, badx, file = "~/bads.RData")
+    print("Already HEVC")
+  }
   if((clflag & !hevcFlag) | file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$cls==fn),'sz']){
     if(!hevcFlag){
       mtime=file.mtime(fn)
+      msize=file.size(fn)
       print(paste('Mtime=',mtime))
       print(subset(ddd,grepl('Duration',ddd))[1])
       of=paste(basename(tempfile()),'.mp4',sep='')
@@ -74,12 +83,13 @@ for(fn in dfa$cls)
               dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                              ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
               shell(paste('c:/Users/Larry/Documents/fdd.bat "',
-                          nfn,'" ',dx$times,',' ,sep=''),translate = TRUE, intern = TRUE)
-
+                          nfn,'" ',dx$times,'' ,sep=''),translate = TRUE)
+              
               print(paste('file mtime back to orig',file.mtime(nfn)))
-              print(paste(fn,ptn(file.size(fn))))
+              print(paste(fn,ptn(msize)))
               print(paste(nfn,ptn(file.size(nfn))))
-              file.remove(fn)
+              if(nfn!=fn)
+                file.remove(fn)
             }
           }else{
             bads[badx,]$fname=fn
