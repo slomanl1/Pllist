@@ -32,11 +32,11 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   tl1=data.frame(table(dx$lss))
   tl=tl1[order(as.numeric(gsub('[a-z]|_','',tl1$Var1,ignore.case = TRUE))),]
   ts=1
-  for(i in 2:nrow(tl))
+  for(i in 2:(nrow(tl)+1))
   {
     ts[i]=ts[i-1]+tl[i-1,'Freq']
   }
-  ts[i+1]=ts[i]
+  #ts[i+1]=ts[i]
   print('Build ts Done')
   xo=sapply(1:(nrow(tl)), function(x) dx[ts[x]:(ts[x+1]-1),'xx'])
   xn=sapply(1:(nrow(tl)), function(x) {
