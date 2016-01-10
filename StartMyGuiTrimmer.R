@@ -1,11 +1,12 @@
 StartMyGUI <- function() {
+  mtime=file.mtime(svt)
   print('Gui Started')
   startt=EnterStartStop()
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
     print('Convert H265')
     of=paste(basename(tempfile()),'.mp4',sep='')
-    print(of)
+    print(paste(svt,of,file.mtime(svt)))
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
                 svt,'" ',of,',' ,sep=''),translate = TRUE)
     #     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
@@ -14,6 +15,15 @@ StartMyGUI <- function() {
       print('file rename back to orig failed - REDUCE')
     }else{
       unlink(of)
+      print('file renamed back to orig - REDUCE')
+      dx=data.frame(dtn=NA,fn=NA,times=NA)
+      dx$dtn=mtime
+      dx$fn=normalizePath(as.character(svt),winslash = '/')
+      dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                     ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+      cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+      eval(parse(text=cmd))
+      print('file mtime back to orig - REDUCE')
     }
     startt=NULL
   }
