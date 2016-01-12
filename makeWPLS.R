@@ -11,7 +11,7 @@ makeWpl=function(flist,slctor){
   header=sub('fns',file_path_sans_ext(slctor),header)
   header=sub('3611',len(flist),header)
   js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
-  adds=sprintf(js,basename(flist))
+  adds=unique(sprintf(js,basename(flist)))
   lsx1=c(header,adds,footer)
   m3uname <- paste(pldrive,'My Playlists/',sep='')
   write(lsx1,paste(m3uname,slctor,sep=''))
