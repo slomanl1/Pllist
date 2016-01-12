@@ -1,3 +1,4 @@
+  cd('~/')
   shell('dir D:\\ /S/B > zz.txt')
   shell('dir c:\\PNMTALL /S/B >> zz.txt')
   shell('dir E:\\PNMTALL /S/B > yy.txt')
