@@ -5,6 +5,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
   source(scriptStatsRemoveAll) #clear bones
   source("~/Local.R")
+  fn=NULL
   shell('dir "C:\\My Videos\\RPDNClips" /od/b > ddd.txt')
   lns=readLines('ddd.txt')
   unlink('ddd.txt')
@@ -83,6 +84,20 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   }else print('No new files found')
 } else print('CANNOT OPEN FLK')
 
-
-
-
+setwd(paste(pldrive,'My Playlists',sep=""))
+for(fnx in fn){
+  exx=exts[unlist(sapply(exts,function(x) gregexpr(x,fnx)))>0]
+  print(paste(fn,'Added to'))
+  for(ex in exx){
+    waps=paste(ex,'.wpl',sep='')
+    print(waps)
+    lss = unique(readLines(waps))
+    js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
+    adds=sprintf(js,fnx)
+    lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
+    m3uname <- paste(pldrive,'My Playlists/',sep='')
+    write(lsx1,paste(m3uname,waps,sep='')) # add new clips
+  }
+}
+if(len(fn)>0)
+  source('~/pllist.git/BuildxxALT.R')
