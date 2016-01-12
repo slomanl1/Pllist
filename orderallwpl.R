@@ -21,7 +21,7 @@ for (j in 1:length(wpls)) {
   fnnt=fnn[(length(fnn)-2):length(fnn)] #wpl footer
   fnno=c(fnnh,sub('..\\My','C:\\My',lssz,fixed = TRUE),fnnt)
   setwd(paste(pldrive,'My Playlists',sep=""))
-  writeLines(fnno,wpls[j])
+  writeLines(unique(fnno),wpls[j])
 }
 
 save(mfnfo,wpls,file='~/mfnfo.RData') # update file mtime for chooser time test if mfnfo to date
