@@ -50,6 +50,7 @@ if (!.GlobalEnv$tpexist) {
         .GlobalEnv$idx=svalue(h$obj,index = TRUE)
         print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
+        .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
         nfn=NULL  # supply select idx item in editing window fwinf
         tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
         if(!is.na(tmpdf$DMComment))

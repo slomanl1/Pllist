@@ -237,7 +237,7 @@ if(nexistpas){ # sfname does not exist
   }else{
     save(dfan,file='dfan.Rdata')
     print('Dfan.RData written') # added to save newly added files to dfan
-    }
+  }
 }
 
 
@@ -271,7 +271,7 @@ while(TRUE)
     }
     )
     font(ORButton) <- c(color="blue", style="bold") # initial 
- 
+    
     EXITButton=gbutton("-EXIT-", container = linerw, handler = function(h,...) {
       dispose(linerw)
     }
@@ -288,7 +288,7 @@ while(TRUE)
     liner=NULL
     while(!avail)
     {}
-
+    
     if(isExtant(linerw)){
       liner=svalue(obj)
       dispose(linerw)
@@ -379,13 +379,13 @@ while(TRUE)
       enabled(mbutton)=(len(svalue(tab))!=0)
     }
   }
-
+  
   if(changed | deleted){
     dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     ofn=dfan[dfix,'filename']
     dispose(w)
   }
-
+  
   renamed=FALSE
   if(changed){
     changed=FALSE
@@ -401,30 +401,40 @@ while(TRUE)
         }
       }
     }
-    dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
-    print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
-    if(nchar(trim(dfan[dfix,'Comment']))==0){
-      dfan[dfix,'Comment']=NA
-    }else{
-      dfan[dfix,'DMComment']=dfan[dfix,'Comment']
-    }
-    if(file_ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
-      gmessage('Cannot write metadata to wmv or flv files')
-    }else{
-      fnc=normalizePath(dfan[dfix,'filename'],winslash = '/')
-      print(paste('Updating Metadata in',fnc))
-      cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
-                 dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
-      writeLines(cmdd,'Jester.R') 
-      print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
-      print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
-      print(paste('Added to allmetadata.txt Comment:',dfan[dfix,'Comment']))
-      source('jester.R')
-      ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
-      if(file.exists(ttllorig)){
-        unlink(ttllorig)
-      }else
-        print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
+    if(!all(trim(fwind[,1:4])==dfan[dfix,1:4],na.rm=TRUE)){
+      dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
+      print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
+      if(nchar(trim(dfan[dfix,'Comment']))==0){
+        dfan[dfix,'Comment']=NA
+      }else{
+        dfan[dfix,'DMComment']=dfan[dfix,'Comment']
+      }
+      if(file_ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
+        gmessage('Cannot write metadata to wmv or flv files')
+      }else{
+        fnc=normalizePath(dfan[dfix,'filename'],winslash = '/')
+        print(paste('Updating Metadata in',fnc))
+        cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
+                   dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
+        writeLines(cmdd,'Jester.R') 
+        print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
+        print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
+        print(paste('Added to allmetadata.txt Comment:',dfan[dfix,'Comment']))
+        source('jester.R')
+        ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
+        if(file.exists(ttllorig)){
+          unlink(ttllorig)
+        }else
+          print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
+      }
+      filename=dfan[dfix,'filename']
+      dx=data.frame(dtn=NA,fn=NA,times=NA)
+      dx$dtn=mtme # from testplots changed handler
+      dx[1,'fn']=normalizePath(as.character(filename),winslash = '/')
+      dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                          ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+      cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+      eval(parse(text=cmd))
     }
     dfan$filename = normalizePath(dfan$filename,winslash = '/')
     if(renamed){
