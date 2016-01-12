@@ -7,7 +7,7 @@ source('~/Local.R') #get drive
 lsst=as.character(mfnfo$lsst)
 k=0
 setwd(paste(drive,'My Videos/RPDNClips',sep=""))
-removers = ""
+removers = NULL
 for (i in 1:length(lsst)) {
   if (!file.exists(lsst[i])) {
     k=k+1
@@ -23,9 +23,11 @@ for (i in 1:length(wpls)) {
   lns=lss
   print(wpls[i])
   dupp=dups(lns[nchar(lns)>0])
-  if(length(dupp)>0)
+  if(length(dupp)>0){
     print(paste(length(dupp),'dups found in',wpls[i]))
+  }
   lnsu=unique(lns)
+  if(length(removers)>0)
   for (j in 1:length(removers)){
     if(nchar(removers[j])>0){
       lnsu[grep(removers[j],lnsu,fixed=TRUE)] <- NA
@@ -41,5 +43,6 @@ for (i in 1:length(wpls)) {
 setwd("~/")
 mfnfo=mfnfo[mfnfo$lsst %in% lsst,]
 save(mfnfo,wpls,file='~/mfnfo.RData')
-print(paste('Removed -',removers))
+if(length(removers)>0)
+  print(paste('Removed -',removers))
 
