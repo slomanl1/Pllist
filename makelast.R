@@ -14,7 +14,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('C:\\RealPlayerDownloads')
   fns1=dir(pattern='*.mp4')
   fns1=fns1[!grepl('.mp4.',fns1)]
-  exts1=c('ah','blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pn.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4')
+  exts1=c('ah','blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pn.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4','utp.mp4')
   exts=gsub('.mp4','',exts1,fixed=TRUE)
   odr=sample(last:last+length(fns1),length(fns1),replace=T) 
   if(length(odr)!=0){
@@ -27,13 +27,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     setwd('C:\\RealPlayerDownloads')
     last=last+1
     for (i in 1:length(fns)){
-      cc=''
-      for (j in 1:length(exts)){
-        if (grepl(exts[j],fns[i])){
-          cc=paste(cc,exts[j],sep='')}
-      }
+      cc=capture.output(cat(sort(exts[unlist(sapply(exts,function(x) gregexpr(x,fns[i])))>0]),sep=''))
       for(x in 1:len(exts))
-          cc=sub(paste(exts[x],exts[x],sep=''),exts[x],cc)
+        cc=sub(paste(exts[x],exts[x],sep=''),exts[x],cc)
       exist=TRUE
       while (exist){
         fn[i]=paste(as.character(last),cc,'.wmv',sep='')
