@@ -12,7 +12,7 @@ if (!.GlobalEnv$tpexist) {
   getToolkitWidget(fw)$move(0,100)
   visible(fw) <- FALSE
   addhandlerchanged(fwind, handler = function(h,...) 
-  { print('changed handler (fwind)')
+  {
     .GlobalEnv$changed=TRUE
     .GlobalEnv$avail=TRUE
     .GlobalEnv$Passt=TRUE
@@ -22,7 +22,7 @@ if (!.GlobalEnv$tpexist) {
   })
   
   addHandlerDestroy(fwind, handler = function(h,...) 
-  { print('destroy handler (fwind)')
+  { 
     .GlobalEnv$avail=TRUE
     .GlobalEnv$ofnx=NULL
     if(isExtant(w))
@@ -39,7 +39,6 @@ if (!.GlobalEnv$tpexist) {
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
-                  #print(paste('hdl isunsorted=',.GlobalEnv$unsorted))
                   .GlobalEnv$ssv = getFnx()
                   .GlobalEnv$avail = TRUE
                 }
@@ -48,7 +47,6 @@ if (!.GlobalEnv$tpexist) {
     tab, handler = function(h,...) {
       if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
         .GlobalEnv$idx=svalue(h$obj,index = TRUE)
-        print(paste('RC Handler idx=',idx))
         .GlobalEnv$ofnx=fnames[idx,]
         .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
         nfn=NULL  # supply select idx item in editing window fwinf
@@ -67,7 +65,6 @@ if (!.GlobalEnv$tpexist) {
       .GlobalEnv$ssv = NULL
       .GlobalEnv$avail = TRUE
       .GlobalEnv$tpexist <- FALSE
-      #print('tab destroyed handler')
       if(isExtant(fwind))
         dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
@@ -85,7 +82,6 @@ if (!.GlobalEnv$tpexist) {
     if(answ){
       print(paste('Deleting',getFnx()))
       .GlobalEnv$idx=svalue(tab,index=TRUE)
-      print(paste('idx=',.GlobalEnv$idx))
       if(unlink(getFnx()))
         print('delete FAILED')
       else{
@@ -141,7 +137,6 @@ if (!.GlobalEnv$tpexist) {
   addSpring(bgm)
   addHandlerDestroy(
     tabm, handler = function(h,...) {
-      print('destroyed tabm');
       if(exists('w')) 
         if(isExtant(w)) 
           dispose(w)
