@@ -47,7 +47,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
             print(paste(fn[i],'exists'))
             next
           }else{
-            print(paste(fn[i], 'added'))
+            print(paste(fn[i], 'added to RPDNClips'))
             file.copy(fns[i],paste(drive,"My Videos\\RPDNClips\\",fn[i],sep=''))
             exist=FALSE
           }
@@ -87,10 +87,10 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
 setwd(paste(pldrive,'My Playlists',sep=""))
 for(fnx in fn){
   exx=exts[unlist(sapply(exts,function(x) gregexpr(x,fnx)))>0]
-  print(paste(fn,'Added to'))
+
   for(ex in exx){
     waps=paste(ex,'.wpl',sep='')
-    print(waps)
+    print(paste(fnx,'Added to',waps))
     lss = unique(readLines(waps))
     js="            <media src=\"c:\\My Videos\\RPDNClips\\%s\"/>"
     adds=sprintf(js,fnx)
