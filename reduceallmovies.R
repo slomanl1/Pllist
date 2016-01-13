@@ -4,7 +4,7 @@ dwnlds=NULL
 choices=c('D:/PNMTALL','C:/PNMTALL','C:/My Videos/RPDNclips','c:/Users/Larry/Downloads','REDUCE only')
 sll=select.list(choices,multiple=TRUE,graphics = TRUE)
 if(len(sll)>0){
-  slx=which(sll %in% choices)
+  slx=which(choices %in% sll)
   if(1 %in% slx)
     cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
   if(2 %in% slx)
