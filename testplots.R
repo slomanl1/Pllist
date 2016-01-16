@@ -31,35 +31,23 @@ if (!.GlobalEnv$tpexist) {
   }) 
   
   heit=min(100+(nrow(fnames)*30),750)
-  w <- gwindow(paste(liner,nrow(fnames),"Choose One or More Files, Click Right to Edit Filename and Comments\n"),width = 1900,height=heit,parent = c(0,0))
+  w <- gwindow(paste(liner,nrow(fnames),"Choose One or More Files or choose single file to Edit Name/Comments\n"),width = 1900,height=heit,parent = c(0,0))
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
   
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
+                  print('GTABLEANDLER')
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
                   .GlobalEnv$ssv = getFnx()
                   .GlobalEnv$avail = TRUE
+
                 }
   )
-  addHandlerRightclick(
-    tab, handler = function(h,...) {
-      if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
-        .GlobalEnv$idx=svalue(h$obj,index = TRUE)
-        .GlobalEnv$ofnx=fnames[idx,]
-        .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-        nfn=NULL  # supply select idx item in editing window fwinf
-        tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
-        if(!is.na(tmpdf$DMComment))
-          tmpdf$Comment=tmpdf$DMComment
-        fwind[,] = tmpdf[,1:4]
-        visible(fw) <- TRUE
-        enabled(fw) <- TRUE
-        visible(w) <- FALSE
-      }
-    }
-  )
+  addHandlerClicked(tab, handler = function(h,...)     .GlobalEnv$lenn=len(getFnx()))
+
+  
   addHandlerDestroy(
     tab, handler = function(h,...) {
       .GlobalEnv$ssv = NULL
@@ -76,6 +64,25 @@ if (!.GlobalEnv$tpexist) {
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
+  
+  ebutton=gbutton("Edit", container = bg, handler = function(h,...) {
+    if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
+      .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
+      idx=which(fnames$fnx==.GlobalEnv$svt)
+      .GlobalEnv$idx=idx
+      print(paste('svt,idx=',svt,idx))
+      .GlobalEnv$ofnx=fnames[idx,]
+      .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
+      nfn=NULL  # supply select idx item in editing window fwinf
+      tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+      if(!is.na(tmpdf$DMComment))
+        tmpdf$Comment=tmpdf$DMComment
+      fwind[,] = tmpdf[,1:4]
+      visible(fw) <- TRUE
+      enabled(fw) <- TRUE
+      visible(w) <- FALSE
+    }
+  })
   
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
@@ -102,29 +109,6 @@ if (!.GlobalEnv$tpexist) {
     startt=NULL
     print(paste('svt=',.GlobalEnv$svt))
     StartMyGUI()
-#     startt=EnterStartStop()
-#     
-#     print(len(startt))
-#     if(len(startt)>0){
-#       endtt=EnterStartStop("Enter End Time (secs) or (mm:ss)\n")
-#       unlink('~/temppt.mp4')
-#       file.rename(svt,'~/temppt.mp4')
-#       svtt1=gsub(' ','',svt) # remove spaces for ffmpeg (does not accept " in filename's)
-#       svtt='c:/RealPlayerDownloads/trimmed.mp4'
-#       entf=FALSE
-#       if(len(endtt)==0){
-#         entf=TRUE
-#         endtt=10000
-#       }
-#       cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
-#       print(cmdd)
-#       eval(parse(text=cmdd))
-#       if(entf){
-#         file.rename(svtt,svt) # replace svt has trimmed with start to end
-#       }else{
-#         file.rename('~/temppt.mp4',svt)  # put back original, svtt has trimmed
-#       }
-#     }
   }
   )
   
@@ -158,7 +142,7 @@ if (!.GlobalEnv$tpexist) {
     mm[,2]=substr(meta,42,nchar(meta))
     mg=data.frame(mm,stringsAsFactors = FALSE)
     tabm[,]=mg
-    }
+  }
   )
   
   gbutton("dismiss", container = bg, handler = function(h,...) {
@@ -168,11 +152,12 @@ if (!.GlobalEnv$tpexist) {
     dispose(w)
     dispose(fwind)
     .GlobalEnv$gdfopen=FALSE
-  }
-  )
-}else
+  })
+  
+  
+}else{
   visible(w)=TRUE
-
+}
 
 
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
