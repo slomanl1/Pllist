@@ -15,7 +15,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('C:\\RealPlayerDownloads')
   fns1=dir(pattern='*.mp4')
   fns1=fns1[!grepl('.mp4.',fns1)]
-  exts1=c('ah','blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','ussfd.mp4','pn.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4','utp.mp4')
+  exts1=c('ah','blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','cs.mp4','ussfd.mp4','pn.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4','utp.mp4')
   exts=gsub('.mp4','',exts1,fixed=TRUE)
   odr=sample(last:last+length(fns1),length(fns1),replace=T) 
   if(length(odr)!=0){
