@@ -34,6 +34,7 @@ deleted=FALSE
 nexistpas=FALSE
 fnsave=''
 convert=FALSE
+lenn=0
 
 dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
@@ -374,9 +375,16 @@ while(TRUE)
   {
     delay500()
     if(isExtant(tab)){
-      enabled(tbutton)=(len(svalue(tab))!=0)#CHECKsvalue(tab) S/B global in testplots.R
-      enabled(dbutton)=(len(svalue(tab))!=0)
-      enabled(mbutton)=(len(svalue(tab))!=0)
+      enabled(dbutton)=FALSE # delete button
+      enabled(tbutton)=FALSE # TRIM button
+      enabled(mbutton)=FALSE # metadata button
+      enabled(ebutton)=FALSE # edit button
+      if(lenn==1){
+        enabled(dbutton)=(len(svalue(tab))!=0) # delete button
+        enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
+        enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
+        enabled(ebutton)=(len(svalue(tab))!=0) # edit button
+      }
     }
   }
   
