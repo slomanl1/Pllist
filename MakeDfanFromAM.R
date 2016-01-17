@@ -474,7 +474,11 @@ while(TRUE)
     writeLines(as.character(c(
       header,paste('<media src="',fns,'"/>'),footer
     ),sep = ''),'fns.wpl')
-    shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
+    #shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
+    mpc="shell('mpc-hc64.exe %s')"
+    ss=capture.output(cat(fns))
+    cmdd=sprintf(mpc,ss)
+    eval(parse(text=cmdd))
     unlink('~/fns.wpl')
     Passt=TRUE
     unsorted=FALSE
