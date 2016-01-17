@@ -409,7 +409,7 @@ while(TRUE)
         }
       }
     }
-    if(!all(trim(fwind[,1:4])==dfan[dfix,1:4],na.rm=TRUE) | (dfan[dfix,'DMComment'] != fwind[,'Comment'])){
+    if(!all(trim(fwind[,1:4])==dfan[dfix,1:4],na.rm=TRUE) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
       dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
       print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
       if(nchar(trim(dfan[dfix,'Comment']))==0){
