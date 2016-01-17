@@ -54,9 +54,14 @@ while(TRUE){
             }
             #m3uname <- paste(pldrive,'My Playlists/',sep='')
             write(flist,paste('~/',selectL,fname,'.M3U',sep='_'))
-            write(flist,'~/fns.M3U')
-            shell('wmplayer c:\\Users\\Larry\\Documents\\fns.m3u')
-            unlink('~/fns.M3U')
+            #write(flist,'~/fns.M3U')
+            mpc="shell('mpc-hc64.exe %s ')"
+            ss=capture.output(cat(flist,sep='" "'))
+            ss=paste('"',ss,sep='')
+            cmdd=sprintf(mpc,ss)
+            eval(parse(text=cmdd))
+            #shell('wmplayer c:\\Users\\Larry\\Documents\\fns.m3u')
+            #unlink('~/fns.M3U')
           }
         }else{
           break
