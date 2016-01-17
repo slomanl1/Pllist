@@ -38,7 +38,6 @@ if (!.GlobalEnv$tpexist) {
   
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
-                  print('GTABLEANDLER')
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
                   .GlobalEnv$ssv = getFnx()
                   .GlobalEnv$avail = TRUE
