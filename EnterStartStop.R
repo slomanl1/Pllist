@@ -5,7 +5,11 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   ww=gwindow(height=25,title=x)	
   obj <- gedit(container=ww)
   addhandlerchanged(obj, handler=function(h,...) 
-  { .GlobalEnv$ss=svalue(h$obj);dispose(ww);gtkMainQuit()})
+  { .GlobalEnv$ss=svalue(h$obj)
+  dispose(ww)
+  gtkMainQuit()
+  })
+  
   addHandlerKeystroke(obj, handler = function(h,...){
     if(nchar(svalue(h$obj))==0){ 
       .GlobalEnv$ss=NULL
@@ -44,20 +48,27 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     }
   })
   
+  fbutton=gbutton("FDATE", container=ww,handler=function(h,...)
+  {
+    .GlobalEnv$Fdate=TRUE
+    dispose(ww)
+    gtkMainQuit()
+  })
+  
   if(!allowEnter)
     tbutton=gbutton("Convert", container=ww,handler=function(h,...){
       .GlobalEnv$convert=TRUE
       dispose(ww)
       gtkMainQuit()
     })
-
+  
   xbutton=gbutton("Cancel", container=ww,handler=function(h,...) 
   {
     .GlobalEnv$ss=NULL
     dispose(ww)
     gtkMainQuit()
   })
-
+  
   
   focus(obj)=TRUE
   gtkMain()
@@ -80,11 +91,11 @@ EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FA
             break # good mm:ss
           }
         }else{
-              if(allowEnter){
-                startt=10000
-                break;
-              }
-
+          if(allowEnter){
+            startt=10000
+            break;
+          }
+          
         }
       }
     }else{
