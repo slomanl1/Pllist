@@ -5,6 +5,7 @@ source('~/pllist.git/StartMyGuiTrimmer.R')
 ToEnd=FALSE
 .GlobalEnv$convert=FALSE
 .GlobalEnv$bOK=FALSE
+.GlobalEnv$Fdate=FALSE
 print('Trimmer hello')
 
 shell('nircmd win min process rscript.exe')
@@ -20,4 +21,3 @@ if(is.na(svt))
   svt=file.choose()
 print(paste('svt=',svt))
 StartMyGUI()
-
