@@ -35,6 +35,7 @@ nexistpas=FALSE
 fnsave=''
 convert=FALSE
 lenn=0
+Fdate=FALSE
 
 dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
 dirs=subset(dirs,!grepl('lnk',dirs))
@@ -71,7 +72,7 @@ if (file.exists('D:/PNMTALL')) {
     zz1 = readLines('zz.txt')
     unlink('zz.txt')
     zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
-                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp',zz1,fixed=TRUE) &
+                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp|.crdownload',zz1,fixed=TRUE) &
                       toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
     zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
     dirtbl=as.data.frame(table(as.character(dirname(zz))))
@@ -102,7 +103,7 @@ if (file.exists('D:/PNMTALL')) {
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       fmss = suppressWarnings(normalizePath(xmissing, winslash = "/"))
       #fmissing=subset(fmss,!grepl('_New',fmss))
-      fmissing=fmss
+      fmissing=subset(fmss,!grepl('crdownload',fmss))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
     }
@@ -370,7 +371,7 @@ while(TRUE)
   fnames[fnames$fnx==fnsave,'sell']='++++'
   fnames=fnames[,c(5,1,2,3,4)]
   fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
-  source('~/pllist.git/testplots.R')
+  debugSource('~/pllist.git/testplots.R')
   while(!avail)
   {
     delay500()
