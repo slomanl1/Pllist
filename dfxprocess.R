@@ -9,7 +9,7 @@ if(!exists('Fdate')){
 }
 if(!Fdate)
   filename=file.choose()
-Fdate=FALSE
+
 ALTGinput("Enter mod date/time", TRUE) 
 print(paste('ss=',ss,filename))
 
