@@ -1,18 +1,19 @@
 cd('~/')
 cls=NULL
 dwnlds=NULL
-choices=c('D:/PNMTALL','C:/PNMTALL','C:/My Videos/RPDNclips','c:/Users/Larry/Downloads','REDUCE only')
+choices=c('D:/PNMTALL','C:/PNMTALL','C:/My Videos/RPDNclips','c:/PNMTALL/NewDownloads','REDUCE only')
 sll=select.list(choices,multiple=TRUE,graphics = TRUE)
 if(len(sll)>0){
   slx=which(choices %in% sll)
   if(1 %in% slx)
     cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
-  if(2 %in% slx)
+  if(2 %in% slx){
     cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
+    cls=cls[!grepl('c:/PNMTALL/NewDownloads',cls)]}
   if(3 %in% slx)
     cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
   if(4 %in% slx)
-    dwnlds=dir('c:/Users/Larry/Downloads',recursive = TRUE,full.names = TRUE)
+    dwnlds=dir('c:/PNMTALL/NewDownloads',recursive = TRUE,full.names = TRUE)
   cls=c(cls,dwnlds)
   if(5 %in% slx)
     cls=cls[grepl('REDUCE',cls)]
@@ -45,10 +46,10 @@ if(len(sll)>0){
       writeLines('','~/msgis.txt')
     }
     dfa=dfa[!duplicated(dfa$cls),]
-    dfa=dfa[order(dfa$sz,decreasing=TRUE),]
+    dfa=dfa[order(dfa$sz,decreasing=FALSE),]
     for(fn in dfa$cls)
     { 
-      print('')
+      print('------------------------------------------------------------------------------')
       print(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
                   ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
       
