@@ -36,32 +36,32 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       focus(obj)=TRUE
     }
   })
-  
-  tbutton=gbutton("ToEnd", container=ww,handler=function(h,...)
-  {
-    .GlobalEnv$ToEnd=TRUE
-    if(ss > 0 | allowEnter){
-      dispose(ww)
-      gtkMainQuit()
-    }else{
-      focus(obj)=TRUE
-    }
-  })
-  
-  fbutton=gbutton("FDATE", container=ww,handler=function(h,...)
-  {
-    .GlobalEnv$Fdate=TRUE
-    dispose(ww)
-    gtkMainQuit()
-  })
-  
-  if(!allowEnter)
-    tbutton=gbutton("Convert", container=ww,handler=function(h,...){
-      .GlobalEnv$convert=TRUE
+  if(!.GlobalEnv$Fdate){
+    tbutton=gbutton("ToEnd", container=ww,handler=function(h,...)
+    {
+      .GlobalEnv$ToEnd=TRUE
+      if(ss > 0 | allowEnter){
+        dispose(ww)
+        gtkMainQuit()
+      }else{
+        focus(obj)=TRUE
+      }
+    })
+    
+    fbutton=gbutton("FDATE", container=ww,handler=function(h,...)
+    {
+      .GlobalEnv$Fdate=TRUE
       dispose(ww)
       gtkMainQuit()
     })
-  
+    
+    if(!allowEnter)
+      tbutton=gbutton("Convert", container=ww,handler=function(h,...){
+        .GlobalEnv$convert=TRUE
+        dispose(ww)
+        gtkMainQuit()
+      })
+  }
   xbutton=gbutton("Cancel", container=ww,handler=function(h,...) 
   {
     .GlobalEnv$ss=NULL
