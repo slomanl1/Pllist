@@ -31,7 +31,10 @@ if (!.GlobalEnv$tpexist) {
   }) 
   
   heit=min(100+(nrow(fnames)*30),750)
-  w <- gwindow(paste(liner,nrow(fnames),"Choose One or More Files or choose single file to Edit Name/Comments\n"),width = 1900,height=heit,parent = c(0,0))
+  linerd=liner
+  if(!ANDflag)
+    linerd=gsub(' ','|',liner)
+  w <- gwindow(paste(linerd,nrow(fnames),"Choose One or More Files or choose single file to Edit Name/Comments\n"),width = 1900,height=heit,parent = c(0,0))
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
@@ -41,11 +44,18 @@ if (!.GlobalEnv$tpexist) {
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
                   .GlobalEnv$ssv = getFnx()
                   .GlobalEnv$avail = TRUE
-
+                  
                 }
   )
-  addHandlerClicked(tab, handler = function(h,...)     .GlobalEnv$lenn=len(getFnx()))
-
+  addHandlerClicked(tab, handler = function(h,...) {
+#     if(lenn==0){
+#     print('Clicked') # DELETE Debug only
+    .GlobalEnv$lenn=len(getFnx())
+#     jew=gwindow(getFnx(),width=100,height=200)
+#   gradio(c('Edit','Trim','Delete','Cancel'),container = jew)
+#     }
+  })
+  
   
   addHandlerDestroy(
     tab, handler = function(h,...) {
@@ -63,7 +73,7 @@ if (!.GlobalEnv$tpexist) {
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
-  
+  #rb <- gtable(fnames$fnx[1:3], container=bg,width=500)
   ebutton=gbutton("Edit", container = bg, handler = function(h,...) {
     if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
@@ -82,6 +92,7 @@ if (!.GlobalEnv$tpexist) {
       visible(w) <- FALSE
     }
   })
+  
   
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
@@ -131,6 +142,9 @@ if (!.GlobalEnv$tpexist) {
     svt=normalizePath(getFnx(),winslash = '/')
     print(svt)
     cmdd=paste('shell("mediainfo.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
+    print(cmdd)
+    eval(parse(text=cmdd))
+    cmdd=paste('shell("exiftool',svt,' >>meta.txt",mustWork=NA,translate=TRUE)')
     print(cmdd)
     eval(parse(text=cmdd))
     .GlobalEnv$meta=readLines('meta.txt')
