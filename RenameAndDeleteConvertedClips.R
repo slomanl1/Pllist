@@ -1,6 +1,6 @@
 cls=c(dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
 cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
-cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
+cls=c(cls,dir('c:/MyVideos/rpdnclips',recursive = TRUE,full.names = TRUE))
 cls=c(cls,dir('c:/Users/Larry/Downloads',recursive = TRUE,full.names = TRUE))
 clt=subset(cls,grepl('_New',cls))
 clo=sub('_New','',clt)
