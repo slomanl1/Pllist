@@ -16,7 +16,7 @@ if(exists('obj'))
 
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(file.size(fnx),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
+get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(as.integer(file.size(fnx)),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 
 delay500=function(){
   x=1000000
@@ -371,24 +371,8 @@ while(TRUE)
   fnames[fnames$fnx==fnsave,'sell']='++++'
   fnames=fnames[,c(5,1,2,3,4)]
   fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
-  debugSource('~/pllist.git/testplots.R')
-  while(!avail)
-  {
-    delay500()
-    if(isExtant(tab)){
-      enabled(dbutton)=FALSE # delete button
-      enabled(tbutton)=FALSE # TRIM button
-      enabled(mbutton)=FALSE # metadata button
-      enabled(ebutton)=FALSE # edit button
-      if(lenn==1){
-        enabled(dbutton)=(len(svalue(tab))!=0) # delete button
-        enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
-        enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
-        enabled(ebutton)=(len(svalue(tab))!=0) # edit button
-      }
-    }
-  }
-  
+  source('~/pllist.git/testplots.R')
+
   if(changed | deleted){
     dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
     ofn=dfan[dfix,'filename']
