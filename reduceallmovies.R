@@ -1,7 +1,7 @@
 cd('~/')
 cls=NULL
 dwnlds=NULL
-choices=c('D:/PNMTALL','C:/PNMTALL','C:/My Videos/RPDNclips','c:/PNMTALL/NewDownloads','REDUCE only')
+choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','c:/PNMTALL/NewDownloads','REDUCE only')
 sll=select.list(choices,multiple=TRUE,graphics = TRUE)
 if(len(sll)>0){
   slx=which(choices %in% sll)
@@ -11,7 +11,7 @@ if(len(sll)>0){
     cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
     cls=cls[!grepl('c:/PNMTALL/NewDownloads',cls)]}
   if(3 %in% slx)
-    cls=c(cls,dir('c:/my videos/rpdnclips',recursive = TRUE,full.names = TRUE))
+    cls=c(cls,dir('c:/MyVideos/rpdnclips',recursive = TRUE,full.names = TRUE))
   if(4 %in% slx)
     dwnlds=dir('c:/PNMTALL/NewDownloads',recursive = TRUE,full.names = TRUE)
   cls=c(cls,dwnlds)
