@@ -1,9 +1,9 @@
+getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
 idxs=NULL
 for(x in 1:nrow(fnames)) 
   idxs=c(idxs,which(grepl(fnames[x,'fnx'],an[ttl],fixed=TRUE)))
 
 if (!.GlobalEnv$tpexist) {
-  avail = FALSE
   renamed = FALSE
   ssv = NULL
   
@@ -14,27 +14,27 @@ if (!.GlobalEnv$tpexist) {
   addhandlerchanged(fwind, handler = function(h,...) 
   {
     .GlobalEnv$changed=TRUE
-    .GlobalEnv$avail=TRUE
     .GlobalEnv$Passt=TRUE
     visible(w) <- FALSE
     enabled(fw) <- FALSE
     tpexist=FALSE
+    gtkMainQuit()
   })
   
   addHandlerDestroy(fwind, handler = function(h,...) 
   { 
-    .GlobalEnv$avail=TRUE
     .GlobalEnv$ofnx=NULL
     if(isExtant(w))
       dispose(w)
     tpexist=FALSE
+    gtkMainQuit()
   }) 
   
   heit=min(100+(nrow(fnames)*30),750)
   linerd=liner
   if(!ANDflag)
     linerd=gsub(' ','|',liner)
-  w <- gwindow(paste(linerd,nrow(fnames),"Choose One or More Files or choose single file to Edit Name/Comments\n"),width = 1900,height=heit,parent = c(0,0))
+  w <- gwindow(paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"),width = 1900,height=heit,parent = c(0,0))
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
@@ -43,30 +43,52 @@ if (!.GlobalEnv$tpexist) {
                 handler = function(h,...) {
                   .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
                   .GlobalEnv$ssv = getFnx()
-                  .GlobalEnv$avail = TRUE
-                  
+                  gtkMainQuit()
                 }
   )
   addHandlerClicked(tab, handler = function(h,...) {
-#     if(lenn==0){
-#     print('Clicked') # DELETE Debug only
     .GlobalEnv$lenn=len(getFnx())
-#     jew=gwindow(getFnx(),width=100,height=200)
-#   gradio(c('Edit','Trim','Delete','Cancel'),container = jew)
-#     }
+    if(lenn==1){
+      enabled(dbutton)=(len(svalue(tab))!=0) # delete button
+      enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
+      enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
+      enabled(ebutton)=(len(svalue(tab))!=0) # edit button
+    }else{ 
+      enabled(dbutton)=FALSE # delete button
+      enabled(tbutton)=FALSE # TRIM button
+      enabled(mbutton)=FALSE # metadata button
+      enabled(ebutton)=FALSE # edit button
+    }
   })
   
+  addHandlerRightclick(
+    tab, handler = function(h,...) {
+      if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
+        .GlobalEnv$idx=svalue(h$obj,index = TRUE)
+        .GlobalEnv$ofnx=fnames[idx,]
+        .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
+        nfn=NULL  # supply select idx item in editing window fwinf
+        tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+        if(!is.na(tmpdf$DMComment))
+          tmpdf$Comment=tmpdf$DMComment
+        fwind[,] = tmpdf[,1:4]
+        visible(fw) <- TRUE
+        enabled(fw) <- TRUE
+        visible(w) <- FALSE
+      }
+    }
+  )  
   
   addHandlerDestroy(
     tab, handler = function(h,...) {
       .GlobalEnv$ssv = NULL
-      .GlobalEnv$avail = TRUE
       .GlobalEnv$tpexist <- FALSE
       if(isExtant(fwind))
         dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
       if(isExtant(wm))
         visible(wm) <- FALSE
+      gtkMainQuit()
     }
   )
   
@@ -103,13 +125,13 @@ if (!.GlobalEnv$tpexist) {
         print('delete FAILED')
       else{
         .GlobalEnv$deleted=TRUE
-        .GlobalEnv$avail=TRUE
         .GlobalEnv$Passt=TRUE
         visible(w) <- FALSE
         tpexist=FALSE
         writeLines(getFnx(),'file.tmp')
         file.append('deletelog.txt','file.tmp') # update delete log
         unlink('file.tmp')
+        gtkMainQuit()
       }
     }
   }
@@ -134,8 +156,14 @@ if (!.GlobalEnv$tpexist) {
       if(exists('w')) 
         if(isExtant(w)) 
           dispose(w)
-      .GlobalEnv$avail = TRUE})
-  gbutton("dismiss", container=bgm, handler = function(h,...) {visible(wm) <- FALSE;    if(exists('w')) if(isExtant(w)) enabled(w) <- TRUE})
+      gtkMainQuit()})
+  
+  gbutton("dismiss", container=bgm, handler = function(h,...) {
+    visible(wm) <- FALSE;    
+    if(exists('w')) 
+      if(isExtant(w)) 
+        enabled(w) <- TRUE
+  })
   
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
@@ -160,17 +188,20 @@ if (!.GlobalEnv$tpexist) {
   
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
-    .GlobalEnv$avail = TRUE
     .GlobalEnv$ofnx=NULL
     dispose(w)
     dispose(fwind)
     .GlobalEnv$gdfopen=FALSE
+    gtkMainQuit()
   })
-  
+  enabled(dbutton)=FALSE # delete button
+  enabled(tbutton)=FALSE # TRIM button
+  enabled(mbutton)=FALSE # metadata button
+  enabled(ebutton)=FALSE # edit button  
   
 }else{
   visible(w)=TRUE
 }
+gtkMain()
 
 
-getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
