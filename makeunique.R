@@ -6,7 +6,7 @@ source('~/Local.R') #get drive
 
 lsst=as.character(mfnfo$lsst)
 k=0
-setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+setwd(paste(drive,'MyVideos/RPDNClips',sep=""))
 removers = NULL
 for (i in 1:length(lsst)) {
   if (!file.exists(lsst[i])) {
