@@ -12,7 +12,7 @@ for (j in 1:length(wpls)) {
   for(i in 1:length(lss)){
     lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|mp4|flv|asf|wmv',lss[i])[1]+2)
   }
-  setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+  setwd(paste(drive,'MyVideos/RPDNClips',sep=""))
   lssy=sub('_','',lssx)
   dxx=data.frame(lsst=lssx,lss)
   lssj=merge(dxx,mfnfo[,c('lsst','mtime')])
