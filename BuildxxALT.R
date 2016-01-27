@@ -7,7 +7,7 @@ source("~/Local.R")
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   source('~/pllist.git/combiner.R')
   print('Combiner Done')
-  setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+  setwd(paste(drive,'MyVideos/RPDNClips',sep=""))
   allall=c(dir(pattern='*.mpg'),dir(pattern='*.wmv'))
   
   setwd(paste(pldrive,'My Playlists',sep=""))
@@ -49,10 +49,10 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   print('Build xo/xn Done')
   tl$xx=xn
   tl$lsst=sub('_REN','',tl$Var1)
-  setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+  setwd(paste(drive,'MyVideos/RPDNClips',sep=""))
   print('Refreshing mfnfo')
   load('~/mfnfo.RData')
-  setwd(paste(drive,'My Videos/RPDNClips',sep=""))
+  setwd(paste(drive,'MyVideos/RPDNClips',sep=""))
   mg1=merge(mfnfo,tl[,c('Var1','xx')],by.x='lsst',by.y='Var1')
   mg1$xx=mg1$xx.y
   mfnfo=mg1[,names(mfnfo)]
