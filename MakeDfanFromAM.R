@@ -18,16 +18,6 @@ scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(as.integer(file.size(fnx)),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 
-delay500=function(){
-  x=1000000
-  while(TRUE)
-  {
-    x=x-1
-    if(x==0)
-      break
-  }
-}
-
 extras=NULL
 fmissing=NULL
 deleted=FALSE
@@ -72,7 +62,7 @@ if (file.exists('D:/PNMTALL')) {
     zz1 = readLines('zz.txt')
     unlink('zz.txt')
     zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
-                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp|.crdownload',zz1,fixed=TRUE) &
+                      !grepl('RECYCLE|.txt|.RData|RPDN|.tmp|.crdownload|.exe',zz1,fixed=TRUE) &
                       toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
     zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
     dirtbl=as.data.frame(table(as.character(dirname(zz))))
@@ -103,7 +93,7 @@ if (file.exists('D:/PNMTALL')) {
       xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
       fmss = suppressWarnings(normalizePath(xmissing, winslash = "/"))
       #fmissing=subset(fmss,!grepl('_New',fmss))
-      fmissing=subset(fmss,!grepl('crdownload',fmss))
+      fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
       extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
       dts = dto # replace old dates
     }
