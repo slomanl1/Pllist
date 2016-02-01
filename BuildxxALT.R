@@ -63,10 +63,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   if(nrow(addfnfo)>0){
     addfnfo$lsst=sub('REN_New','',fn)
     addfnfo$xx=0 # not in any playlist
-    #addfnfo$nfn=NA
     addfnfo$md5s=md5sum(addfnfo$lsst)
-    #addfnfo$nfn=paste(file_path_sans_ext(addfnfo$lsst),'_New.wmv',sep='')
-    addfnfo$md5sn=addfnfo$md5s
     addfnfo=addfnfo[,names(mfnfo)]
     mfnfo=rbind(mfnfo,addfnfo)
     tod=format(Sys.time(), "%Y-%m-%d %H:%M:%S")
