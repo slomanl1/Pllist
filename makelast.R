@@ -62,8 +62,6 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo$lsst=fn
     addfnfo$xx=2^(length(wpls)-1) # wa1.wpl
     addfnfo$md5s=md5sum(fn)
-    #addfnfo$nfn=paste(file_path_sans_ext(fn),'_New.wmv',sep='')
-    addfnfo$md5sn=NA
     mfnfo=rbind(mfnfo,addfnfo)
     tod=format(Sys.time(), "%Y-%m-%d %H:%M:%S")
     lastr=nrow(mfnfo)
