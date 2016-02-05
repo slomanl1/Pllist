@@ -11,9 +11,12 @@ bc=gsub('[0-9]','',lsstn)
 bn=substr(bn,1,nchar(bn)-2)
 namer=mfnfo
 namer$mtime=file.mtime(mfnfo$lsst)
+namer$mlsst=namer$lsst
 namer$lsst=gsub('_REN','',namer$lsst)
 namer$bn=as.integer(bn)
 namer$info=bc
+namer$ofn=NA
+namer=namer[!duplicated(namer$lsst),]
 
 while(any(duplicated(namer$mtime))){ # ensure that no two entires are equal, sep by 1 second
   namer$mtime=namer$mtime+duplicated(namer$mtime)
@@ -21,16 +24,17 @@ while(any(duplicated(namer$mtime))){ # ensure that no two entires are equal, sep
 namer=namer[order(as.character(namer$mtime)),]
 namer$newfn=1:nrow(namer)
 namer$newfn=paste(namer$newfn,'_REN',namer$info,sep='')
-namer$ofn=NA
 namer[file.exists(namer$lsst),]$ofn=namer[file.exists(namer$lsst),]$lsst
 namer[file.exists(namer$newfn),]$ofn=namer[file.exists(namer$newfn),]$newfn
 rens=which(grepl('_REN',namer$ofn))
 
 if(len(rens))
   namer[rens,]$newfn=gsub('_REN','',namer[rens,]$newfn)
+namer[which(!file.exists(namer$ofn)),'ofn']=namer[which(!file.exists(namer$ofn)),'mlsst']
 answ=gconfirm('RENAME .wpl - Are you Sure?')
 if(answ){
   rnmd=file.rename(as.character(namer$ofn),as.character(namer$newfn))
+  save(namer,mfnfo,wpls,file=paste('~/namer',gsub(':','_',Sys.time(),fixed=TRUE),'.RData',sep=''))
   if(any(!rnmd))
   {
     print('File Rename Failed')
@@ -44,7 +48,6 @@ if(answ){
     setwd(paste(pldrive,'My Playlists',sep=""))
     wpls = sort(dir(pattern = '*.wpl'))
     save(mfnfo,wpls,file='~/mfnfo.RData')
-    save(namer,mfnfo,wpls,file=paste('~/namer',gsub(':','_',Sys.time(),fixed=TRUE),'.RData',sep=''))
     source('~/pllist.git/makeWPLS.R')
   }
 }else{
