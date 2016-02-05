@@ -1,16 +1,15 @@
 StartMyGUI <- function() {
   mtime=file.mtime(svt)
   print(paste('Gui Started - NEW',mtime))
+  file.remove(dir(pattern = 'file'))
   startt=EnterStartStop()
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
     print('Convert H265')
-    of=paste(basename(tempfile()),'.mp4',sep='')
+    of=paste('c:/Users/Larry/Documents/',basename(tempfile()),'.mp4',sep='')
     print(paste(svt,of,file.mtime(svt)))
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
                 svt,'" ',of,',' ,sep=''),translate = TRUE)
-    #     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
-    #                 svt,'" c:/Users/Larry/Documents/out.mp4',sep=''),translate = TRUE)
     ofn=sub('REDUCE','',svt)
     if(!file.rename(of,ofn)){
       print('file rename back to orig failed - REDUCE')
@@ -39,7 +38,7 @@ StartMyGUI <- function() {
       print(paste('startt=',startt))
       endtt=0
       if(!.GlobalEnv$ToEnd)
-        endtt=EnterStartStop("Enter Time Duration (secs) or (mm:ss), 
+        endtt=EnterStartStop("Enter End Time (mm:ss), 
                            or Enter/Esc for End of File\n",TRUE)
       
       #if(startt > 0 & len(endtt)){
@@ -49,10 +48,18 @@ StartMyGUI <- function() {
         unlink(svtt)
         file.rename(svt,'~/temppt.mp4')
         if(.GlobalEnv$ToEnd){
-          endtt=10000
+          endttd=10000
           .GlobalEnv$ToEnd=FALSE
+        }else{
+          if(!grepl(':',startt)){
+            startt=as.integer(startt)
+            endtt=paste(as.integer(startt/60),':',startt%%60)
+          }
+          endttd=as.character(60*(strptime(endtt,"%M:%S") - strptime(startt,"%M:%S")))
+          print(paste('endttd=',endttd))
         }
-        cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endtt,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
+
+        cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endttd,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
         print(cmdd)
         eval(parse(text=cmdd))
         svt1=sub('TRIM','',svt)
@@ -70,7 +77,7 @@ StartMyGUI <- function() {
         eval(parse(text=cmd))
         print('file mtime back to orig - REDUCE')
         print(file.mtime(svtO))
-        gmessage(paste(cmd,file.mtime(svtO),svtO))
+        #gmessage(paste(cmd,file.mtime(svtO),svtO))
       }else
         print('Invalid start/end time')
     }
