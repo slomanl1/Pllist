@@ -7,11 +7,12 @@
   unlink('zz.txt')
   unlink('yy.txt')
   copyl1 = zz[!(substr(zz,2,100) %in% substr(yy,2,100))]
-  copyl=copyl1[!grepl('RECYCLE',copyl1)] # remove recycle bin entried
+  copyl=copyl1[!grepl('RECYCLE|crdownload',copyl1)] # remove recycle bin entried
   reml = yy[!(substr(yy,2,100) %in% substr(zz,2,100))]
   unlink(reml,recursive = TRUE)
   ccdirs = sub('D:','E:',na.omit(copyl[file.info(copyl)[,'isdir']]),ignore.case = TRUE)
   ccdirs = sub('C:','E:',na.omit(copyl[file.info(copyl)[,'isdir']]),ignore.case = TRUE)
+  ccdirs=ccdirs[!file.exists(ccdirs)]
   if (len(ccdirs) > 0)
     for (i in 1:len(ccdirs)) {
       dir.create(ccdirs[i])
