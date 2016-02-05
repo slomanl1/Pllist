@@ -42,7 +42,7 @@ if (file.exists('D:/PNMTALL')) {
     if(destroyed)
       stop('Aborted')
     YesorNo=vall
-    if(YesorNo=='YES'){
+    if(YesorNo=='gtk-yes'){
       dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
       if(len(dirpaths)==0)
         stop('Aborted')
