@@ -14,6 +14,7 @@ library(RGtk2)
 library(gWidgets)
 library(gWidgetsRGtk2)
 library(tools)
+require(gdata) # required for standalone version
 args <- commandArgs(TRUE)
 save(args,file='~/args.RData')
 svt=args[1]
