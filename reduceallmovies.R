@@ -1,3 +1,4 @@
+file.remove(dir(pattern = 'file'))
 cd('~/')
 cls=NULL
 dwnlds=NULL
@@ -38,6 +39,7 @@ if(len(sll)>0){
     dfa=rbind(dfa1,dfa)
     
     bads=data.frame(fname=NA,errorC=NA)
+    badx=1
     if(file.exists('~/bads.RData'))
       load('~/bads.RData')
     
@@ -46,7 +48,7 @@ if(len(sll)>0){
       writeLines('','~/msgis.txt')
     }
     dfa=dfa[!duplicated(dfa$cls),]
-    dfa=dfa[order(dfa$sz,decreasing=FALSE),]
+    dfa=dfa[order(dfa$sz,decreasing=TRUE),]
     for(fn in dfa$cls)
     { 
       print('------------------------------------------------------------------------------')
