@@ -63,7 +63,7 @@ while(TRUE){
       zz1 = readLines('zz.txt')
       unlink('zz.txt')
       zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
-                        !grepl('RECYCLE|.txt|.RData|RPDN|.tmp|.crdownload|.exe',zz1,fixed=TRUE) &
+                        !grepl('RECYCLE|.txt|.RData|RPDN|.tmp|.crdownload|.exe|.rar',zz1,fixed=TRUE) &
                         toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/')))]
       zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
       dirtbl=as.data.frame(table(as.character(dirname(zz))))
