@@ -26,7 +26,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     gtkMainQuit()})
   
   olabel='OK'
-  if(allowEnter)
+  if(allowEnter &!.GlobalEnv$Fdate)
     olabel='To'
   
   obutton=gbutton(olabel, container=ww,handler=function(h,...)
