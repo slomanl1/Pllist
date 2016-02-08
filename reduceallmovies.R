@@ -1,3 +1,15 @@
+svv=function(filename,errorCode) {
+  load('~/bads.RData')
+  badsa=data.frame(fname=NA,errorC=NA,md5s=NA)
+  badsa$fname=filename
+  badsa$errorC=errorCode
+  badsa$md5s=md5sum(filename)
+  bads=rbind(bads,badsa)
+  print(bads[.GlobalEnv$badx,]$errorC)
+  .GlobalEnv$badx=.GlobalEnv$badx+1
+  save(bads,file='~/bads.RData')
+}
+
 file.remove(dir(pattern = 'file'))
 cd('~/')
 cls=NULL
@@ -38,17 +50,19 @@ if(len(sll)>0){
     dfa1=subset(dfa1,!file.exists(as.character(dfa1$nfns))) # remove already converted to _New
     dfa=rbind(dfa1,dfa)
     
-    bads=data.frame(fname=NA,errorC=NA)
-    badx=1
-    if(file.exists('~/bads.RData'))
+    bads=data.frame(fname=NA,errorC=NA,md5s=NA)
+    
+    if(file.exists('~/bads.RData')){
       load('~/bads.RData')
+      badx=nrow(bads)+1
+    }
     
     dfa=dfa[!toupper(dfa$cls) %in% toupper(bads$fname),]
     if(!file.exists('~/msgis.txt')){
       writeLines('','~/msgis.txt')
     }
     dfa=dfa[!duplicated(dfa$cls),]
-    dfa=dfa[order(dfa$sz,decreasing=TRUE),]
+    dfa=dfa[order(dfa$sz,decreasing=FALSE),]
     for(fn in dfa$cls)
     { 
       print('------------------------------------------------------------------------------')
@@ -67,11 +81,7 @@ if(len(sll)>0){
       hevcFlag=any(grepl('HEVC',ddd))
       
       if(clflag & hevcFlag){
-        bads[badx, ]$fname = fn
-        bads[badx, "errorC"] = "Already HEVC"
-        badx = badx + 1
-        save(bads, badx, file = "~/bads.RData")
-        print("Already HEVC")
+        svv(fn,"Already HEVC")
       }
       if((clflag & !hevcFlag) | file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$cls==fn),'sz']){
         if(!hevcFlag){
@@ -105,27 +115,15 @@ if(len(sll)>0){
                     file.remove(fn)
                 }
               }else{
-                bads[badx,]$fname=fn
-                bads[badx,]$errorC='Bad Metadata'
-                badx=badx+1
-                save(bads,badx,file='~/bads.RData')
-                print('bad metadata')
+                svv(fn,'Bad Metadata')
                 unlink(of)
               }
             }else{
-              bads[badx,]$fname=fn
-              bads[badx,'errorC']='Bad Size'
-              badx=badx+1
-              save(bads,badx,file='~/bads.RData')
-              print('Bad size')
+              svv(fn,'Bad Size')
               unlink(of)
             }
           }else{
-            bads[badx,]$fname=fn
-            bads[badx,'errorC']='Bad Moov'
-            badx=badx+1
-            save(bads,badx,file='~/bads.RData')
-            print('Bad Moov')
+            svv(fn,'Bad Moov')
           }
           writeLines(msgi,'~/temp.txt')
           msgi=readLines('~/temp.txt') # convert CR to CRLF
@@ -133,10 +131,7 @@ if(len(sll)>0){
           file.append('~/msgis.txt','~/temp.txt')
         }else{
           bads[badx,]$fname=fn
-          bads[badx,'errorC']='Already HEVC'
-          badx=badx+1
-          save(bads,badx,file='~/bads.RData')
-          print('Already HEVC')
+          svv(fn,'Already HEVC')
         }
       }
     }
