@@ -5,8 +5,7 @@ svv=function(filename,errorCode) {
   badsa$errorC=errorCode
   badsa$md5s=md5sum(filename)
   bads=rbind(bads,badsa)
-  print(bads[.GlobalEnv$badx,]$errorC)
-  .GlobalEnv$badx=.GlobalEnv$badx+1
+  print(badsa$errorC)
   save(bads,file='~/bads.RData')
 }
 
@@ -54,7 +53,6 @@ if(len(sll)>0){
     
     if(file.exists('~/bads.RData')){
       load('~/bads.RData')
-      badx=nrow(bads)+1
     }
     
     dfa=dfa[!toupper(dfa$cls) %in% toupper(bads$fname),]
@@ -63,11 +61,29 @@ if(len(sll)>0){
     }
     dfa=dfa[!duplicated(dfa$cls),]
     dfa=dfa[order(dfa$sz,decreasing=FALSE),]
+    done=FALSE
+    ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
+    ww=gwindow(title=ttl)
+    gtbl=gtable(as.character(dfa$cls),container=ww)
+    addhandlerdestroy(gtbl,handler = function(h,...){
+      xx=shell(paste('handle',of),intern = TRUE)
+      if(any(grepl(of,xx))){
+        pidx=xx[grepl('pid',xx)]
+        xxx=(as.numeric(unlist(strsplit(pidx,' '))))
+        pid=xxx[!is.na(xxx)]
+        shell(paste('taskkill /PID',pid, '/F'))
+      }else{
+        print('No ffmpeg.exe found')
+      }
+      .GlobalEnv$done=TRUE
+    })
     for(fn in dfa$cls)
     { 
       print('------------------------------------------------------------------------------')
-      print(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
-                  ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
+      txl=(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
+                 ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
+      svalue(ww)=txl
+      print(txl)
       
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
@@ -94,6 +110,8 @@ if(len(sll)>0){
           msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
                            fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
           print(tail(msgi))
+          if(done)
+            break
           if(file.exists(of)){
             if(file.size(of)>1000){
               if(any(grepl('hevc',msgi))){
@@ -130,7 +148,6 @@ if(len(sll)>0){
           writeLines(msgi,'~/temp.txt')
           file.append('~/msgis.txt','~/temp.txt')
         }else{
-          bads[badx,]$fname=fn
           svv(fn,'Already HEVC')
         }
       }
