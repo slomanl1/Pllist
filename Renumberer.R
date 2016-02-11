@@ -35,6 +35,7 @@ answ=gconfirm('RENAME .wpl - Are you Sure?')
 if(answ){
   rnmd=file.rename(as.character(namer$ofn),as.character(namer$newfn))
   save(namer,mfnfo,wpls,file=paste('~/namer',gsub(':','_',Sys.time(),fixed=TRUE),'.RData',sep=''))
+  save(namer,file='~/namer.RData')
   if(any(!rnmd))
   {
     print('File Rename Failed')
@@ -49,6 +50,13 @@ if(answ){
     wpls = sort(dir(pattern = '*.wpl'))
     save(mfnfo,wpls,file='~/mfnfo.RData')
     source('~/pllist.git/makeWPLS.R')
+    load('~/bads.RData')
+    load('~/namer.RData')
+    bads$bn=basename(bads$fname)
+    mgg=merge(namer[,c('ofn','newfn')],bads,by.x='ofn',by.y='bn')
+    bads=mgg[,names(bads)[1:3]]
+    bads$fname=paste('C:/myVideos/RPDNClips/',bads$fname,sep='')
+    save(bads,file='~/bads.RData')
   }
 }else{
   print('RENAME CANCELLED')
