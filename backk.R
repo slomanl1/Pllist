@@ -28,6 +28,7 @@ if (lnc > 0)
     file.copy(copyl[i],copyll[i])
   }
 shell('xcopy D: E: /S/D/Y/J',intern = TRUE)
+print('Backing up RPDN Clips')
 load('E:/mfnfo.RData')
 emfnfo=mfnfo
 load('~/mfnfo.RData')
@@ -38,10 +39,13 @@ mm=mgg[!mgg$lsst.x==mgg$lsst.y & !is.na(mgg$lsst.y),]
 if(nrow(mm)){
   nfn=paste('E:/rpdn/',mm$lsst.x,'.temp',sep='')
   ofn=paste('E:/rpdn/',mm$lsst.y,sep='')
-  file.rename(ofn,nfn)
+  rn1=file.rename(ofn,nfn)
+  rn=paste(ofn,nfn)[rn1]
   ofn=nfn
   nfn=gsub('.temp','',nfn,fixed=TRUE)
-  file.rename(ofn,nfn)
+  rn2=file.rename(ofn,nfn)
+  rn=c(rn,rn=paste(ofn,nfn)[rn2])
+  print(paste(rn, "renamed"))
 }
 file.copy('~/mfnfo.RData','e:/mfnfo.RData',overwrite=TRUE)
 print('Done')
