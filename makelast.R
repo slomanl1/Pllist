@@ -32,8 +32,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
       for(x in 1:len(exts))
         cc=sub(paste(exts[x],exts[x],sep=''),exts[x],cc)
       exist=TRUE
+      ren=ifelse(any(grepl('_REN',mfnfo$lsst)),'_REN','')
       while (exist){
-        fn[i]=paste(as.character(last),cc,'.wmv',sep='')
+        fn[i]=paste(as.character(last),cc,ren,'.wmv',sep='')
         fs=file.info(fns[i])
         if(fs$size %in% mfnfo$size &
            identical(md5sum(fns[i]), md5sum(fns[fs$size %in% mfnfo$size]))){
