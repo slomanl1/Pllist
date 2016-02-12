@@ -84,7 +84,7 @@ if(len(sll)>0){
                  ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
       svalue(ww)=txl
       print(txl)
-      
+      gtbl[,]=as.character(dfa[which(fn==dfa$cls):len(dfa$cls),'cls'])
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
       clflag=FALSE
@@ -155,4 +155,7 @@ if(len(sll)>0){
   }else{
     print('NONE FOUND')
   }
+  
+  if(isExtant(ww))
+    dispose(ww)
 }
