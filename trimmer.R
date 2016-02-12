@@ -21,4 +21,7 @@ svt=args[1]
 if(is.na(svt))
   svt=file.choose()
 print(paste('svt=',svt))
+alrt=galert(svt,delay = 1000)	
 StartMyGUI()
+dispose(alrt)
+
