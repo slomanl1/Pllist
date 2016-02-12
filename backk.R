@@ -34,7 +34,10 @@ emfnfo=mfnfo
 load('~/mfnfo.RData')
 mgg=merge(mfnfo[,c('lsst','md5s')],emfnfo[,c('lsst','md5s')],by='md5s',all.x=TRUE)
 cd('C:/MyVideos/RPDNClips')
-file.copy(mgg[is.na(mgg$lsst.y),'lsst.x'],'e:/RPDN',overwrite=TRUE)
+fils=mgg[is.na(mgg$lsst.y),'lsst.x']
+file.copy(fils,'e:/RPDN',overwrite=TRUE)
+print(paste(fils,'Copied to E:/RPDN'))
+
 mm=mgg[!mgg$lsst.x==mgg$lsst.y & !is.na(mgg$lsst.y),]
 if(nrow(mm)){
   nfn=paste('E:/rpdn/',mm$lsst.x,'.temp',sep='')
