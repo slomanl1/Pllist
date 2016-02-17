@@ -26,6 +26,7 @@ fnsave=''
 convert=FALSE
 lenn=0
 Fdate=FALSE
+rebuild=FALSE
 while(TRUE){
   exitF=FALSE
   dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
@@ -39,7 +40,15 @@ while(TRUE){
       vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
       print(paste('VNAME =',vname))
       sfname = paste(substr(vname,1,nchar(vname) - 4),'.RData',sep = '')
-      source('~/pllist.git/selecttt.R')
+      if(!rebuild){
+        source('~/pllist.git/selecttt.R')
+      }else{
+        rebuild=FALSE
+        rm(dfanNew)
+        rm(dfan)
+        rm(dfanx)
+        fnsave=''
+      }
       if(destroyed)
         stop('Aborted')
       YesorNo=vall
@@ -146,7 +155,8 @@ while(TRUE){
     }
   }
   ####################################
-  if(len(extras) | len(fmissing) | !file.exists(sfname)){
+  if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
+
     procExtras()
     dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
     am1 = readLines('allmetadata.txt')
@@ -272,6 +282,7 @@ while(TRUE){
       font(EXITButton) <- c(color="red", style="bold") # initial 
       
       RBButton=gbutton("REBUILD", container = linerw, handler = function(h,...) {
+        .GlobalEnv$rebuild=TRUE
         dispose(linerw)
       }
       ) 
