@@ -52,7 +52,7 @@ if(answ){
     source('~/pllist.git/makeWPLS.R')
     load('~/bads.RData')
     load('~/namer.RData')
-    bads$bn=basename(bads$fname)
+    bads$bn=basename(as.character(bads$fname))
     mgg=merge(namer[,c('ofn','newfn')],bads,by.x='ofn',by.y='bn')
     bads=mgg[,names(bads)[1:3]]
     bads$fname=paste('C:/myVideos/RPDNClips/',bads$fname,sep='')
