@@ -28,7 +28,8 @@ if(len(sll)>0){
     dwnlds=dir('c:/PNMTALL/NewDownloads',recursive = TRUE,full.names = TRUE)
   cls=c(cls,dwnlds)
   if(5 %in% slx)
-    cls=cls[grepl('REDUCE',cls)]
+    cls=cls[grepl('REDUCE',cls) |grepl('MyVideo',cls)]
+  
   cls=cls[which(!grepl('crdownload|ini|_REN',cls))]
   fna=cls # all files (including _New's)
   cls=cls[which(!grepl('_New',cls))]
