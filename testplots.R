@@ -53,11 +53,13 @@ if (!.GlobalEnv$tpexist) {
       enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
       enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
       enabled(ebutton)=(len(svalue(tab))!=0) # edit button
+      enabled(xbutton)=(len(svalue(tab))!=0) # explore button
     }else{ 
       enabled(dbutton)=FALSE # delete button
       enabled(tbutton)=FALSE # TRIM button
       enabled(mbutton)=FALSE # metadata button
       enabled(ebutton)=FALSE # edit button
+      enabled(xbutton)=FALSE # explorer button
     }
   })
   
@@ -95,6 +97,14 @@ if (!.GlobalEnv$tpexist) {
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
+  
+  xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
+  fn=getFnx()
+  shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
+        intern = TRUE)
+  }
+  )
+  
   #rb <- gtable(fnames$fnx[1:3], container=bg,width=500)
   ebutton=gbutton("Edit", container = bg, handler = function(h,...) {
     if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
@@ -137,6 +147,7 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
+
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
     print(paste('svt=',.GlobalEnv$svt))
@@ -198,6 +209,7 @@ if (!.GlobalEnv$tpexist) {
   enabled(tbutton)=FALSE # TRIM button
   enabled(mbutton)=FALSE # metadata button
   enabled(ebutton)=FALSE # edit button  
+  enabled(xbutton)=FALSE # explore button  
   
 }else{
   visible(w)=TRUE
