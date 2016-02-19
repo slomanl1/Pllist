@@ -130,6 +130,7 @@ if(len(sll)>0){
                   print(paste('file mtime back to orig',file.mtime(nfn)))
                   print(paste(fn,ptn(msize)))
                   print(paste(nfn,ptn(file.size(nfn))))
+                  svv(nfn,'Already HEVC')
                   if(nfn!=fn)
                     file.remove(fn)
                 }
