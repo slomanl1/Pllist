@@ -100,7 +100,7 @@ while(TRUE){
         }
         ttl = which(substr(am,1,1) == '=')
         xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
-        fmss = suppressWarnings(normalizePath(xmissing, winslash = "/"))
+        fmss = suppressWarnings(normalizePath(c(dmissing,xmissing), winslash = "/"))
         #fmissing=subset(fmss,!grepl('_New',fmss))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
         extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
@@ -129,7 +129,7 @@ while(TRUE){
   ###########################################
   procExtras=function() {
     if(len(extras)>0){
-      exidxs=which(trim(substr(am,10,nchar(am))) %in% trim(substr(extras,10,nchar(extras)))) # extra indices in am[]
+      exidxs=which(trim(substr(am,10,nchar(am))) %in% normalizePath(trim(substr(extras,10,nchar(extras))))) # extra indices in am[]
       if(len(exidxs)){
         ttidxs=which(ttl%in%exidxs)
         for (i in 1:len(exidxs)){
@@ -389,7 +389,6 @@ while(TRUE){
     
     renamed=FALSE
     if(changed){
-      changed=FALSE
       print(paste("dfix=",dfix,fnames[idx,'fnx']))
       if(fwind[,'filename']!=dfan[dfix,'filename']){
         answ=gconfirm('Rename - Are you Sure?')
@@ -438,13 +437,14 @@ while(TRUE){
         eval(parse(text=cmd))
       }
       dfan$filename = normalizePath(dfan$filename,winslash = '/')
-      if(renamed){
+      if(renamed | changed){
         dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
         extras=paste("========",ofn) # remove old metadata associated with the old file
         procExtras()
       }
       save(dfan,file='Dfan.RData')
       print('Dfan.Rdata written')
+      changed=FALSE
       next #rebuild an from updated dfan
     }
     if(deleted){
