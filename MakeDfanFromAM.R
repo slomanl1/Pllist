@@ -43,7 +43,6 @@ while(TRUE){
       if(!rebuild){
         source('~/pllist.git/selecttt.R')
       }else{
-        rebuild=FALSE
         rm(dfanNew)
         rm(dfan)
         rm(dfanx)
@@ -156,7 +155,7 @@ while(TRUE){
   }
   ####################################
   if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
-
+    rebuild=FALSE
     procExtras()
     dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
     am1 = readLines('allmetadata.txt')
