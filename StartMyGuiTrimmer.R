@@ -10,20 +10,27 @@ StartMyGUI <- function() {
     print(paste(svt,of,file.mtime(svt)))
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
                 svt,'" ',of,',' ,sep=''),translate = TRUE)
-    ofn=sub('REDUCE','',svt)
-    if(!file.rename(of,ofn)){
-      print('file rename back to orig failed - REDUCE')
+    if(file.size(of)<100){
+      print('Bad Size, failed to convert')
     }else{
-      unlink(of)
-      print('file renamed back to orig - REDUCE')
-      dx=data.frame(dtn=NA,fn=NA,times=NA)
-      dx$dtn=mtime+(8*3600) #add 8 hours to make GMT
-      dx$fn=normalizePath(as.character(ofn),winslash = '/')
-      dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
-                     ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
-      cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
-      eval(parse(text=cmd))
-      print('file mtime back to orig - REDUCE')
+      ofn=sub('REDUCE','',svt)
+      if(!file.rename(of,ofn)){
+        print('file rename back to orig failed - REDUCE')
+      }else{
+        unlink(of)
+        print('file renamed back to orig - REDUCE')
+        dx=data.frame(dtn=NA,fn=NA,times=NA)
+        dx$dtn=mtime+(8*3600) #add 8 hours to make GMT
+        dx$fn=normalizePath(as.character(ofn),winslash = '/')
+        dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                       ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+        cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+        eval(parse(text=cmd))
+        print('file mtime back to orig - REDUCE')
+#         srr='shell("recycle –f %s")'
+#         cmdd=sprintf(srr,of)
+#         eval(parse(text=cmdd))
+      }
     }
     startt=NULL
   }else{
@@ -52,14 +59,21 @@ StartMyGUI <- function() {
           .GlobalEnv$ToEnd=FALSE
         }else{
           if(!grepl(':',startt)){
-            startt=as.integer(startt)
-            endtt=paste(as.integer(startt/60),':',startt%%60)
+            starttd=as.integer(startt)
+            startt=paste(as.integer(starttd/60),':',starttd%%60,sep='')
+            if(!grepl(':',endtt)){
+              endtt=as.integer(endtt)
+              endtt=paste(as.integer(endtt/60),':',endtt%%60,sep='')
+            }
+          }else{
+            pos=unlist(gregexpr(':',startt))
+            starttd=as.integer(substr(startt,1,(pos-1)))*60 + as.integer(substr(startt,pos+1,nchar(startt)))
           }
-          endttd=as.character(60*(strptime(endtt,"%M:%S") - strptime(startt,"%M:%S")))
+          endttd=as.character(strptime(endtt,"%M:%S") - strptime(startt,"%M:%S"))
           print(paste('endttd=',endttd))
         }
-
-        cmdd=paste('shell("ffmpeg.exe -ss',startt,' -i c:/users/Larry/Documents/temppt.mp4 -t',endttd,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
+        
+        cmdd=paste('shell("ffmpeg.exe -ss',starttd,' -i c:/users/Larry/Documents/temppt.mp4 -t',endttd,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
         print(cmdd)
         eval(parse(text=cmdd))
         svt1=sub('TRIM','',svt)
