@@ -129,7 +129,7 @@ while(TRUE){
   ###########################################
   procExtras=function() {
     if(len(extras)>0){
-      exidxs=which(trim(substr(am,10,nchar(am))) %in% normalizePath(trim(substr(extras,10,nchar(extras))))) # extra indices in am[]
+      exidxs=which(normalizePath(trim(substr(am,10,nchar(am)))) %in% normalizePath(trim(substr(extras,10,nchar(extras))))) # extra indices in am[]
       if(len(exidxs)){
         ttidxs=which(ttl%in%exidxs)
         for (i in 1:len(exidxs)){
