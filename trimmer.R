@@ -19,9 +19,13 @@ args <- commandArgs(TRUE)
 save(args,file='~/args.RData')
 svt=args[1]
 if(is.na(svt))
-  svt=file.choose()
-print(paste('svt=',svt))
-alrt=galert(svt,delay = 1000)	
+  svt=normalizePath(file.choose(),winslash = '/')
+cmdd="shell('mediainfo.exe %s | findstr Duration',intern=TRUE)"
+cmdx=sprintf(cmdd,svt)
+xx=eval(parse(text=cmdx))
+dur=gsub('  ','',xx[1])
+print(paste('svt=',svt,dur))
+alrt=galert(paste(svt,dur),delay = 1000)	
 StartMyGUI()
 dispose(alrt)
 
