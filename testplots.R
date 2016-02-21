@@ -1,7 +1,4 @@
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
-idxs=NULL
-for(x in 1:nrow(fnames)) 
-  idxs=c(idxs,which(grepl(fnames[x,'fnx'],an[ttl],fixed=TRUE)))
 
 if (!.GlobalEnv$tpexist) {
   renamed = FALSE
@@ -23,7 +20,6 @@ if (!.GlobalEnv$tpexist) {
   
   addHandlerDestroy(fwind, handler = function(h,...) 
   { 
-    .GlobalEnv$ofnx=NULL
     if(isExtant(w))
       dispose(w)
     tpexist=FALSE
@@ -47,7 +43,7 @@ if (!.GlobalEnv$tpexist) {
                 }
   )
   addHandlerClicked(tab, handler = function(h,...) {
-    .GlobalEnv$lenn=len(getFnx())
+    lenn=len(getFnx())
     if(lenn==1){
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
       enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
@@ -66,10 +62,10 @@ if (!.GlobalEnv$tpexist) {
   addHandlerRightclick(
     tab, handler = function(h,...) {
       if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
-        .GlobalEnv$idx=svalue(h$obj,index = TRUE)
-        .GlobalEnv$ofnx=fnames[idx,]
+        .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
+        idx=which(fnames$fnx==.GlobalEnv$svt)
         .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-        nfn=NULL  # supply select idx item in editing window fwinf
+        # supply select idx item in editing window fwinf
         tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
         if(!is.na(tmpdf$DMComment))
           tmpdf$Comment=tmpdf$DMComment
@@ -110,11 +106,9 @@ if (!.GlobalEnv$tpexist) {
     if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
       idx=which(fnames$fnx==.GlobalEnv$svt)
-      .GlobalEnv$idx=idx
       print(paste('svt,idx=',svt,idx))
-      .GlobalEnv$ofnx=fnames[idx,]
       .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-      nfn=NULL  # supply select idx item in editing window fwinf
+      # supply select idx item in editing window fwinf
       tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
       if(!is.na(tmpdf$DMComment))
         tmpdf$Comment=tmpdf$DMComment
@@ -130,7 +124,6 @@ if (!.GlobalEnv$tpexist) {
     answ=gconfirm('Are you Sure?')
     if(answ){
       print(paste('Deleting',getFnx()))
-      .GlobalEnv$idx=svalue(tab,index=TRUE)
       if(unlink(getFnx()))
         print('delete FAILED')
       else{
@@ -199,7 +192,6 @@ if (!.GlobalEnv$tpexist) {
   
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
-    .GlobalEnv$ofnx=NULL
     dispose(w)
     dispose(fwind)
     .GlobalEnv$gdfopen=FALSE
