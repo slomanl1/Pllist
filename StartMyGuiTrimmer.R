@@ -27,9 +27,6 @@ StartMyGUI <- function() {
         cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
         eval(parse(text=cmd))
         print('file mtime back to orig - REDUCE')
-#         srr='shell("recycle –f %s")'
-#         cmdd=sprintf(srr,of)
-#         eval(parse(text=cmdd))
       }
     }
     startt=NULL
@@ -48,7 +45,6 @@ StartMyGUI <- function() {
         endtt=EnterStartStop("Enter End Time (mm:ss), 
                            or Enter/Esc for End of File\n",TRUE)
       
-      #if(startt > 0 & len(endtt)){
       if(len(endtt)){
         svtt='c:/RealPlayerDownloads/trimmed.mp4'
         unlink('~/temppt.mp4')
@@ -57,22 +53,27 @@ StartMyGUI <- function() {
         if(.GlobalEnv$ToEnd){
           endttd=10000
           .GlobalEnv$ToEnd=FALSE
-        }else{
-          if(!grepl(':',startt)){
-            starttd=as.integer(startt)
-            startt=paste(as.integer(starttd/60),':',starttd%%60,sep='')
-            if(!grepl(':',endtt)){
-              endtt=as.integer(endtt)
-              endtt=paste(as.integer(endtt/60),':',endtt%%60,sep='')
-            }
-          }else{
-            pos=unlist(gregexpr(':',startt))
-            starttd=as.integer(substr(startt,1,(pos-1)))*60 + as.integer(substr(startt,pos+1,nchar(startt)))
-          }
-          endttd=as.character(strptime(endtt,"%M:%S") - strptime(startt,"%M:%S"))
-          print(paste('endttd=',endttd))
         }
-        
+        if(!grepl(':',startt)){
+          starttd=as.integer(startt)
+          startt=paste(as.integer(starttd/60),':',starttd%%60,sep='')
+          if(!grepl(':',endtt)){
+            endtt=as.integer(endtt)
+            endtt=paste(as.integer(endtt/60),':',endtt%%60,sep='')
+          }
+        }else{
+          pos=unlist(gregexpr(':',startt))
+          starttd=as.integer(substr(startt,1,(pos-1)))*60 + as.integer(substr(startt,pos+1,nchar(startt)))
+        }
+        dd=strptime(endtt,"%M:%S") - strptime(startt,"%M:%S")
+        attd=attributes(dd)$units
+        if(attd=='secs')
+          timef=1
+        if(attd=='mins')
+          timef=60
+        if(attd=='hours')
+          timef=3600
+        endttd=as.character(dd*timef)
         cmdd=paste('shell("ffmpeg.exe -ss',starttd,' -i c:/users/Larry/Documents/temppt.mp4 -t',endttd,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
         print(cmdd)
         eval(parse(text=cmdd))
