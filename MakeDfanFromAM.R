@@ -24,7 +24,6 @@ deleted=FALSE
 nexistpas=FALSE
 fnsave=''
 convert=FALSE
-lenn=0
 Fdate=FALSE
 rebuild=FALSE
 while(TRUE){
