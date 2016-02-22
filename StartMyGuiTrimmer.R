@@ -65,7 +65,8 @@ StartMyGUI <- function() {
           pos=unlist(gregexpr(':',startt))
           starttd=as.integer(substr(startt,1,(pos-1)))*60 + as.integer(substr(startt,pos+1,nchar(startt)))
         }
-        endtt=paste('00:',endtt,sep='')
+        if(nchar(endtt)<8)
+          endtt=paste('00:',endtt,sep='')
         dd=strptime(endtt,"%H:%M:%S") - strptime(startt,"%M:%S")
         attd=attributes(dd)$units
         if(attd=='secs')
