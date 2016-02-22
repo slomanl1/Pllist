@@ -6,7 +6,6 @@ ToEnd=FALSE
 .GlobalEnv$convert=FALSE
 .GlobalEnv$bOK=FALSE
 .GlobalEnv$Fdate=FALSE
-of=''
 print('Trimmer hello')
 
 shell('nircmd win min process rscript.exe')
@@ -22,7 +21,7 @@ svt=args[1]
 if(is.na(svt))
   svt=normalizePath(file.choose(),winslash = '/')
 xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
-                 svt,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
+                 svt,'" ' ,sep=''),translate = TRUE, intern = TRUE)
 dur=gsub('  ','',xx[3])
 print(paste('svt=',svt,dur))
 alrt=galert(paste(svt,dur),delay = 1000)	
