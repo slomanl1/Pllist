@@ -51,7 +51,7 @@ StartMyGUI <- function() {
         unlink(svtt)
         file.rename(svt,'~/temppt.mp4')
         if(.GlobalEnv$ToEnd){
-          endttd=10000
+          endtt='23:59:59'
           .GlobalEnv$ToEnd=FALSE
         }
         if(!grepl(':',startt)){
@@ -59,13 +59,14 @@ StartMyGUI <- function() {
           startt=paste(as.integer(starttd/60),':',starttd%%60,sep='')
           if(!grepl(':',endtt)){
             endtt=as.integer(endtt)
-            endtt=paste(as.integer(endtt/60),':',endtt%%60,sep='')
+            endtt=paste(as.integer(endtt/3600),':',as.integer(endtt/60),':',endtt%%60,sep='')
           }
         }else{
           pos=unlist(gregexpr(':',startt))
           starttd=as.integer(substr(startt,1,(pos-1)))*60 + as.integer(substr(startt,pos+1,nchar(startt)))
         }
-        dd=strptime(endtt,"%M:%S") - strptime(startt,"%M:%S")
+        endtt=paste('00:',endtt,sep='')
+        dd=strptime(endtt,"%H:%M:%S") - strptime(startt,"%M:%S")
         attd=attributes(dd)$units
         if(attd=='secs')
           timef=1
