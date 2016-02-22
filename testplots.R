@@ -64,6 +64,7 @@ if (!.GlobalEnv$tpexist) {
       if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
         .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
         idx=which(fnames$fnx==.GlobalEnv$svt)
+        print(paste('svt,idx=',svt,idx))
         .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
         # supply select idx item in editing window fwinf
         tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
