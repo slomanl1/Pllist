@@ -6,6 +6,7 @@ ToEnd=FALSE
 .GlobalEnv$convert=FALSE
 .GlobalEnv$bOK=FALSE
 .GlobalEnv$Fdate=FALSE
+of=''
 print('Trimmer hello')
 
 shell('nircmd win min process rscript.exe')
@@ -20,10 +21,9 @@ save(args,file='~/args.RData')
 svt=args[1]
 if(is.na(svt))
   svt=normalizePath(file.choose(),winslash = '/')
-cmdd="shell('mediainfo.exe %s | findstr Duration',intern=TRUE)"
-cmdx=sprintf(cmdd,svt)
-xx=eval(parse(text=cmdx))
-dur=gsub('  ','',xx[1])
+xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
+                 svt,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
+dur=gsub('  ','',xx[3])
 print(paste('svt=',svt,dur))
 alrt=galert(paste(svt,dur),delay = 1000)	
 StartMyGUI()
