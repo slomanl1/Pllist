@@ -381,14 +381,13 @@ while(TRUE){
     source('~/pllist.git/testplots.R')
     
     if(changed | deleted){
-      dfix=which(grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE))
+      dfix=which(grepl(getFnx(),dfan[,'filename'],fixed=TRUE))
       ofn=dfan[dfix,'filename']
       dispose(w)
     }
     
     renamed=FALSE
     if(changed){
-      print(paste("dfix=",dfix,fnames[idx,'fnx']))
       if(fwind[,'filename']!=dfan[dfix,'filename']){
         answ=gconfirm('Rename - Are you Sure?')
         if(answ){
