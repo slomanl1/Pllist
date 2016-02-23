@@ -98,11 +98,11 @@ while(TRUE){
           dmissing = zz[!dto %in% dts] # add records with new date to dmissing
         }
         ttl = which(substr(am,1,1) == '=')
-        xmissing = zz[!suppressWarnings(normalizePath(zz)) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000)))]
+        xmissing = zz[!suppressWarnings(normalizePath(zz,winslash = '/')) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/'))]
         fmss = suppressWarnings(normalizePath(c(dmissing,xmissing), winslash = "/"))
         #fmissing=subset(fmss,!grepl('_New',fmss))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
-        extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000))) %in% suppressWarnings(normalizePath(zz))]
+        extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/')) %in% suppressWarnings(normalizePath(zz,winslash='/'))]
         dts = dto # replace old dates
       }
     } 
@@ -128,7 +128,8 @@ while(TRUE){
   ###########################################
   procExtras=function() {
     if(len(extras)>0){
-      exidxs=which(normalizePath(trim(substr(am,10,nchar(am)))) %in% normalizePath(trim(substr(extras,10,nchar(extras))))) # extra indices in am[]
+      exidxst=which(normalizePath(trim(substr(am[ttl],10,nchar(am[ttl]))),winslash = '/') %in% normalizePath(trim(substr(extras,10,nchar(extras))),winslash='/')) # extra indices in am[]
+      exidxs=which(am %in% am[ttl][exidxst])      
       if(len(exidxs)){
         ttidxs=which(ttl%in%exidxs)
         for (i in 1:len(exidxs)){
@@ -161,7 +162,7 @@ while(TRUE){
     am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
     ttl = c(which(substr(am,1,1) == '='),len(am)+1)
-    ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000)))),na.rm = FALSE)
+    ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash = '/'))),na.rm = FALSE)
     if(ducc){
       print(paste(ducc,'Duplicates found'))  
       stop('TERMINATED - DUPLICATES FOUND')
