@@ -183,9 +183,16 @@ if (!.GlobalEnv$tpexist) {
     .GlobalEnv$meta=readLines('meta.txt')
     unlink('meta.txt')
     visible(wm) <- TRUE
+    meta=meta[nchar(meta)>0]
     mm=matrix(NA,len(meta),2)
-    mm[,1]=substr(meta,1,41)
-    mm[,2]=substr(meta,42,nchar(meta))
+    pos=gregexpr(':',meta)
+    for (i in 1:len(meta))
+      pos[i]=pos[[i]][1]
+    pos=unlist(pos)
+    pos[pos==-1]=1
+    meta[pos==1]=paste(':',meta[pos==1])
+    mm[,1]=substr(meta,1,pos-1)
+    mm[,2]=substr(meta,pos+1,nchar(meta))
     mg=data.frame(mm,stringsAsFactors = FALSE)
     tabm[,]=mg
   }
