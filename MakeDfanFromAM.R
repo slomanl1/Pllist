@@ -99,7 +99,7 @@ while(TRUE){
         }
         ttl = which(substr(am,1,1) == '=')
         xmissing = zz[!suppressWarnings(normalizePath(zz,winslash = '/')) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/'))]
-        fmss = suppressWarnings(normalizePath(c(dmissing,xmissing), winslash = "/"))
+        fmss = unique(suppressWarnings(normalizePath(c(dmissing,xmissing), winslash = "/")))
         #fmissing=subset(fmss,!grepl('_New',fmss))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
         extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/')) %in% suppressWarnings(normalizePath(zz,winslash='/'))]
