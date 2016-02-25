@@ -95,19 +95,26 @@ if (!.GlobalEnv$tpexist) {
   .GlobalEnv$tab <- tab
   addSpring(bg)
   
+  MLButton=gbutton("MakeLast.R", container = bg, handler = function(h,...) {
+    enabled(MLButton) = FALSE
+    shell('"c:/Program Files/R/R-3.2.3/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
+    shell('nircmd.exe win close class "CabinetWClass"')
+  }
+  )
+  
   ge=gedit(container=bg, initial.msg='Enter Search Text', handler = function(h,...) {
     print(which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE)))
   })
   addHandlerKeystroke(ge, handler = function(h,...){print(svalue(h$obj))}) 
   
   xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
-  fn=getFnx()
-  shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
-        intern = TRUE)
+    fn=getFnx()
+    shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
+          intern = TRUE)
+    enabled(MLButton) = TRUE
   }
   )
   
-  #rb <- gtable(fnames$fnx[1:3], container=bg,width=500)
   ebutton=gbutton("Edit", container = bg, handler = function(h,...) {
     if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
@@ -146,7 +153,7 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
-
+    
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
     print(paste('svt=',.GlobalEnv$svt))
@@ -214,7 +221,8 @@ if (!.GlobalEnv$tpexist) {
   enabled(tbutton)=FALSE # TRIM button
   enabled(mbutton)=FALSE # metadata button
   enabled(ebutton)=FALSE # edit button  
-  enabled(xbutton)=FALSE # explore button  
+  enabled(xbutton)=FALSE # explore button 
+  enabled(MLButton) = FALSE # MakeLast
   
 }else{
   visible(w)=TRUE
