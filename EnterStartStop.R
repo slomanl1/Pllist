@@ -60,7 +60,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     })
     
     if(!allowEnter)
-      tbutton=gbutton("Convert", container=ww,handler=function(h,...){
+      Cbutton=gbutton("Convert", container=ww,handler=function(h,...){
         .GlobalEnv$convert=TRUE
         dispose(ww)
         gtkMainQuit()
