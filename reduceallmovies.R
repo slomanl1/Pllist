@@ -1,5 +1,6 @@
 svv=function(filename,errorCode) {
-  load('~/bads.RData')
+  if(file.exists('~/bads.RData'))
+    load('~/bads.RData')
   badsa=data.frame(fname=NA,errorC=NA,md5s=NA)
   badsa$fname=filename
   badsa$errorC=errorCode
@@ -7,6 +8,17 @@ svv=function(filename,errorCode) {
   bads=rbind(bads,badsa)
   print(badsa$errorC)
   save(bads,file='~/bads.RData')
+}
+
+getDur = function(svt) {
+  dur=NA
+  for(i in 1:len(svt)){
+    xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
+                   svt[i],'" ' ,sep=''),translate = TRUE, intern = TRUE)
+    durx=paste(subset(xx,grepl('Format  ',xx))[2],subset(xx,grepl('Duration  ',xx))[1])
+    dur[i]=gsub('  ','',durx)
+  }
+  return(dur)
 }
 
 file.remove(dir(pattern = 'file'))
@@ -42,11 +54,14 @@ if(len(sll)>0){
     dfn=dfn[!is.na(dfn$sz),]
     
     nfns=paste(file_path_sans_ext(cls),'_New.',file_ext(cls),sep='')
-    dfa=data.frame(cls,sz=file.size(cls),nfns)
+    dfa=data.frame(cls,sz=file.size(cls),nfns,durF=NA)
+    dfa$szp=ptn(dfa$sz)
+    
     dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted to _New
     dfa=dfa[order(dfa$sz,decreasing=FALSE),]
     nfns=paste(file_path_sans_ext(cls),'_New.',file_ext(cls),sep='')
-    dfa1=data.frame(cls,sz=file.size(cls),nfns)
+    dfa1=data.frame(cls,sz=file.size(cls),nfns,durF=NA)
+    dfa1$szp=ptn(dfa1$sz)
     dfa1=subset(dfa1,!file.exists(as.character(dfa1$nfns))) # remove already converted to _New
     dfa=rbind(dfa1,dfa)
     
@@ -64,8 +79,8 @@ if(len(sll)>0){
     dfa=dfa[order(dfa$sz,decreasing=FALSE),]
     done=FALSE
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
-    ww=gwindow(title=ttl)
-    gtbl=gtable(as.character(dfa$cls),container=ww)
+    ww=gwindow(title=ttl,width=1100,height=300)
+    gtbl=gtable(dfa[,c('durF','szp','cls')],container=ww)
     addhandlerdestroy(gtbl,handler = function(h,...){
       xx=shell(paste('handle',of),intern = TRUE)
       if(any(grepl(of,xx))){
@@ -85,7 +100,11 @@ if(len(sll)>0){
                  ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
       svalue(ww)=txl
       print(txl)
-      gtbl[,]=as.character(dfa[which(fn==dfa$cls):len(dfa$cls),'cls'])
+      rng=which(fn==dfa$cls):len(dfa$cls) #range pre-calc
+      #clsx=paste(as.character(dfa[rng,'cls']),ptn(dfa[rng,'sz']))
+      dfa[rng[1]:rng[min(len(rng),10)],'durF']=getDur(dfa[rng[1]:rng[min(len(rng),10)],'cls'])
+      gtbl[,]=dfa[rng,c('durF','szp','cls')]
+      svalue(gtbl)=1
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
       clflag=FALSE
@@ -108,8 +127,9 @@ if(len(sll)>0){
           print(subset(ddd,grepl('Duration',ddd))[1])
           of=paste(basename(tempfile()),'.mp4',sep='')
           print(of)
+          msgi=''
           msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
-                           fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
+                          fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
           print(tail(msgi))
           if(done)
             break
