@@ -42,6 +42,7 @@ if (!.GlobalEnv$tpexist) {
                   gtkMainQuit()
                 }
   )
+  
   addHandlerClicked(tab, handler = function(h,...) {
     lenn=len(getFnx())
     if(lenn==1){
@@ -102,11 +103,11 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   
-  ge=gedit(container=bg, initial.msg='Enter Search Text', handler = function(h,...) {
-    print(which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE)))
+  ge=gedit(container=bg, initial.msg='Enter Search RegExp', handler = function(h,...) {
+    rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
+    tab[,]=fnames[rng,]
   })
-  addHandlerKeystroke(ge, handler = function(h,...){print(svalue(h$obj))}) 
-  
+
   xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
     fn=getFnx()
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
@@ -153,7 +154,6 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
-    
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
     print(paste('svt=',.GlobalEnv$svt))
