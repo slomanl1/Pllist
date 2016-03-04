@@ -130,7 +130,7 @@ if(len(sll)>0){
           of=paste(basename(tempfile()),'.mp4',sep='')
           print(of)
           unlink('block.txt')
-          system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" FFMPEGProgressBar.R',wait=FALSE)
+          system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
           msgi=''
           msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
                           fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
