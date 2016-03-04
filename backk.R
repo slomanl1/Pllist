@@ -27,7 +27,7 @@ if (lnc > 0)
     print(paste('Copying',copyll[i],lnc - i))
     file.copy(copyl[i],copyll[i])
   }
-shell('xcopy D: E: /S/D/Y/J',intern = TRUE)
+shell('xcopy D: E: /S/D/Y/J')
 print('Backing up RPDN Clips')
 load('E:/mfnfo.RData')
 emfnfo=mfnfo
