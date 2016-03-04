@@ -88,6 +88,7 @@ if(len(sll)>0){
         xxx=(as.numeric(unlist(strsplit(pidx,' '))))
         pid=xxx[!is.na(xxx)]
         shell(paste('taskkill /PID',pid, '/F'))
+        writeLines('progress=end','block.txt') # stop progress bar
       }else{
         print('No ffmpeg.exe found')
       }
@@ -102,7 +103,7 @@ if(len(sll)>0){
       print(txl)
       rng=which(fn==dfa$cls):len(dfa$cls) #range pre-calc
       #clsx=paste(as.character(dfa[rng,'cls']),ptn(dfa[rng,'sz']))
-      dfa[rng[1]:rng[min(len(rng),10)],'durF']=getDur(dfa[rng[1]:rng[min(len(rng),10)],'cls'])
+      dfa[rng[1]:rng[min(len(rng),13)],'durF']=getDur(dfa[rng[1]:rng[min(len(rng),13)],'cls'])
       gtbl[,]=dfa[rng,c('durF','szp','cls')]
       svalue(gtbl)=1
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
@@ -114,6 +115,7 @@ if(len(sll)>0){
       }
       print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
       ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
+      save(ddd,file='mediainfo.RData')
       hevcFlag=any(grepl('HEVC',ddd))
       
       if(clflag & hevcFlag){
@@ -127,6 +129,8 @@ if(len(sll)>0){
           print(subset(ddd,grepl('Duration',ddd))[1])
           of=paste(basename(tempfile()),'.mp4',sep='')
           print(of)
+          unlink('block.txt')
+          system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" FFMPEGProgressBar.R',wait=FALSE)
           msgi=''
           msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
                           fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
