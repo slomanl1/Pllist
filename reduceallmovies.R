@@ -1,4 +1,4 @@
-svv=function(filename,errorCode) {
+svv=function(filename,errorCode,printF=TRUE) {
   if(file.exists('~/bads.RData'))
     load('~/bads.RData')
   badsa=data.frame(fname=NA,errorC=NA,md5s=NA)
@@ -6,7 +6,8 @@ svv=function(filename,errorCode) {
   badsa$errorC=errorCode
   badsa$md5s=md5sum(filename)
   bads=rbind(bads,badsa)
-  print(badsa$errorC)
+  if(printF)
+    print(badsa$errorC)
   save(bads,file='~/bads.RData')
 }
 
@@ -80,6 +81,7 @@ if(len(sll)>0){
     done=FALSE
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
     ww=gwindow(title=ttl,width=1100,height=300)
+    getToolkitWidget(ww)$move(0,0)
     gtbl=gtable(dfa[,c('durF','szp','cls')],container=ww)
     addhandlerdestroy(gtbl,handler = function(h,...){
       xx=shell(paste('handle',of),intern = TRUE)
@@ -154,7 +156,7 @@ if(len(sll)>0){
                   print(paste('file mtime back to orig',file.mtime(nfn)))
                   print(paste(fn,ptn(msize)))
                   print(paste(nfn,ptn(file.size(nfn))))
-                  svv(nfn,'Already HEVC')
+                  svv(nfn,'Already HEVC',FALSE)
                   if(nfn!=fn)
                     file.remove(fn)
                 }
