@@ -25,7 +25,7 @@ if(file.exists('block.txt')){
     if(any(grepl('progress=end',xx)))
       break
     tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])
-    setWinProgressBar(pb,tius,paste('FFMPEG PROGRESS',tius))
+    setWinProgressBar(pb,tius,paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%'))
   }
   close(pb)
   
