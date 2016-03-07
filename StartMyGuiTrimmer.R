@@ -10,7 +10,7 @@ StartMyGUI <- function() {
     print(paste(svt,of,file.mtime(svt)))
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
                 svt,'" ',of,',' ,sep=''),translate = TRUE)
-    if(file.size(of)<100){
+    if(file.size(of)<600){
       print('Bad Size, failed to convert')
     }else{
       ofn=sub('REDUCE','',svt)
@@ -65,7 +65,7 @@ StartMyGUI <- function() {
           pos=unlist(gregexpr(':',startt))
           starttd=as.integer(substr(startt,1,(pos-1)))*60 + as.integer(substr(startt,pos+1,nchar(startt)))
         }
-        if(nchar(endtt)<8)
+        if((nchar(endtt)<8) & (len(unlist(gregexpr(':',endtt))) !=2))
           endtt=paste('00:',endtt,sep='')
         dd=strptime(endtt,"%H:%M:%S") - strptime(startt,"%M:%S")
         attd=attributes(dd)$units
