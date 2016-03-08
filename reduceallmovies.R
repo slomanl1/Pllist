@@ -11,12 +11,18 @@ svv=function(filename,errorCode,printF=TRUE) {
   save(bads,file='~/bads.RData')
 }
 
-getDur = function(svt) {
+getDur = function(svtDur) {
+  svt=svtDur$cls
+  durF=svtDur$durF
   dur=NA
   for(i in 1:len(svt)){
-    xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
-                   svt[i],'" ' ,sep=''),translate = TRUE, intern = TRUE)
-    durx=paste(subset(xx,grepl('Format  ',xx))[2],subset(xx,grepl('Duration  ',xx))[1])
+    if(!is.na(durF[i])){
+      durx=durF[i]
+    }else{
+      xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
+                     svt[i],'" ' ,sep=''),translate = TRUE, intern = TRUE)
+      durx=paste(subset(xx,grepl('Format  ',xx))[2],subset(xx,grepl('Duration  ',xx))[1])
+    }
     dur[i]=gsub('  ','',durx)
   }
   return(dur)
@@ -105,7 +111,7 @@ if(len(sll)>0){
       print(txl)
       rng=which(fn==dfa$cls):len(dfa$cls) #range pre-calc
       #clsx=paste(as.character(dfa[rng,'cls']),ptn(dfa[rng,'sz']))
-      dfa[rng[1]:rng[min(len(rng),13)],'durF']=getDur(dfa[rng[1]:rng[min(len(rng),13)],'cls'])
+      dfa[rng[1]:rng[min(len(rng),13)],'durF']=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('cls','durF')])
       gtbl[,]=dfa[rng,c('durF','szp','cls')]
       svalue(gtbl)=1
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
@@ -135,7 +141,7 @@ if(len(sll)>0){
           system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
           msgi=''
           msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
-                          fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
+                           fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
           print(tail(msgi))
           if(done)
             break
