@@ -86,7 +86,8 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
 setwd(paste(pldrive,'My Playlists',sep=""))
 for(fnx in fn){
   exx=exts[unlist(sapply(exts,function(x) gregexpr(x,fnx)))>0]
-
+  exx=exx[!is.na(exx) & exx!='blfd']
+  print(exx)
   for(ex in exx){
     waps=paste(ex,'.wpl',sep='')
     print(paste(fnx,'Added to',waps))
