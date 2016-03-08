@@ -83,21 +83,20 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   }else print('No new files found')
 } else print('CANNOT OPEN FLK')
 
+load('~/mfnfo.RData')
 setwd(paste(pldrive,'My Playlists',sep=""))
+extx=gsub('.wpl','',wpls,fixed=TRUE)
 for(fnx in fn){
   exx=exts[unlist(sapply(exts,function(x) gregexpr(x,fnx)))>0]
   exx=exx[!is.na(exx) & exx!='blfd']
   print(exx)
-  for(ex in exx){
-    waps=paste(ex,'.wpl',sep='')
-    print(paste(fnx,'Added to',waps))
-    lss = unique(readLines(waps))
-    js="            <media src=\"c:\\MyVideos\\RPDNClips\\%s\"/>"
-    adds=sprintf(js,fnx)
-    lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
-    m3uname <- paste(pldrive,'My Playlists/',sep='')
-    write(lsx1,paste(m3uname,waps,sep='')) # add new clips
-  }
+  bb=which(extx %in% exx)
+  bits=sum(2^(bb-1))
+  mfnfo[mfnfo$lsst==fnx,'xx']=bitOr(mfnfo[mfnfo$lsst==fnx,'xx'],bits)
 }
-if(len(fn)>0)
-  source('~/pllist.git/BuildxxALT.R')
+if(len(fn)>0){
+  save(mfnfo,wpls,file='~/mfnfo.RData')
+  source('~/pllist.git/makeWPLS.R')
+}
+
+source('~/pllist.git/BuildxxALT.R')
