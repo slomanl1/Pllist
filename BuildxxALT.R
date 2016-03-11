@@ -65,12 +65,16 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo$xx=0 # not in any playlist
     addfnfo$md5s=md5sum(addfnfo$lsst)
     addfnfo=addfnfo[,names(mfnfo)]
+  # if file renamed just replace xx with xx of old file before rename(otherwise it was added)
+    for(i in 1:nrow(addfnfo)){
+      addfnfo[i,'xx']=mfnfo[which(mfnfo$md5s==addfnfo[i,'md5s']),'xx']
+    }
     mfnfo=rbind(mfnfo,addfnfo)
     tod=format(Sys.time(), "%Y-%m-%d %H:%M:%S")
     lastr=nrow(mfnfo)
     mfnfo[(lastr-len(fn)+1):lastr,c(7,8,9)]=tod
     save(mfnfo,wpls,file='~/mfnfo.RData')
-    print(paste(nrow(addfnfo),'records added'))
+    print(paste(nrow(addfnfo),'records added in addfnfo'))
     source('~/pllist.git/makeWPLS.R')
   }else{
     save(mfnfo,wpls,file='~/mfnfo.RData')
