@@ -28,15 +28,18 @@ if (lnc > 0)
     file.copy(copyl[i],copyll[i])
   }
 shell('xcopy D: E: /S/D/Y/J')
-print('Backing up RPDN Clips')
+
 load('E:/mfnfo.RData')
 emfnfo=mfnfo
 load('~/mfnfo.RData')
 mgg=merge(mfnfo[,c('lsst','md5s')],emfnfo[,c('lsst','md5s')],by='md5s',all.x=TRUE)
 cd('C:/MyVideos/RPDNClips')
 fils=mgg[is.na(mgg$lsst.y),'lsst.x']
-file.copy(fils,'e:/RPDN',overwrite=TRUE)
-print(paste(fils,'Copied to E:/RPDN'))
+if(len(fils)){
+  print('Backing up RPDN Clips')
+  file.copy(fils,'e:/RPDN',overwrite=TRUE)
+  print(paste(fils,'Copied to E:/RPDN'))
+}
 
 mm=mgg[!mgg$lsst.x==mgg$lsst.y & !is.na(mgg$lsst.y),]
 if(nrow(mm)){
