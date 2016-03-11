@@ -28,7 +28,7 @@ if(file.exists('block.txt')){
     setWinProgressBar(pb,tius,paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%'))
   }
   close(pb)
-  
+  unlink('block.txt')
 }else{
   print('block.txt not found')
 }
