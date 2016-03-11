@@ -97,6 +97,7 @@ for(fnx in fn){
 if(len(fn)>0){
   save(mfnfo,wpls,file='~/mfnfo.RData')
   source('~/pllist.git/makeWPLS.R')
+  source('~/pllist.git/BuildxxALT.R')
 }
 
-source('~/pllist.git/BuildxxALT.R')
+
