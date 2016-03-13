@@ -157,7 +157,9 @@ if (!.GlobalEnv$tpexist) {
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
     print(paste('svt=',.GlobalEnv$svt))
+    .GlobalEnv$alrt=galert(svt,delay=10000)
     StartMyGUI()
+    dispose(alrt)
   }
   )
   
