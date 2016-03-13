@@ -2,7 +2,8 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   .GlobalEnv$bOK=TRUE
   .GlobalEnv$ss=-1
   .GlobalEnv$ToEnd=FALSE
-  ww=gwindow(height=25,title=x)	
+  ww=gwindow(height=25,title=x,parent = alrt)	
+  getToolkitWidget(alrt)$move(0,0)
   obj <- gedit(container=ww)
   addhandlerchanged(obj, handler=function(h,...) 
   { .GlobalEnv$ss=svalue(h$obj)
