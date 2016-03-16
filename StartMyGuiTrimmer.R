@@ -5,9 +5,22 @@ StartMyGUI <- function() {
   startt=EnterStartStop()
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
+    svalue(.GlobalEnv$alrt)='Close to ABORT'
     print('Convert H265')
     bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
     of=paste(bname,'.mp4',sep='')
+    addhandlerdestroy(.GlobalEnv$alrt,handler = function(h,...) {
+      print('ALRT DESTROYED')
+      xx=shell(paste('handle',basename(of)),intern = TRUE)
+      if(any(grepl(basename(of),xx))){
+        pidx=xx[grepl('pid',xx)]
+        xxx=(as.numeric(unlist(strsplit(pidx,' '))))
+        pid=xxx[!is.na(xxx)]
+        shell(paste('taskkill /PID',pid, '/F'))
+        writeLines('progress=end',blockFile) # stop progress bar
+        unlink(of)
+      }
+    })
     metaFile=paste(bname,'.RData',sep='')
     ddd=shell(paste('mediainfo "',svt,'"',sep=''),intern = TRUE)
     if(any(grepl('HEVC',ddd)))
