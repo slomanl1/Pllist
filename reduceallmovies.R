@@ -33,7 +33,8 @@ cd('~/')
 cls=NULL
 dwnlds=NULL
 choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','c:/PNMTALL/NewDownloads','REDUCE only')
-sll=select.list(choices,multiple=TRUE,graphics = TRUE)
+#sll=select.list(choices,multiple=TRUE,graphics = TRUE)
+source('~/pllist.git/testradio.R')
 if(len(sll)>0){
   slx=which(choices %in% sll)
   if(1 %in% slx)
@@ -65,7 +66,7 @@ if(len(sll)>0){
     dfa$szp=ptn(dfa$sz)
     
     dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted to _New
-    dfa=dfa[order(dfa$sz,decreasing=FALSE),]
+    dfa=dfa[order(dfa$sz,decreasing=decreasing),]
     nfns=paste(file_path_sans_ext(cls),'_New.',file_ext(cls),sep='')
     dfa1=data.frame(cls,sz=file.size(cls),nfns,durF=NA)
     dfa1$szp=ptn(dfa1$sz)
@@ -83,20 +84,21 @@ if(len(sll)>0){
       writeLines('','~/msgis.txt')
     }
     dfa=dfa[!duplicated(dfa$cls),]
-    dfa=dfa[order(dfa$sz,decreasing=FALSE),]
+    dfa=dfa[order(dfa$sz,decreasing=decreasing),]
     done=FALSE
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
     ww=gwindow(title=ttl,width=1100,height=300)
     getToolkitWidget(ww)$move(0,0)
     gtbl=gtable(dfa[,c('durF','szp','cls')],container=ww)
     addhandlerdestroy(gtbl,handler = function(h,...){
-      xx=shell(paste('handle',of),intern = TRUE)
-      if(any(grepl(of,xx))){
+      xx=shell(paste('handle',basename(of)),intern = TRUE)
+      if(any(grepl(basename(of),xx))){
         pidx=xx[grepl('pid',xx)]
         xxx=(as.numeric(unlist(strsplit(pidx,' '))))
         pid=xxx[!is.na(xxx)]
         shell(paste('taskkill /PID',pid, '/F'))
-        writeLines('progress=end','block.txt') # stop progress bar
+        writeLines('progress=end',blockFile) # stop progress bar
+        unlink(of)
       }else{
         print('No ffmpeg.exe found')
       }
@@ -122,8 +124,10 @@ if(len(sll)>0){
         nfn=sub('_New','',nfn)
       }
       print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
+      bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
+      metaFile=paste(bname,'.RData',sep='')
       ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
-      save(ddd,file='mediainfo.RData')
+      save(ddd,file=metaFile)
       hevcFlag=any(grepl('HEVC',ddd))
       
       if(clflag & hevcFlag){
@@ -135,13 +139,14 @@ if(len(sll)>0){
           msize=file.size(fn)
           print(paste('Mtime=',mtime))
           print(subset(ddd,grepl('Duration',ddd))[1])
-          of=paste(basename(tempfile()),'.mp4',sep='')
+
+          of=paste(bname,'.mp4',sep='')
+          blockFile=paste(bname,'.txt',sep='')
+          save(blockFile,metaFile,file='~/blockFileNames.RData')
           print(of)
-          unlink('block.txt')
           system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
           msgi=''
-          msgi=shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
-                           fn,'" ',of,',' ,sep=''),translate = TRUE, intern = TRUE)
+          msgi=shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,fn,of),intern = TRUE)
           print(tail(msgi))
           if(done)
             break

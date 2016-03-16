@@ -6,10 +6,21 @@ StartMyGUI <- function() {
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
     print('Convert H265')
-    of=paste('c:/Users/Larry/Documents/',basename(tempfile()),'.mp4',sep='')
+    bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
+    of=paste(bname,'.mp4',sep='')
+    metaFile=paste(bname,'.RData',sep='')
+    ddd=shell(paste('mediainfo "',svt,'"',sep=''),intern = TRUE)
+    if(any(grepl('HEVC',ddd)))
+    {
+      print('Already HEVC')
+      return()
+    }
+    save(ddd,file=metaFile)
+    blockFile=paste(bname,'.txt',sep='')
+    save(blockFile,metaFile,file='~/blockFileNames.RData')
     print(paste(svt,of,file.mtime(svt)))
-    shell(paste('c:/Users/Larry/Documents/hexDump/bin/converth265.bat "',
-                svt,'" ',of,',' ,sep=''),translate = TRUE)
+    system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" "C:\\Users\\Larry\\Documents\\pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
+    shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,svt,of))
     if(file.size(of)<600){
       print('Bad Size, failed to convert')
     }else{
