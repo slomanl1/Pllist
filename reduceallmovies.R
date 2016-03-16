@@ -33,8 +33,7 @@ cd('~/')
 cls=NULL
 dwnlds=NULL
 choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','c:/PNMTALL/NewDownloads','REDUCE only')
-#sll=select.list(choices,multiple=TRUE,graphics = TRUE)
-source('~/pllist.git/testradio.R')
+source('~/pllist.git/ChooseDIRS.R')
 if(len(sll)>0){
   slx=which(choices %in% sll)
   if(1 %in% slx)
