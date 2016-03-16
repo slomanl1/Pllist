@@ -36,6 +36,8 @@ StartMyGUI <- function() {
     shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,svt,of))
     if(file.size(of)<600){
       print('Bad Size, failed to convert')
+      unlink(of)
+      unlink(blockFile)
     }else{
       ofn=sub('REDUCE','',svt)
       if(!file.rename(of,ofn)){
