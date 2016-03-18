@@ -55,3 +55,11 @@ if(nrow(mm)){
 }
 file.copy('~/mfnfo.RData','e:/mfnfo.RData',overwrite=TRUE)
 print('Done')
+ee=dir('e:/rpdn')
+cc=dir('c:/MyVideos/RPDNClips')
+mm=ee[which(!ee%in% cc)]
+cd('E:/RPDN')
+print(paste(mm[file.remove(mm)],'Removed'))
+
+
+
