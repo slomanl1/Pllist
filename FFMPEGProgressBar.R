@@ -4,12 +4,43 @@ if(!exists('blockFile')){
   load('blockFileNames.RData')
   unlink('blockFileNames.RData')
 }
-print(paste('blockFile-',blockFile,'metaFile-',metaFile))
+print(paste('svt-',svt,'blockFile-',blockFile,'metaFile-',metaFile))
 
 gi=function (x, y) 
 {
   ix = which(grepl(toupper(x), toupper(y), fixed = TRUE))
   return(y[grepl(toupper(x), toupper(y), fixed = TRUE)])
+}
+
+tailfile=function(file, n) {
+  bufferSize <- 1024L
+  size <- file.info(file)$size
+  
+  if (size < bufferSize) {
+    bufferSize <- size
+  }
+  
+  pos <- size - bufferSize
+  text <- character()
+  k <- 0L
+  
+  f <- file(file, "rb")
+  on.exit(close(f))
+  
+  while(TRUE) {
+    seek(f, where=pos)
+    chars <- readChar(f, nchars=bufferSize)
+    k <- k + length(gregexpr(pattern="\\n", text=chars)[[1L]])
+    text <- paste0(text, chars)
+    
+    if (k > n || pos == 0L) {
+      break
+    }
+    
+    pos <- max(pos-bufferSize, 0L)
+  }
+  
+  tail(strsplit(text, "\\n")[[1L]], n)
 }
 
 load(metaFile) # get metadata saved in reduceallmovies.R/StartMyGuiTrimmer.R
@@ -24,14 +55,16 @@ if(grepl('mn',mns)){
   durx=nms[1]
 }
 if(file.exists(blockFile)){
-  pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000) # tius is microseconds
+  pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000,label=svt,width=600) # tius is microseconds
   while(TRUE){
     Sys.sleep(1)
-    xx=readLines(blockFile)
+    xx=tailfile(blockFile,10)
+    if(len(xx)==0)
+      next
     if(any(grepl('progress=end',xx)))
       break
     tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])
-    setWinProgressBar(pb,tius,paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%'))
+    setWinProgressBar(pb,tius,paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%'),label=svt)
   }
   close(pb)
   unlink(blockFile)

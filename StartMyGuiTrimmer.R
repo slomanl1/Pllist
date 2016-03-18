@@ -30,7 +30,7 @@ StartMyGUI <- function() {
     }
     save(ddd,file=metaFile)
     blockFile=paste(bname,'.txt',sep='')
-    save(blockFile,metaFile,file='~/blockFileNames.RData')
+    save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
     print(paste(svt,of,file.mtime(svt)))
     system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" "C:\\Users\\Larry\\Documents\\pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
     shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,svt,of))
