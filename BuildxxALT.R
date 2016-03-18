@@ -67,7 +67,10 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     addfnfo=addfnfo[,names(mfnfo)]
   # if file renamed just replace xx with xx of old file before rename(otherwise it was added)
     for(i in 1:nrow(addfnfo)){
-      addfnfo[i,'xx']=mfnfo[which(mfnfo$md5s==addfnfo[i,'md5s']),'xx']
+      newxx=mfnfo[which(mfnfo$md5s==addfnfo[i,'md5s']),'xx']
+      if(len(newxx)==0)
+        next
+      addfnfo[i,'xx']=newxx
     }
     mfnfo=rbind(mfnfo,addfnfo)
     tod=format(Sys.time(), "%Y-%m-%d %H:%M:%S")
