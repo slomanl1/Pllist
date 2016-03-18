@@ -141,7 +141,8 @@ if(len(sll)>0){
 
           of=paste(bname,'.mp4',sep='')
           blockFile=paste(bname,'.txt',sep='')
-          save(blockFile,metaFile,file='~/blockFileNames.RData')
+          svt=fn
+          save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
           print(of)
           system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
           msgi=''
