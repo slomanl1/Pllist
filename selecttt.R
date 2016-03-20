@@ -13,9 +13,9 @@ gp <- ggroup(container=xw)
 
 #cb <- gradio(flavors, editable=TRUE, container=gp, handler=f)
 yb=gbutton("YES", container=gp, handler = f)
-font(yb) <- c(color="red" , style="bold")
+font(yb) <- c(color="red" , weight="bold")
 cb=gbutton("NO", container=gp, handler = f)
-font(cb) <- c(color="springgreen4" , style="bold")
+font(cb) <- c(color="springgreen4" , weight="bold")
 
 addHandlerDestroy(xw, handler = function(h,...) {
   .GlobalEnv$destroyed=.GlobalEnv$flagg
