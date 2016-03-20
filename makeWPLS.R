@@ -1,6 +1,5 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-require(bitops)
 source("~/Local.R")
 setwd('~/')
 load('~/mfnfo.RData') # load lsst, wpls and xx
@@ -25,7 +24,7 @@ for(selector in  wpls){
   bits = bitOr(bits,2^(b-1))
   print(bits)
   flisto=flist1
-  flist1 = mfnfo[bitAnd(mfnfo$xx,bits) == bits,]$lsst
+  flist1 = mfnfo[bitwAnd(mfnfo$xx,bits) == bits,]$lsst
   if(selector=='wa1.wpl'){
     flist1=flist1[!flist1 %in% flisto]
   }

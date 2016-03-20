@@ -1,6 +1,5 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-require(bitops)
 source("~/Local.R")
 while(TRUE){
   if(all(file.info(dir(pattern='*.wpl',path='c:/my playlists',full.names = TRUE))$mtime <= 
@@ -24,15 +23,15 @@ while(TRUE){
             #b=a[selector[i]==wpls]
             b=which(selector[i]==wpls)
             if (!is.na(b)) 
-              bits = bitOr(bits,2^(b-1))
+              bits = bitwOr(bits,2^(b-1))
           }
           if (selectL == 'AND')
-            flist1 = lsst[bitAnd(xx,bits) == bits]
+            flist1 = lsst[bitwAnd(xx,bits) == bits]
           else
             if (selectL == 'OR')
-              flist1 = lsst[bitAnd(xx,bits) > 0]
+              flist1 = lsst[bitwAnd(xx,bits) > 0]
           else #NOT
-            flist1 = lsst[bitAnd(xx,bits) == 0]
+            flist1 = lsst[bitwAnd(xx,bits) == 0]
           
           flist2 = flist1[flist1!='']
           
@@ -49,7 +48,7 @@ while(TRUE){
             indxs=regexpr('wpl',wpls)[1:length(wpls)]
             fname=""
             for (i in 1:length(wpls)){
-              if (bitAnd(bits,2^(i-1))>0)    
+              if (bitwAnd(bits,2^(i-1))>0)    
                 fname = paste(fname,substr(wpls[i],1,indxs[i]-2),sep='_')
             }
             #m3uname <- paste(pldrive,'My Playlists/',sep='')

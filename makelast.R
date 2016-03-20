@@ -15,7 +15,8 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   setwd('C:\\RealPlayerDownloads')
   fns1=dir(pattern='*.mp4|*.mov')
   fns1=fns1[!(grepl('.mp4',fns1)&(grepl('.mov',fns1)))]
-  exts1=c('ah','blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','cs.mp4','ussfd.mp4','pn.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4','utp.mp4')
+  exts1=c('ah','blah.mp4','bfa.mp4','ussf.mp4','dd.mp4','bl.mp4','cs.mp4',
+          'ussfd.mp4','pn.mp4','blfd.mp4','utpfd.mp4','ussfa.mp4','uwa.mp4','utp.mp4','sbd.mp4')
   exts=gsub('.mp4','',exts1,fixed=TRUE)
   odr=sample(last:last+length(fns1),length(fns1),replace=T) 
   if(length(odr)!=0){
@@ -92,7 +93,7 @@ for(fnx in fn){
   print(exx)
   bb=which(extx %in% exx)
   bits=sum(2^(bb-1))
-  mfnfo[mfnfo$lsst==fnx,'xx']=bitOr(mfnfo[mfnfo$lsst==fnx,'xx'],bits)
+  mfnfo[mfnfo$lsst==fnx,'xx']=bitwOr(mfnfo[mfnfo$lsst==fnx,'xx'],bits)
 }
 if(len(fn)>0){
   save(mfnfo,wpls,file='~/mfnfo.RData')

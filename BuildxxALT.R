@@ -1,6 +1,5 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-require(bitops)
 require(tcltk)
 source("~/Local.R")
 
@@ -43,7 +42,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     xx=unlist(xo[[x]])
     xy=0
     for (i in 1:len(xx)) 
-      xy=bitOr(xy,xx[i]) 
+      xy=bitwOr(xy,xx[i]) 
     return(xy)
   }) 
   print('Build xo/xn Done')

@@ -1,6 +1,5 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-require(bitops)
 source("~/Local.R")
 setwd('~/')
 load('xxxx (2).RData')
