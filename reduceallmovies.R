@@ -144,7 +144,7 @@ if(len(sll)>0){
           svt=fn
           save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
           print(of)
-          system('"C:\\Program Files\\R\\R-3.2.3\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
+          system('"C:\\Program Files\\R\\R-3.2.4revised\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
           msgi=''
           msgi=shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,fn,of),intern = TRUE)
           print(tail(msgi))

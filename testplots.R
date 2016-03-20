@@ -98,7 +98,7 @@ if (!.GlobalEnv$tpexist) {
   
   MLButton=gbutton("MakeLast.R", container = bg, handler = function(h,...) {
     enabled(MLButton) = FALSE
-    shell('"c:/Program Files/R/R-3.2.3/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
+    shell('"c:/Program Files/R/R-3.2.4revised/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
     shell('nircmd.exe win close class "CabinetWClass"')
   }
   )
