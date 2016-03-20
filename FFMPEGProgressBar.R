@@ -12,7 +12,7 @@ gi=function (x, y)
   return(y[grepl(toupper(x), toupper(y), fixed = TRUE)])
 }
 
-tailfile=function(file, n) {
+tailfile=function(file, n=6) {
   bufferSize <- 1024L
   size <- file.info(file)$size
   
