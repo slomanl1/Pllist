@@ -103,7 +103,43 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   
-  ge=gedit(container=bg, initial.msg='Enter Search RegExp', handler = function(h,...) {
+  ANDButton=gbutton("AND", container = bg, handler = function(h,...) {
+    .GlobalEnv$ANDflag = TRUE
+    .GlobalEnv$avail = TRUE
+    .GlobalEnv$Passt=TRUE
+    gtkMainQuit()
+  }
+  )
+  font(ANDButton) <- c(color="yellow4" , style="bold") # initial RED to indicate 'AND' condition
+  .GlobalEnv$ANDflag = TRUE
+  
+  ORButton=gbutton("OR", container = bg, handler = function(h,...) {
+    .GlobalEnv$ANDflag = FALSE
+    .GlobalEnv$avail = TRUE
+    .GlobalEnv$Passt=TRUE
+    gtkMainQuit()
+  }
+  )
+  font(ORButton) <- c(color="blue", style="bold") # initial 
+
+  xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
+    print('Search Handler')
+  })
+  
+  addhandlerkeystroke(xe, handler = function(h,...) {
+    print(svalue(h$obj))
+    enabled(ANDButton) = FALSE #
+    enabled(ORButton) = FALSE #
+    if(nchar(svalue(h$obj))){
+      enabled(ANDButton) = TRUE #
+      enabled(ORButton) = TRUE #
+      .GlobalEnv$liner=svalue(h$obj)
+      print(.GlobalEnv$liner)
+      print('XE KEYSTROKE')
+    }
+  })
+  
+   ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
     rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
     tab[,]=fnames[rng,]
   })
@@ -225,8 +261,15 @@ if (!.GlobalEnv$tpexist) {
   enabled(ebutton)=FALSE # edit button  
   enabled(xbutton)=FALSE # explore button 
   enabled(MLButton) = FALSE # MakeLast
-  
+  enabled(ANDButton) = FALSE #
+  enabled(ORButton) = FALSE #
+
 }else{
+  tab[,]=fnames
+  linerd=liner
+  if(!ANDflag)
+    linerd=gsub(' ','|',liner)
+  svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
   visible(w)=TRUE
 }
 gtkMain()
