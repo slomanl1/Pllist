@@ -21,7 +21,7 @@ for(selector in  wpls){
   print(selector)
   bits=0
   b=which(selector==wpls)
-  bits = bitOr(bits,2^(b-1))
+  bits = bitwOr(bits,2^(b-1))
   print(bits)
   flisto=flist1
   flist1 = mfnfo[bitwAnd(mfnfo$xx,bits) == bits,]$lsst
