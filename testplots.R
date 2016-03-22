@@ -123,19 +123,21 @@ if (!.GlobalEnv$tpexist) {
   font(ORButton) <- c(color="blue", style="bold") # initial 
 
   xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
-    print('Search Handler')
+    if(enabled(ANDButton)){
+      .GlobalEnv$ANDflag = TRUE
+      .GlobalEnv$avail = TRUE
+      .GlobalEnv$Passt=TRUE
+      gtkMainQuit()
+    }
   })
   
   addhandlerkeystroke(xe, handler = function(h,...) {
-    print(svalue(h$obj))
     enabled(ANDButton) = FALSE #
     enabled(ORButton) = FALSE #
     if(nchar(svalue(h$obj))){
       enabled(ANDButton) = TRUE #
       enabled(ORButton) = TRUE #
       .GlobalEnv$liner=svalue(h$obj)
-      print(.GlobalEnv$liner)
-      print('XE KEYSTROKE')
     }
   })
   
