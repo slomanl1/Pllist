@@ -1,12 +1,13 @@
-destr=FALSE
+destr=TRUE
 sll=NA
 
 ww=gwindow('Choose',height=180,width=700)
 txl=gtable(choices,container=ww,multiple = TRUE,handler=function(h,...){.GlobalEnv$cb=svalue(h$obj)})
 vv=gradio(c('INCREASING','DECREASING'),container = ww)
-gcheckbox('OK',container=ww,use.togglebutton=TRUE,handler=function(h,...){gtkMainQuit()})
+gcheckbox('OK',container=ww,use.togglebutton=TRUE,handler=function(h,...){
+  .GlobalEnv$destr=FALSE
+  gtkMainQuit()})
 addhandlerdestroy(ww,handler=function(h,...){
-  .GlobalEnv$destr=TRUE
   gtkMainQuit()
 })
 if(file.exists('~/ChooseDIRS.RData')){
