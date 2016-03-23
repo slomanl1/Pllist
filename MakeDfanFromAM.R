@@ -1,4 +1,5 @@
 library(gWidgets)
+#library(gWidgets2)
 options(guiToolkit = "RGtk2") 
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
@@ -257,35 +258,36 @@ while(TRUE){
   {
     if(!Passt){
       linerw=gwindow(height = 20, title=lnttl)
-      obj =  gcombobox(dflt, editable=TRUE, container = linerw)
-      ANDButton=gbutton("AND", container = linerw, handler = function(h,...) {
+      ggp=ggroup(cont=linerw)
+      obj =  gcombobox(dflt, editable=TRUE, container = ggp)
+      ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
         .GlobalEnv$ANDflag = TRUE
         .GlobalEnv$avail = TRUE
       }
       )
-      font(ANDButton) <- c(color="yellow4" , style="bold") # initial RED to indicate 'AND' condition
+      font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
       .GlobalEnv$ANDflag = TRUE
       
-      ORButton=gbutton("OR", container = linerw, handler = function(h,...) {
+      ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$avail = TRUE
       }
       )
-      font(ORButton) <- c(color="blue", style="bold") # initial 
+      font(ORButton) <- c(color="blue", weight="bold") # initial 
       
-      EXITButton=gbutton("-EXIT-", container = linerw, handler = function(h,...) {
+      EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
         .GlobalEnv$exitF=TRUE
         dispose(linerw)
       }
       ) 
-      font(EXITButton) <- c(color="red", style="bold") # initial 
+      font(EXITButton) <- c(color="red", weight="bold") # initial 
       
-      RBButton=gbutton("REBUILD", container = linerw, handler = function(h,...) {
+      RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
         .GlobalEnv$rebuild=TRUE
         dispose(linerw)
       }
       ) 
-      font(RBButton) <- c(color="springgreen4", style="bold") # initial 
+      font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
       shell('nircmd win activate title "Enter Search Criteria"')
       focus(obj)=TRUE
@@ -362,6 +364,9 @@ while(TRUE){
       if(len(idxs)==0)
       {
         print('Non found')
+        if(exists('w'))
+          if(isExtant(w))
+          dispose(w)
         avail=FALSE
         next
       }
