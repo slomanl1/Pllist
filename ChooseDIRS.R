@@ -1,5 +1,5 @@
 destr=TRUE
-sll=NA
+sll=NULL
 
 ww=gwindow('Choose',height=180,width=700)
 txl=gtable(choices,container=ww,multiple = TRUE,handler=function(h,...){.GlobalEnv$cb=svalue(h$obj)})
@@ -25,4 +25,6 @@ if(!destr){
   save(sll,slv,file='~/ChooseDIRS.RData')
   if(exists('ww'))
     dispose(ww)
+}else{
+  sll=NULL
 }
