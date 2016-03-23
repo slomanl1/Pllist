@@ -106,11 +106,14 @@ if (!.GlobalEnv$tpexist) {
     enabled(xbutton)=FALSE # explore button 
     shell('"c:/Program Files/R/R-3.2.4revised/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
     shell('nircmd.exe win close class "CabinetWClass"')
-    enabled(dbutton)=TRUE # delete button
-    enabled(tbutton)=TRUE # TRIM button
-    enabled(mbutton)=TRUE # metadata button
-    enabled(ebutton)=TRUE # edit button  
-    enabled(xbutton)=TRUE # explore button
+    if(exists('dbutton'))
+      if(isExtant(dbutton)){
+        enabled(dbutton)=TRUE # delete button
+        enabled(tbutton)=TRUE # TRIM button
+        enabled(mbutton)=TRUE # metadata button
+        enabled(ebutton)=TRUE # edit button  
+        enabled(xbutton)=TRUE # explore button
+      }
     dispose(gxx)
   }
   )
@@ -133,7 +136,7 @@ if (!.GlobalEnv$tpexist) {
   }
   )
   font(ORButton) <- c(color="blue", style="bold") # initial 
-
+  
   xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
     if(enabled(ANDButton)){
       .GlobalEnv$ANDflag = TRUE
@@ -153,11 +156,11 @@ if (!.GlobalEnv$tpexist) {
     }
   })
   
-   ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
+  ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
     rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
     tab[,]=fnames[rng,]
   })
-
+  
   xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
     fn=getFnx()
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
@@ -277,7 +280,7 @@ if (!.GlobalEnv$tpexist) {
   enabled(MLButton) = FALSE # MakeLast
   enabled(ANDButton) = FALSE #
   enabled(ORButton) = FALSE #
-
+  
 }else{
   tab[,]=fnames
   linerd=liner
