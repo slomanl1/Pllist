@@ -289,6 +289,14 @@ if (!.GlobalEnv$tpexist) {
   svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
   visible(w)=TRUE
 }
+if(exists('gxy'))
+  if(isExtant(gxy))
+    dispose(gxy)
 gtkMain()
+if(avail){
+  gxy=galert(paste('Searching for',liner),delay=1000)
+  Sys.sleep(1)
+}
+
 
 
