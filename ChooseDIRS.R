@@ -7,7 +7,7 @@ vv=gradio(c('INCREASING','DECREASING'),container = ww)
 gcheckbox('OK',container=ww,use.togglebutton=TRUE,handler=function(h,...){
   .GlobalEnv$destr=FALSE
   gtkMainQuit()})
-addhandlerdestroy(ww,handler=function(h,...){
+IDD=addhandlerdestroy(ww,handler=function(h,...){
   gtkMainQuit()
 })
 if(file.exists('~/ChooseDIRS.RData')){
@@ -23,8 +23,11 @@ if(!destr){
   sll=svalue(txl)
   slv=svalue(vv)
   save(sll,slv,file='~/ChooseDIRS.RData')
-  if(exists('ww'))
+  if(exists('ww')){
+    removeHandler(ww, ID=IDD) # prevent gtkMainQuit() error
     dispose(ww)
+  }
+
 }else{
   sll=NULL
 }
