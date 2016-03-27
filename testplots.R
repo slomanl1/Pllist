@@ -294,7 +294,7 @@ if(exists('gxy'))
     dispose(gxy)
 gtkMain()
 if(avail){
-  gxy=galert(paste('Searching for',liner),delay=1000)
+  gxy=galert(paste('1 Searching for',liner),delay=1000)
   Sys.sleep(1)
 }
 

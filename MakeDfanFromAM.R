@@ -253,7 +253,10 @@ while(TRUE){
   dfltidx=1
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
-  Passt=FALSE
+  Passt=TRUE
+  liner='.'
+  ANDflag=TRUE
+
   while(TRUE)
   {
     if(!Passt){
@@ -311,6 +314,8 @@ while(TRUE){
       }
     }else
       Passt=FALSE
+    if(!exists('gxy'))
+      gxy=galert(paste('2 Searching for',liner),delay=1000)
     ################ REBUILD an from dfan ################
     if(!exists('dfanNew')){
       dfanNew=dfan
@@ -367,6 +372,9 @@ while(TRUE){
         if(exists('w'))
           if(isExtant(w))
           dispose(w)
+        if(exists('gxy'))
+          if(isExtant(gxy))
+            dispose(gxy)
         avail=FALSE
         next
       }
