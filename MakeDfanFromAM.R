@@ -256,10 +256,11 @@ while(TRUE){
   Passt=TRUE
   liner='.'
   ANDflag=TRUE
-
+  
   while(TRUE)
   {
     if(!Passt){
+      rm(gxy)
       linerw=gwindow(height = 20, title=lnttl)
       ggp=ggroup(cont=linerw)
       obj =  gcombobox(dflt, editable=TRUE, container = ggp)
@@ -314,8 +315,10 @@ while(TRUE){
       }
     }else
       Passt=FALSE
-    if(!exists('gxy'))
-      gxy=galert(paste('2 Searching for',liner),delay=1000)
+    if(!exists('gxy') & !exitF){
+      gxy=galert(paste('Searching for',liner),delay=1000)
+      Sys.sleep(1)
+    }
     ################ REBUILD an from dfan ################
     if(!exists('dfanNew')){
       dfanNew=dfan
@@ -371,7 +374,7 @@ while(TRUE){
         print('Non found')
         if(exists('w'))
           if(isExtant(w))
-          dispose(w)
+            dispose(w)
         if(exists('gxy'))
           if(isExtant(gxy))
             dispose(gxy)
