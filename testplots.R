@@ -5,10 +5,7 @@ if (!.GlobalEnv$tpexist) {
   ssv = NULL
   
   fw=gwindow("Edit File Details",width=1900,height = 20)
-  fwind=gdf(dfan[1,1:4], container=fw)
-  getToolkitWidget(fw)$move(0,100)
-  visible(fw) <- FALSE
-  addhandlerchanged(fwind, handler = function(h,...) 
+  fwind=gdf(dfan[1,1:4], container=fw, handler = function(h,...) 
   {
     .GlobalEnv$changed=TRUE
     .GlobalEnv$Passt=TRUE
@@ -17,6 +14,8 @@ if (!.GlobalEnv$tpexist) {
     tpexist=FALSE
     gtkMainQuit()
   })
+  getToolkitWidget(fw)$move(0,100)
+  visible(fw) <- FALSE
   
   addHandlerDestroy(fwind, handler = function(h,...) 
   { 
@@ -37,7 +36,7 @@ if (!.GlobalEnv$tpexist) {
   
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
-                  .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
+                 # .GlobalEnv$unsorted=is.unsorted(tab[,'cdts'])
                   .GlobalEnv$ssv = getFnx()
                   gtkMainQuit()
                 }
@@ -125,7 +124,7 @@ if (!.GlobalEnv$tpexist) {
     gtkMainQuit()
   }
   )
-  font(ANDButton) <- c(color="yellow4" , style="bold") # initial RED to indicate 'AND' condition
+  font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
   .GlobalEnv$ANDflag = TRUE
   
   ORButton=gbutton("OR", container = bg, handler = function(h,...) {
@@ -135,7 +134,7 @@ if (!.GlobalEnv$tpexist) {
     gtkMainQuit()
   }
   )
-  font(ORButton) <- c(color="blue", style="bold") # initial 
+  font(ORButton) <- c(color="blue", weight="bold") # initial 
   
   xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
     if(enabled(ANDButton)){
@@ -146,7 +145,7 @@ if (!.GlobalEnv$tpexist) {
     }
   })
   
-  addhandlerkeystroke(xe, handler = function(h,...) {
+  addHandlerKeystroke(xe, handler = function(h,...) {
     enabled(ANDButton) = FALSE #
     enabled(ORButton) = FALSE #
     if(nchar(svalue(h$obj))){

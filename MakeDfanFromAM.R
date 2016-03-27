@@ -1,9 +1,18 @@
 library(gWidgets)
-#library(gWidgets2)
+library(gWidgets2)
 options(guiToolkit = "RGtk2") 
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
-
+galert=function(msg,delay=3)
+{
+  vvv=gwindow(height = 50)
+  addHandlerDestroy(vvv,handler=function(h,...) {a$stop_timer()})
+  g <- gvbox(cont=vvv)
+  gtext(msg,cont=g,font.attr = list(size='xx-large'))
+  FUN=function(data) dispose(vvv)
+  a <- gtimer(delay*1000,one.shot=TRUE,FUN)
+  return(vvv)
+}
 setwd('~/')
 if(exists('w'))
   if(isExtant(w))
@@ -253,20 +262,25 @@ while(TRUE){
   dfltidx=1
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
-  Passt=TRUE
+  Passt=FALSE
   liner='.'
   ANDflag=TRUE
   
   while(TRUE)
   {
     if(!Passt){
-      rm(gxy)
+      if(exists('gxy'))
+        rm(gxy)
       linerw=gwindow(height = 20, title=lnttl)
       ggp=ggroup(cont=linerw)
-      obj =  gcombobox(dflt, editable=TRUE, container = ggp)
+      obj =  gedit(dflt, editable=TRUE, container = ggp, handler=function(h,...)
+        {})
+      addHandlerChanged(obj,handler=function(h,...){
+        gtkMainQuit()})
+      
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
         .GlobalEnv$ANDflag = TRUE
-        .GlobalEnv$avail = TRUE
+        gtkMainQuit()
       }
       )
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
@@ -274,7 +288,7 @@ while(TRUE){
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
         .GlobalEnv$ANDflag = FALSE
-        .GlobalEnv$avail = TRUE
+        gtkMainQuit()
       }
       )
       font(ORButton) <- c(color="blue", weight="bold") # initial 
@@ -282,6 +296,7 @@ while(TRUE){
       EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
         .GlobalEnv$exitF=TRUE
         dispose(linerw)
+        gtkMainQuit()
       }
       ) 
       font(EXITButton) <- c(color="red", weight="bold") # initial 
@@ -289,21 +304,20 @@ while(TRUE){
       RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
         .GlobalEnv$rebuild=TRUE
         dispose(linerw)
+        gtkMainQuit()
       }
       ) 
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
       shell('nircmd win activate title "Enter Search Criteria"')
       focus(obj)=TRUE
-      addhandlerchanged(obj, handler=function(h,...)
-        .GlobalEnv$avail=TRUE)
+
       addHandlerDestroy(obj, handler=function(h,...){
-        .GlobalEnv$avail=TRUE
+        gtkMainQuit()
       })
       
       liner=NULL
-      while(!avail)
-      {}
+      gtkMain()
       
       if(isExtant(linerw)){
         liner=svalue(obj)
@@ -501,7 +515,7 @@ while(TRUE){
 ######################## close all windows (ignore errors) ##################
 xx=ls()
 classes=sapply(1:length(xx),function(x) eval(parse(text=paste('class(',xx,')')[x])))
-wdws1=xx[which(classes=='gWindow')]
+wdws1=xx[which(classes=='GWindow')]
 wdws=wdws1[sapply(1:length(wdws1),function(x) eval(parse(text=paste('isExtant(',wdws1,')')[x])))]
 if(len(wdws))
   classes=sapply(1:length(wdws),function(x) eval(parse(text=paste('dispose(',wdws,')')[x])))
