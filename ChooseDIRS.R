@@ -8,7 +8,7 @@ vv=gradio(c('INCREASING','DECREASING'),container = ggx)
 gcheckbox('OK',container=ggx,use.togglebutton=TRUE,handler=function(h,...){
   .GlobalEnv$destr=FALSE
   gtkMainQuit()})
-IDD=addhandlerdestroy(ww,handler=function(h,...){
+IDD=addHandlerDestroy(ww,handler=function(h,...){
   gtkMainQuit()
 })
 if(file.exists('~/ChooseDIRS.RData')){
