@@ -11,7 +11,6 @@ f <- function(h,...) {
 xw <- gwindow("Delete sfname and rebuild?",height = 20)
 gp <- ggroup(container=xw)
 
-#cb <- gradio(flavors, editable=TRUE, container=gp, handler=f)
 yb=gbutton("YES", container=gp, handler = f)
 font(yb) <- c(color="red" , weight="bold")
 cb=gbutton("NO", container=gp, handler = f)
