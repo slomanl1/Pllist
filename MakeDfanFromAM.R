@@ -273,45 +273,38 @@ while(TRUE){
         rm(gxy)
       linerw=gwindow(height = 20, title=lnttl)
       ggp=ggroup(cont=linerw)
-      obj =  gedit(dflt, editable=TRUE, container = ggp, handler=function(h,...)
-        {})
-      addHandlerChanged(obj,handler=function(h,...){
-        gtkMainQuit()})
+      obj =  gcombobox(dflt, editable=TRUE, container = ggp)
       
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
         .GlobalEnv$ANDflag = TRUE
         gtkMainQuit()
-      }
-      )
+      })
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
       .GlobalEnv$ANDflag = TRUE
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
         .GlobalEnv$ANDflag = FALSE
         gtkMainQuit()
-      }
-      )
+      })
       font(ORButton) <- c(color="blue", weight="bold") # initial 
       
       EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
         .GlobalEnv$exitF=TRUE
         dispose(linerw)
         gtkMainQuit()
-      }
-      ) 
+      }) 
       font(EXITButton) <- c(color="red", weight="bold") # initial 
       
       RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
         .GlobalEnv$rebuild=TRUE
         dispose(linerw)
         gtkMainQuit()
-      }
-      ) 
+      }) 
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
       shell('nircmd win activate title "Enter Search Criteria"')
       focus(obj)=TRUE
-
+      
       addHandlerDestroy(obj, handler=function(h,...){
         gtkMainQuit()
       })
@@ -385,7 +378,7 @@ while(TRUE){
       
       if(len(idxs)==0)
       {
-        print('Non found')
+        galert('Non found')
         if(exists('w'))
           if(isExtant(w))
             dispose(w)
