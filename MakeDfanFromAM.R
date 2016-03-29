@@ -4,16 +4,6 @@ options(guiToolkit = "RGtk2")
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
 
-galert=function(msg,delay=3)
-{
-  vvv=gwindow(height = 50)
-  addHandlerDestroy(vvv,handler=function(h,...) {a$stop_timer()})
-  g <- gvbox(cont=vvv)
-  gtext(msg,cont=g,font.attr = list(size='xx-large'))
-  FUN=function(data) dispose(vvv)
-  a <- gtimer(delay*1000,one.shot=TRUE,FUN)
-  return(vvv)
-}
 setwd('~/')
 if(exists('w'))
   if(isExtant(w))
