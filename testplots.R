@@ -1,30 +1,10 @@
+source('~/pllist.git/GDF.R')
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
 
 if (!.GlobalEnv$tpexist) {
   renamed = FALSE
   ssv = NULL
-  
-  fw=gwindow("Edit File Details",width=1900,height = 20)
-  fwind=gdf(dfan[1,1:4], container=fw, handler = function(h,...) 
-  {
-    .GlobalEnv$changed=TRUE
-    .GlobalEnv$Passt=TRUE
-    visible(w) <- FALSE
-    enabled(fw) <- FALSE
-    tpexist=FALSE
-    gtkMainQuit()
-  })
-  getToolkitWidget(fw)$move(0,100)
-  visible(fw) <- FALSE
-  
-  addHandlerDestroy(fwind, handler = function(h,...) 
-  { 
-    if(isExtant(w))
-      dispose(w)
-    tpexist=FALSE
-    gtkMainQuit()
-  }) 
-  
+
   heit=min(100+(nrow(fnames)*30),750)
   linerd=liner
   if(!ANDflag)
@@ -42,7 +22,7 @@ if (!.GlobalEnv$tpexist) {
                 }
   )
   
-  addHandlerClicked(tab, handler = function(h,...) {
+  addHandlerSelectionChanged(tab, handler = function(h,...) {
     lenn=len(getFnx())
     if(lenn==1){
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
@@ -59,31 +39,10 @@ if (!.GlobalEnv$tpexist) {
     }
   })
   
-  addHandlerRightclick(
-    tab, handler = function(h,...) {
-      if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
-        .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
-        idx=which(fnames$fnx==.GlobalEnv$svt)
-        print(paste('svt,idx=',svt,idx))
-        .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-        # supply select idx item in editing window fwinf
-        tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
-        if(!is.na(tmpdf$DMComment))
-          tmpdf$Comment=tmpdf$DMComment
-        fwind[,] = tmpdf[,1:4]
-        visible(fw) <- TRUE
-        enabled(fw) <- TRUE
-        visible(w) <- FALSE
-      }
-    }
-  )  
-  
   addHandlerDestroy(
     tab, handler = function(h,...) {
       .GlobalEnv$ssv = NULL
       .GlobalEnv$tpexist <- FALSE
-      if(isExtant(fwind))
-        dispose(fwind) # gdf window
       .GlobalEnv$gdfopen=FALSE
       if(isExtant(wm))
         visible(wm) <- FALSE
@@ -174,14 +133,17 @@ if (!.GlobalEnv$tpexist) {
       idx=which(fnames$fnx==.GlobalEnv$svt)
       print(paste('svt,idx=',svt,idx))
       .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-      # supply select idx item in editing window fwinf
+      # supply select idx item in editing window 
       tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
       if(!is.na(tmpdf$DMComment))
         tmpdf$Comment=tmpdf$DMComment
-      fwind[,] = tmpdf[,1:4]
-      visible(fw) <- TRUE
-      enabled(fw) <- TRUE
-      visible(w) <- FALSE
+      .GlobalEnv$tpexist <- FALSE
+      tmpx=tmpdf[,1:4]
+      .GlobalEnv$fwind=gdfd(tmpx)
+      if(!identical(tmpx,.GlobalEnv$fwind)){
+        .GlobalEnv$changed=TRUE
+        .GlobalEnv$Passt=TRUE
+      }
     }
   })
   
@@ -267,7 +229,6 @@ if (!.GlobalEnv$tpexist) {
   gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
     dispose(w)
-    dispose(fwind)
     .GlobalEnv$gdfopen=FALSE
     gtkMainQuit()
   })
