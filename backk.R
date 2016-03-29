@@ -27,7 +27,9 @@ if (lnc > 0)
     print(paste('Copying',copyll[i],lnc - i))
     file.copy(copyl[i],copyll[i])
   }
-shell('xcopy D: E: /S/D/Y/J')
+
+cd('~/')
+shell('bkk.bat')
 
 load('E:/mfnfo.RData')
 emfnfo=mfnfo
@@ -59,7 +61,9 @@ ee=dir('e:/rpdn')
 cc=dir('c:/MyVideos/RPDNClips')
 mm=ee[which(!ee%in% cc)]
 cd('E:/RPDN')
-print(paste(mm[file.remove(mm)],'Removed'))
+mx=mm[file.remove(mm)]
+if(length(mx))
+  print(paste(mx,'Removed'))
 
 
 
