@@ -9,7 +9,7 @@ StartMyGUI <- function() {
     print('Convert H265')
     bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
     of=paste(bname,'.mp4',sep='')
-    addhandlerdestroy(.GlobalEnv$alrt,handler = function(h,...) {
+    addHandlerDestroy(.GlobalEnv$alrt,handler = function(h,...) {
       print('ALRT DESTROYED')
       xx=shell(paste('handle',basename(of)),intern = TRUE)
       if(any(grepl(basename(of),xx))){
