@@ -3,6 +3,7 @@ library(gWidgets2)
 options(guiToolkit = "RGtk2") 
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
+
 galert=function(msg,delay=3)
 {
   vvv=gwindow(height = 50)
@@ -17,9 +18,6 @@ setwd('~/')
 if(exists('w'))
   if(isExtant(w))
     dispose(w)
-if(exists('fwind'))
-  if(isExtant(fwind))
-    dispose(fwind)
 if(exists('obj'))
   if(isExtant(obj))
     dispose(obj)
@@ -423,7 +421,7 @@ while(TRUE){
           }
         }
       }
-      if(!all(trim(fwind[,1:4])==dfan[dfix,1:4],na.rm=TRUE) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
+      if(!identical(trim(fwind[,1:4]),dfan[dfix,1:4]) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
         dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
         print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
         if(nchar(trim(dfan[dfix,'Comment']))==0){
@@ -484,6 +482,7 @@ while(TRUE){
     avail = FALSE
     if (len(fns) > 0) { # null HAS LENGTH 0
       dispose(w)
+      tpexist=FALSE
       #writeLines(fns,'fns.m3u') # Write playlist
       load('headfoot.RData')
       writeLines(as.character(c(
