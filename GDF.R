@@ -1,8 +1,5 @@
-library(gWidgets)
-library(gWidgets2)
-
 gdfd=function(dfx) {
-  dfy=dfx
+  .GlobalEnv$dfy=dfx
   linerw=gwindow(height = 30, title='Edit Record')
   ggp=ggroup(cont=linerw)
   obj1 =  gedit(dfx[,1], width=nchar(trim(dfx[,1]))*1.15,editable=TRUE, container = ggp)
@@ -21,10 +18,7 @@ gdfd=function(dfx) {
   addHandlerChanged(obj4,handler=function(h,...){
     .GlobalEnv$dfy[,4]=svalue(obj4)
     gtkMainQuit()})
-  obj5=  gedit(dfx[,5], editable=TRUE, container = ggp)
-  addHandlerChanged(obj5,handler=function(h,...){
-    .GlobalEnv$dfy[,5]=svalue(obj5)
-    gtkMainQuit()})
+
   
   
   addHandlerBlur(obj1,handler=function(h,...){
@@ -43,9 +37,7 @@ gdfd=function(dfx) {
     .GlobalEnv$dfy[,4]=svalue(obj4)
   })
   
-  addHandlerBlur(obj5,handler=function(h,...){
-    .GlobalEnv$dfy[,5]=svalue(obj5)
-  })
+
   IDD=addHandlerDestroy(linerw,handler=function(h,...) {gtkMainQuit()})
   gtkMain()
   
@@ -53,9 +45,4 @@ gdfd=function(dfx) {
       dispose(linerw)
   return(.GlobalEnv$dfy)
 }
-
-load('~/dfan.RData')
-dfx=dfan[1,]
-
-dfy=gdfd(dfx)
 
