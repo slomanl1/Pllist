@@ -1,3 +1,4 @@
+source('~/.RProfile') # required for standalone version
 len=function(x) length(x)
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
@@ -11,10 +12,9 @@ print('Trimmer hello')
 shell('nircmd win min process rscript.exe')
 options("guiToolkit"="RGtk2")
 library(RGtk2)
-library(gWidgets)
-library(gWidgetsRGtk2)
-library(tools)
-require(gdata) # required for standalone version
+library(gWidgets2)
+
+
 args <- commandArgs(TRUE)
 save(args,file='~/args.RData')
 svt=args[1]
@@ -28,4 +28,3 @@ print(paste('svt=',svt,dur))
 alrt=galert(paste(svt,dur),delay = 1000)	
 StartMyGUI()
 dispose(alrt)
-
