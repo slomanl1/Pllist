@@ -279,7 +279,6 @@ while(TRUE){
       EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
         .GlobalEnv$exitF=TRUE
         dispose(linerw)
-        gtkMainQuit()
       }) 
       font(EXITButton) <- c(color="red", weight="bold") # initial 
       
@@ -291,9 +290,16 @@ while(TRUE){
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
       shell('nircmd win activate title "Enter Search Criteria"')
-      focus(obj)=TRUE
       
-      addHandlerDestroy(obj, handler=function(h,...){
+      addHandlerKeystroke(linerw, handler=function(h,...){
+        if(h$key=='\r'){
+          .GlobalEnv$ANDflag = TRUE
+          gtkMainQuit()
+        }
+      })
+      
+      addHandlerDestroy(linerw, handler=function(h,...){
+        .GlobalEnv$exitF=TRUE
         gtkMainQuit()
       })
       
