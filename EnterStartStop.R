@@ -2,11 +2,10 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   .GlobalEnv$bOK=TRUE
   .GlobalEnv$ss=-1
   .GlobalEnv$ToEnd=FALSE
-  getToolkitWidget(alrt)$move(0,100)
-  ww=gwindow(height=25,title=x,parent = alrt)	
-  getToolkitWidget(alrt)$move(0,0)
-  obj <- gedit(container=ww)
-  addhandlerchanged(obj, handler=function(h,...) 
+  ww=gwindow(height=30,title=x) #,parent = alrt)
+  ggp=ggroup(cont=ww)
+  getToolkitWidget(ww)$move(0,100)
+  obj <- gedit(container=ggp, handler=function(h,...) 
   { .GlobalEnv$ss=svalue(h$obj)
   dispose(ww)
   gtkMainQuit()
@@ -22,7 +21,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       .GlobalEnv$ToEnd=FALSE
       .GlobalEnv$ss=svalue(h$obj)}
   })
-  addHandlerDestroy(obj, handler = function(h,...) {
+  addHandlerDestroy(ww, handler = function(h,...) {
     if(!.GlobalEnv$bOK)
       .GlobalEnv$ss=NULL
     gtkMainQuit()})
@@ -31,7 +30,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   if(allowEnter &!.GlobalEnv$Fdate)
     olabel='To'
   
-  obutton=gbutton(olabel, container=ww,handler=function(h,...)
+  obutton=gbutton(olabel, container=ggp,handler=function(h,...)
   {
     .GlobalEnv$bOK=FALSE
     if(ss >= 0){
@@ -43,7 +42,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     }
   })
   if(!.GlobalEnv$Fdate){
-    tbutton=gbutton("ToEnd", container=ww,handler=function(h,...)
+    tbutton=gbutton("ToEnd", container=ggp,handler=function(h,...)
     {
       .GlobalEnv$ToEnd=TRUE
       if(ss > 0 | allowEnter){
@@ -54,7 +53,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       }
     })
     
-    fbutton=gbutton("FDATE", container=ww,handler=function(h,...)
+    fbutton=gbutton("FDATE", container=ggp,handler=function(h,...)
     {
       .GlobalEnv$Fdate=TRUE
       dispose(ww)
@@ -62,20 +61,19 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     })
     
     if(!allowEnter)
-      Cbutton=gbutton("Convert", container=ww,handler=function(h,...){
+      Cbutton=gbutton("Convert", container=ggp,handler=function(h,...){
         .GlobalEnv$convert=TRUE
         dispose(ww)
         gtkMainQuit()
       })
   }
-  xbutton=gbutton("Cancel", container=ww,handler=function(h,...) 
+  xbutton=gbutton("Cancel", container=ggp,handler=function(h,...) 
   {
     .GlobalEnv$ss=NULL
     dispose(ww)
     gtkMainQuit()
   })
-  
-  
+
   focus(obj)=TRUE
   gtkMain()
 }
@@ -109,4 +107,20 @@ EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FA
     }
   }
   return(startt)
+}
+
+galert=function(msg,delay=3)
+{
+  vvv=gwindow(height = 50)
+  getToolkitWidget(vvv)$move(0,0)
+  addHandlerDestroy(vvv,handler=function(h,...) {a$stop_timer()})
+  g <- gvbox(cont=vvv)
+  if(nchar(msg)>9){
+    gtext(msg,cont=g)
+  }else{
+    gtext(msg,cont=g,font.attr = list(size='xx-large'))
+  }
+  FUN=function(data) dispose(vvv)
+  a <- gtimer(delay*1000,one.shot=TRUE,FUN)
+  return(vvv)
 }
