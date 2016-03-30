@@ -115,10 +115,10 @@ galert=function(msg,delay=3)
   getToolkitWidget(vvv)$move(0,0)
   addHandlerDestroy(vvv,handler=function(h,...) {a$stop_timer()})
   g <- gvbox(cont=vvv)
-  if(nchar(msg)>9){
+  if(nchar(msg)>25){
     gtext(msg,cont=g)
   }else{
-    gtext(msg,cont=g,font.attr = list(size='xx-large'))
+    gtext(msg,cont=g,font.attr = list(size=21))
   }
   FUN=function(data) dispose(vvv)
   a <- gtimer(delay*1000,one.shot=TRUE,FUN)
