@@ -497,7 +497,7 @@ while(TRUE){
       
     }
   }
-  if(exitF)
+  if(exitF & !rebuild)
     break
 }
 ######################## close all windows (ignore errors) ##################
