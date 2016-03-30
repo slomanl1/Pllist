@@ -114,7 +114,7 @@ if(len(sll)>0){
       #clsx=paste(as.character(dfa[rng,'cls']),ptn(dfa[rng,'sz']))
       dfa[rng[1]:rng[min(len(rng),13)],'durF']=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('cls','durF')])
       gtbl[,]=dfa[rng,c('durF','szp','cls')]
-      svalue(gtbl)=1
+      svalue(gtbl)=1 # select first row
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
       clflag=FALSE
