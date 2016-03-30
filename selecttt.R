@@ -15,6 +15,7 @@ yb=gbutton("YES", container=gp, handler = f)
 font(yb) <- c(color="red" , weight="bold")
 cb=gbutton("NO", container=gp, handler = f)
 font(cb) <- c(color="springgreen4" , weight="bold")
+addHandlerKeystroke(xw, f)
 
 addHandlerDestroy(xw, handler = function(h,...) {
   .GlobalEnv$destroyed=.GlobalEnv$flagg
@@ -23,8 +24,7 @@ addHandlerDestroy(xw, handler = function(h,...) {
 cntt=7
 Sys.sleep(1)
 shell('nircmd win activate title "Delete sfname and rebuild?"')
-enabled(cb)=TRUE
-focus(cb)=TRUE
+ 
 while(!avail)
 {
   svalue(xw)=paste("Delete sfname and rebuild?",cntt)
