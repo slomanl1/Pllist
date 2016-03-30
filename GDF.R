@@ -43,6 +43,8 @@ gdfd=function(dfx) {
   
   if(isExtant(linerw))
       dispose(linerw)
-  return(.GlobalEnv$dfy)
+  dfyy=.GlobalEnv$dfy
+  rm('.GlobalEnv$dfy')
+  return(dfyy)
 }
 
