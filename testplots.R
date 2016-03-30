@@ -39,8 +39,7 @@ if (!.GlobalEnv$tpexist) {
     }
   })
   
-  addHandlerDestroy(
-    tab, handler = function(h,...) {
+  addHandlerDestroy(w, handler = function(h,...) {
       .GlobalEnv$ssv = NULL
       .GlobalEnv$tpexist <- FALSE
       .GlobalEnv$gdfopen=FALSE
@@ -49,7 +48,7 @@ if (!.GlobalEnv$tpexist) {
       gtkMainQuit()
     }
   )
-  
+
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
