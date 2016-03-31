@@ -142,6 +142,7 @@ if (!.GlobalEnv$tpexist) {
       if(!identical(tmpx,.GlobalEnv$fwind)){
         .GlobalEnv$changed=TRUE
         .GlobalEnv$Passt=TRUE
+        gtkMainQuit()
       }
     }
   })
