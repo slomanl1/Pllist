@@ -48,7 +48,7 @@ while(TRUE){
       if(destroyed)
         stop('Aborted')
       YesorNo=vall
-      if(YesorNo=='gtk-yes'){
+      if(YesorNo=='YES'){
         dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
         if(len(dirpaths)==0)
           stop('Aborted')
@@ -268,22 +268,27 @@ while(TRUE){
         gtkMainQuit()
       })
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
-      .GlobalEnv$ANDflag = TRUE
+      ANDflag = TRUE
+      ORflag=FALSE
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
         .GlobalEnv$ANDflag = FALSE
+        .GlobalEnv$ORflag = TRUE
         gtkMainQuit()
       })
       font(ORButton) <- c(color="blue", weight="bold") # initial 
       
       EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
         .GlobalEnv$exitF=TRUE
+        .GlobalEnv$ANDflag = FALSE
+        .GlobalEnv$ORflag = FALSE
         dispose(linerw)
       }) 
       font(EXITButton) <- c(color="red", weight="bold") # initial 
       
       RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
         .GlobalEnv$rebuild=TRUE
+        .GlobalEnv$gxy='' #prevent searching for popup
         dispose(linerw)
         gtkMainQuit()
       }) 
@@ -316,6 +321,10 @@ while(TRUE){
       }
     }else
       Passt=FALSE
+    
+    if(ANDflag | ORflag)
+      exitF=FALSE
+    
     if(!exists('gxy') & !exitF){
       gxy=galert(paste('Searching for',liner),delay=1000)
       Sys.sleep(1)
@@ -479,17 +488,19 @@ while(TRUE){
     if (len(fns) > 0) { # null HAS LENGTH 0
       dispose(w)
       tpexist=FALSE
-      #writeLines(fns,'fns.m3u') # Write playlist
-      load('headfoot.RData')
-      writeLines(as.character(c(
-        header,paste('<media src="',fns,'"/>'),footer
-      ),sep = ''),'fns.wpl')
-      #shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
-      mpc="shell('mpc-hc64.exe %s')"
-      ss=capture.output(cat(fns))
-      cmdd=sprintf(mpc,ss)
-      eval(parse(text=cmdd))
-      unlink('~/fns.wpl')
+      writeLines(fns,'fns.m3u') # Write playlist
+      # load('headfoot.RData')
+      # writeLines(as.character(c(
+      #   header,paste('<media src="',fns,'"/>'),footer
+      # ),sep = ''),'fns.wpl')
+      # #shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
+      # mpc="shell('mpc-hc64.exe %s')"
+      # ss=capture.output(cat(fns))
+      # cmdd=sprintf(mpc,ss)
+      # eval(parse(text=cmdd))
+      # unlink('~/fns.wpl')
+      shell('mpc-hc64.exe fns.m3u')
+      unlink('~/fns.m3u')
       Passt=TRUE
       unsorted=FALSE
       avail=FALSE
