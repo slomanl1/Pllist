@@ -116,7 +116,8 @@ galert=function(msg,delay=3)
   addHandlerDestroy(vvv,handler=function(h,...) {a$stop_timer()})
   g <- gvbox(cont=vvv)
   if(nchar(msg)>25){
-    gtext(msg,cont=g)
+    gtext(msg,cont=g,font.attr = list(size=21))
+    size(vvv)[1]=size(vvv)[1]*(as.integer(nchar(msg))/25)
   }else{
     gtext(msg,cont=g,font.attr = list(size=21))
   }
