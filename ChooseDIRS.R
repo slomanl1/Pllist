@@ -2,8 +2,8 @@ destr=TRUE
 sll=NULL
 choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','c:/PNMTALL/NewDownloads','REDUCE only')
 ww=gwindow('Choose',height=180,width=400)
-txl=gtable(choices,container=ww,multiple = TRUE,handler=function(h,...){.GlobalEnv$cb=svalue(h$obj)})
 ggx=ggroup(container=ww)
+txl=gtable(choices,container=ggx,multiple = TRUE,handler=function(h,...){.GlobalEnv$cb=svalue(h$obj)})
 vv=gradio(c('INCREASING','DECREASING'),container = ggx)
 gcheckbox('OK',container=ggx,use.togglebutton=TRUE,handler=function(h,...){
   .GlobalEnv$destr=FALSE
