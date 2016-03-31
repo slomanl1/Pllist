@@ -1,4 +1,3 @@
-library(gWidgets)
 library(gWidgets2)
 options(guiToolkit = "RGtk2") 
 source('~/pllist.git/EnterStartStop.R')
