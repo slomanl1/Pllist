@@ -5,7 +5,12 @@ gdfd=function(dfx) {
       dfx[,x]=' '
   }
   hx=gwindow(height=30,width=1080)
-  hy=gdf(dfx[,1:4],cont=hx)
+  ggp=ggroup(container = hx)
+  hy=gdf(dfx[,1:4],cont=ggp)
+  addSpace(ggp,10)
+  xxx=gbutton('DONE',cont=ggp,handler=function(h,...){
+    dispose(hx)
+  })
   addHandlerChanged(hy, handler = function(h,...) {
     print(svalue(h$obj, drop = FALSE))
     .GlobalEnv$dfy=svalue(h$obj,drop = FALSE)
