@@ -89,7 +89,7 @@ if(len(sll)>0){
     ww=gwindow(title=ttl,width=1100,height=300)
     getToolkitWidget(ww)$move(0,0)
     gtbl=gtable(dfa[,c('durF','szp','cls')],container=ww)
-    addhandlerdestroy(gtbl,handler = function(h,...){
+    addHandlerDestroy(ww,handler = function(h,...){
       xx=shell(paste('handle',basename(of)),intern = TRUE)
       if(any(grepl(basename(of),xx))){
         pidx=xx[grepl('pid',xx)]
