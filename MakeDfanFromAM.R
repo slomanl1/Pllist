@@ -258,21 +258,31 @@ while(TRUE){
     if(!Passt){
       if(exists('gxy'))
         rm(gxy)
+      
+      nxflag=FALSE
+      ORflag=FALSE
+      exitF=FALSE
+      liner=dflt[1]
       linerw=gwindow(height = 20, title=lnttl)
       ggp=ggroup(cont=linerw)
-      obj =  gcombobox(dflt, editable=TRUE, container = ggp)
+      obj =  gcombobox(dflt, editable=TRUE, container = ggp,handler=function(h,...){
+        .GlobalEnv$liner=svalue(obj)
+      })
       
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
+        .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = TRUE
+        dispose(linerw)
         gtkMainQuit()
       })
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
-      ANDflag = TRUE
-      ORflag=FALSE
+
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
+        .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = TRUE
+        dispose(linerw)
         gtkMainQuit()
       })
       font(ORButton) <- c(color="blue", weight="bold") # initial 
@@ -281,13 +291,18 @@ while(TRUE){
         .GlobalEnv$exitF=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = FALSE
+        .GlobalEnv$liner=NULL
         dispose(linerw)
       }) 
       font(EXITButton) <- c(color="red", weight="bold") # initial 
       
       RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
+        .GlobalEnv$nxflag=TRUE
         .GlobalEnv$rebuild=TRUE
+        .GlobalEnv$ANDflag = FALSE
+        .GlobalEnv$ORflag = FALSE
         .GlobalEnv$gxy='' #prevent searching for popup
+        .GlobalEnv$liner=NULL # prevent search
         dispose(linerw)
         gtkMainQuit()
       }) 
@@ -298,21 +313,21 @@ while(TRUE){
       addHandlerKeystroke(linerw, handler=function(h,...){
         if(h$key=='\r'){
           .GlobalEnv$ANDflag = TRUE
+          .GlobalEnv$nxflag=TRUE
+          dispose(linerw)
           gtkMainQuit()
         }
       })
       
       addHandlerDestroy(linerw, handler=function(h,...){
-        .GlobalEnv$exitF=TRUE
+        if(!.GlobalEnv$nxflag)
+          exitF=TRUE # destroyed by user close, not linerw dispose
         gtkMainQuit()
       })
       
-      liner=NULL
       gtkMain()
       
-      if(isExtant(linerw)){
-        liner=svalue(obj)
-        dispose(linerw)
+      if(!is.null(liner)){
         if(exists('w'))
           if(isExtant(w))
             dispose(w)
@@ -321,11 +336,13 @@ while(TRUE){
     }else
       Passt=FALSE
     
-    if(ANDflag | ORflag)
-      exitF=FALSE
-    
     if(!exists('gxy') & !exitF){
-      gxy=galert(paste('Searching for',liner),delay=1000)
+      lnr=liner
+      if(ORflag){
+        lnr=sub(' ',' | ',lnr)
+      }else{
+        lnr=sub(' ',' & ',lnr)}
+      gxy=galert(paste('Searching for',lnr),delay=1000)
       Sys.sleep(1)
     }
     ################ REBUILD an from dfan ################
