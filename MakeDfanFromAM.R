@@ -422,6 +422,10 @@ while(TRUE){
     fnames=fnames[,c(5,1,2,3,4)]
     fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
     source('~/pllist.git/testplots.R')
+    if(avail & tpexist){
+      gxy=galert(paste('Searching for',liner),delay=1000)
+      Sys.sleep(1)
+    }
     
     if(changed | deleted){
       dfix=which(grepl(getFnx(),dfan[,'filename'],fixed=TRUE))
