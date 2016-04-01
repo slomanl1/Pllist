@@ -502,8 +502,7 @@ while(TRUE){
     ssv = NULL #clear bones
     avail = FALSE
     if (len(fns) > 0) { # null HAS LENGTH 0
-      dispose(w)
-      tpexist=FALSE
+      doubleClicked=FALSE
       writeLines(fns,'fns.m3u') # Write playlist
       # load('headfoot.RData')
       # writeLines(as.character(c(
