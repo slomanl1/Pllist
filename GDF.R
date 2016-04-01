@@ -1,10 +1,11 @@
 gdfd=function(dfx) {
+  print(paste('gdf double clicked-',.GlobalEnv$doubleClicked))
   .GlobalEnv$dfy=dfx
   for(x in 1:ncol(dfx)){
     if(is.na(dfx[,x]))
       dfx[,x]=' '
   }
-  hx=gwindow(height=30,width=1080)
+  hx=gwindow('EDit Filename, metadata',height=30,width=1080)
   ggp=ggroup(container = hx)
   hy=gdf(dfx[,1:4],cont=ggp)
   addSpace(ggp,10)
