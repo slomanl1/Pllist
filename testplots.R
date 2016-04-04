@@ -2,7 +2,7 @@ source('~/pllist.git/GDF.R')
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
 doubleClicked=FALSE
 gdfopen=FALSE
-
+tt=as.numeric(proc.time())[3]
 if (!tpexist) {
   renamed = FALSE
   ssv = NULL
