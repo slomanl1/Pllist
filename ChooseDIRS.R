@@ -1,7 +1,6 @@
 destr=TRUE
 sll=NULL
-choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','C:/RealPlayerDownloads',
-          'c:/PNMTALL/NewDownloads', 'REDUCE only')
+
 ww=gwindow('Choose',height=180,width=400)
 ggx=ggroup(container=ww)
 txl=gtable(choices,container=ggx,multiple = TRUE,handler=function(h,...){.GlobalEnv$cb=svalue(h$obj)})
@@ -12,6 +11,7 @@ gcheckbox('OK',container=ggx,use.togglebutton=TRUE,handler=function(h,...){
 IDD=addHandlerDestroy(ww,handler=function(h,...){
   gtkMainQuit()
 })
+shell('nircmd win activate title "Choose"')
 if(file.exists('~/ChooseDIRS.RData')){
   load('~/ChooseDIRS.RData') # load pre-select from sll
   svalue(txl)=sll
