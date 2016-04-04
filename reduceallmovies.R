@@ -32,7 +32,8 @@ file.remove(dir(pattern = 'file'))
 cd('~/')
 cls=NULL
 dwnlds=NULL
-choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','c:/PNMTALL/NewDownloads','REDUCE only')
+choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','C:/RealPlayerDownloads',
+          'c:/PNMTALL/NewDownloads', 'REDUCE only')
 source('~/pllist.git/ChooseDIRS.R')
 if(len(sll)>0){
   slx=which(choices %in% sll)
@@ -44,9 +45,11 @@ if(len(sll)>0){
   if(3 %in% slx)
     cls=c(cls,dir('c:/MyVideos/rpdnclips',recursive = TRUE,full.names = TRUE))
   if(4 %in% slx)
+    cls=c(cls,dir('C:/RealPlayerDownloads',recursive = TRUE,full.names = TRUE))
+  if(5 %in% slx)
     dwnlds=dir('c:/PNMTALL/NewDownloads',recursive = TRUE,full.names = TRUE)
   cls=c(cls,dwnlds)
-  if(5 %in% slx)
+  if(6 %in% slx)
     cls=cls[grepl('REDUCE',cls) |grepl('MyVideo',cls)]
   
   cls=cls[which(!grepl('crdownload|ini|_REN',cls))]
@@ -79,9 +82,6 @@ if(len(sll)>0){
     }
     
     dfa=dfa[!toupper(dfa$cls) %in% toupper(bads$fname),]
-    if(!file.exists('~/msgis.txt')){
-      writeLines('','~/msgis.txt')
-    }
     dfa=dfa[!duplicated(dfa$cls),]
     dfa=dfa[order(dfa$sz,decreasing=decreasing),]
     done=FALSE
@@ -144,15 +144,18 @@ if(len(sll)>0){
           svt=fn
           save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
           print(of)
-          system('"C:\\Program Files\\R\\R-3.2.4revised\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
-          msgi=''
-          msgi=shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,fn,of),intern = TRUE)
-          print(tail(msgi))
+          cx='start /LOW /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/hexDump/bin/ffmpeg.exe -progress %s -i %s -c:v libx265 -c:a copy %s'
+          cy=sprintf(cx,blockFile,fn, of)
+          print(cy)
+          shell(cy,wait = FALSE)
+          #system('"C:\\Program Files\\R\\R-3.2.4revised\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
+          source('~/pllist.git/FFMPEGProgressBar.R')
+          medi=shell(paste('mediainfo "',of,'"',sep=''),intern = TRUE)
           if(done)
             break
           if(file.exists(of)){
             if(file.size(of)>1000){
-              if(any(grepl('hevc',msgi))){
+              if(any(grepl('HEVC',medi))){
                 unlink(nfn)
                 if(file.copy(of,nfn)){
                   unlink(of)
@@ -182,10 +185,6 @@ if(len(sll)>0){
           }else{
             svv(fn,'Bad Moov')
           }
-          writeLines(msgi,'~/temp.txt')
-          msgi=readLines('~/temp.txt') # convert CR to CRLF
-          writeLines(msgi,'~/temp.txt')
-          file.append('~/msgis.txt','~/temp.txt')
         }else{
           svv(fn,'Already HEVC')
         }
