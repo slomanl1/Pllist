@@ -54,17 +54,26 @@ if(grepl('mn',mns)){
 }else{
   durx=nms[1]
 }
+Sys.sleep(1)
 if(file.exists(blockFile)){
+  timeout=3
   pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000,label=svt,width=600) # tius is microseconds
   while(TRUE){
     Sys.sleep(1)
     xx=tailfile(blockFile,10)
-    if(len(xx)==0)
+    if(len(xx)==0){
+      timeout=timeout-1
+      if(timeout==0){
+        break
+        }
       next
+    }
     if(any(grepl('progress=end',xx)))
       break
     tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])
-    setWinProgressBar(pb,tius,paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%'),label=svt)
+    pbtxt=paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%')
+    setWinProgressBar(pb,tius,pbtxt,label=svt)
+    svalue(ww) = pbtxt
   }
   close(pb)
   unlink(blockFile)
