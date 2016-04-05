@@ -26,24 +26,27 @@ if (!tpexist) {
                 }
   )
   
-  
   addHandlerSelectionChanged(tab, handler = function(h,...) {
     print('selection changed handler')
     print(paste('selection changed handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
     fnx=getFnx()
     lenn=len(fnx)
-    if(lenn==1){
-      enabled(dbutton)=(len(svalue(tab))!=0) # delete button
-      enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
-      enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
-      enabled(ebutton)=(len(svalue(tab))!=0) # edit button
-      enabled(xbutton)=(len(svalue(tab))!=0) # explore button
-    }else{ 
-      enabled(dbutton)=FALSE # delete button
-      enabled(tbutton)=FALSE # TRIM button
-      enabled(mbutton)=FALSE # metadata button
-      enabled(ebutton)=FALSE # edit button
-      enabled(xbutton)=FALSE # explorer button
+    if((.GlobalEnv$EDITFlag >0) & lenn==1 & (svalue(tab,index=TRUE)==.GlobalEnv$EDITFlag)){
+      f(h,...) # edit if not double clicked
+    }else{
+      if(lenn==1){
+        enabled(dbutton)=(len(svalue(tab))!=0) # delete button
+        enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
+        enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
+        enabled(ebutton)=(len(svalue(tab))!=0) # edit button
+        enabled(xbutton)=(len(svalue(tab))!=0) # explore button
+      }else{ 
+        enabled(dbutton)=FALSE # delete button
+        enabled(tbutton)=FALSE # TRIM button
+        enabled(mbutton)=FALSE # metadata button
+        enabled(ebutton)=FALSE # edit button
+        enabled(xbutton)=FALSE # explorer button
+      }
     }
   })
   
@@ -91,7 +94,7 @@ if (!tpexist) {
   }
   )
   font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
-
+  
   ORButton=gbutton("OR", container = bg, handler = function(h,...) {
     .GlobalEnv$ORflag = TRUE
     .GlobalEnv$ANDflag = FALSE
@@ -132,44 +135,44 @@ if (!tpexist) {
           intern = TRUE)
     enabled(MLButton) = TRUE
   })
-
+  
   f = function(h,...) {
     if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
-        .GlobalEnv$gdfopen=TRUE # block edit
-        print('gdfopen set')
-        .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
-        idx=which(fnames$fnx==.GlobalEnv$svt)
-        print(paste('svt,idx=',svt,idx))
-        .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-        # supply select idx item in editing window 
-        tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
-        svalue(tab)=0 # unselect
-        if(!is.na(tmpdf$DMComment))
-          tmpdf$Comment=tmpdf$DMComment
-        tmpx=tmpdf[,1:4]
-        enabled(dbutton)=FALSE # delete button
-        enabled(tbutton)=FALSE # TRIM button
-        enabled(mbutton)=FALSE # metadata button
-        enabled(ebutton)=FALSE # edit button
-        enabled(xbutton)=FALSE # explorer button
-        enabled(tab)=FALSE
-        .GlobalEnv$fwind=gdfd(tmpx)
-        .GlobalEnv$gdfopen=FALSE
-        .GlobalEnv$doubleClicked=FALSE
-        enabled(tab)=TRUE
-        print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
-        if(!identical(tmpx,.GlobalEnv$fwind)){
-          .GlobalEnv$changed=TRUE
-          .GlobalEnv$Passt=TRUE
-          gtkMainQuit()
-        }else{
-          .GlobalEnv$avail = TRUE
-          .GlobalEnv$Passt=TRUE
-          gtkMainQuit()
-        }
+      .GlobalEnv$gdfopen=TRUE # block edit
+      print('gdfopen set')
+      .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
+      idx=which(fnames$fnx==.GlobalEnv$svt)
+      print(paste('svt,idx=',svt,idx))
+      .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
+      # supply select idx item in editing window 
+      tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+      svalue(tab)=0 # unselect
+      if(!is.na(tmpdf$DMComment))
+        tmpdf$Comment=tmpdf$DMComment
+      tmpx=tmpdf[,1:4]
+      enabled(dbutton)=FALSE # delete button
+      enabled(tbutton)=FALSE # TRIM button
+      enabled(mbutton)=FALSE # metadata button
+      enabled(ebutton)=FALSE # edit button
+      enabled(xbutton)=FALSE # explorer button
+      enabled(tab)=FALSE
+      .GlobalEnv$fwind=gdfd(tmpx)
+      .GlobalEnv$gdfopen=FALSE
+      .GlobalEnv$doubleClicked=FALSE
+      enabled(tab)=TRUE
+      print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
+      if(!identical(tmpx,.GlobalEnv$fwind)){
+        .GlobalEnv$changed=TRUE
+        .GlobalEnv$Passt=TRUE
+        gtkMainQuit()
+      }else{
+        .GlobalEnv$avail = TRUE
+        .GlobalEnv$Passt=TRUE
+        gtkMainQuit()
       }
     }
-
+  }
+  
   ebutton=gbutton("Edit", container = bg, handler = f)
   
   addHandlerClicked(tab,handler=function(h,...){
@@ -177,8 +180,9 @@ if (!tpexist) {
     elapsed=tx - .GlobalEnv$tt
     .GlobalEnv$tt=tx
     print(paste('clicked handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked,elapsed))
-    if(elapsed>.6)
-      f(h,...) # edit if not double clicked
+    .GlobalEnv$EDITFlag=0
+    if(elapsed>.6 & len(svalue(tab)))
+      .GlobalEnv$EDITFlag=svalue(tab,index=TRUE)
   })
   
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
