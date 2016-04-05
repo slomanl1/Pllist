@@ -5,7 +5,7 @@ gdfd=function(dfx) {
     if(is.na(dfx[,x]))
       dfx[,x]=' '
   }
-  hx=gwindow('EDit Filename, metadata',height=30,width=1080)
+  hx=gwindow('Edit Filename, metadata',height=30,width=1080)
   ggp=ggroup(container = hx)
   hy=gdf(dfx[,1:4],cont=ggp)
   addSpace(ggp,10)
