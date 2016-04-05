@@ -73,7 +73,9 @@ if(file.exists(blockFile)){
     tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])
     pbtxt=paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%')
     setWinProgressBar(pb,tius,pbtxt,label=svt)
-    svalue(ww) = pbtxt
+    if(exists('ww'))
+      if(isExtant(ww))
+        svalue(ww) = pbtxt
   }
   close(pb)
   unlink(blockFile)
