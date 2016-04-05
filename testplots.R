@@ -26,6 +26,43 @@ if (!tpexist) {
                 }
   )
   
+  f = function(h,...) {
+    if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
+      .GlobalEnv$gdfopen=TRUE # block edit
+      print('gdfopen set')
+      .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
+      idx=which(fnames$fnx==.GlobalEnv$svt)
+      print(paste('svt,idx=',svt,idx))
+      .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
+      # supply select idx item in editing window 
+      tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+      svalue(tab)=0 # unselect
+      if(!is.na(tmpdf$DMComment))
+        tmpdf$Comment=tmpdf$DMComment
+      tmpx=tmpdf[,1:4]
+      enabled(dbutton)=FALSE # delete button
+      enabled(tbutton)=FALSE # TRIM button
+      enabled(mbutton)=FALSE # metadata button
+      enabled(ebutton)=FALSE # edit button
+      enabled(xbutton)=FALSE # explorer button
+      enabled(tab)=FALSE
+      .GlobalEnv$fwind=gdfd(tmpx)
+      .GlobalEnv$gdfopen=FALSE
+      .GlobalEnv$doubleClicked=FALSE
+      enabled(tab)=TRUE
+      print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
+      if(!identical(tmpx,.GlobalEnv$fwind)){
+        .GlobalEnv$changed=TRUE
+        .GlobalEnv$Passt=TRUE
+        gtkMainQuit()
+      }else{
+        .GlobalEnv$avail = TRUE
+        .GlobalEnv$Passt=TRUE
+        gtkMainQuit()
+      }
+    }
+  }
+  
   addHandlerClicked(tab,handler=function(h,...){
     tx=as.numeric(proc.time())[3]
     elapsed=tx - .GlobalEnv$tt
@@ -145,43 +182,6 @@ if (!tpexist) {
           intern = TRUE)
     enabled(MLButton) = TRUE
   })
-  
-  f = function(h,...) {
-    if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
-      .GlobalEnv$gdfopen=TRUE # block edit
-      print('gdfopen set')
-      .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
-      idx=which(fnames$fnx==.GlobalEnv$svt)
-      print(paste('svt,idx=',svt,idx))
-      .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-      # supply select idx item in editing window 
-      tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
-      svalue(tab)=0 # unselect
-      if(!is.na(tmpdf$DMComment))
-        tmpdf$Comment=tmpdf$DMComment
-      tmpx=tmpdf[,1:4]
-      enabled(dbutton)=FALSE # delete button
-      enabled(tbutton)=FALSE # TRIM button
-      enabled(mbutton)=FALSE # metadata button
-      enabled(ebutton)=FALSE # edit button
-      enabled(xbutton)=FALSE # explorer button
-      enabled(tab)=FALSE
-      .GlobalEnv$fwind=gdfd(tmpx)
-      .GlobalEnv$gdfopen=FALSE
-      .GlobalEnv$doubleClicked=FALSE
-      enabled(tab)=TRUE
-      print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
-      if(!identical(tmpx,.GlobalEnv$fwind)){
-        .GlobalEnv$changed=TRUE
-        .GlobalEnv$Passt=TRUE
-        gtkMainQuit()
-      }else{
-        .GlobalEnv$avail = TRUE
-        .GlobalEnv$Passt=TRUE
-        gtkMainQuit()
-      }
-    }
-  }
   
   ebutton=gbutton("Edit", container = bg, handler = f)
   
