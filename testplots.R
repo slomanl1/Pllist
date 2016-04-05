@@ -26,6 +26,16 @@ if (!tpexist) {
                 }
   )
   
+  addHandlerClicked(tab,handler=function(h,...){
+    tx=as.numeric(proc.time())[3]
+    elapsed=tx - .GlobalEnv$tt
+    .GlobalEnv$tt=tx
+    print(paste('clicked handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked,elapsed))
+    .GlobalEnv$EDITFlag=0
+    if(elapsed>.6 & len(svalue(tab)))
+      .GlobalEnv$EDITFlag=svalue(tab,index=TRUE)
+  })
+  
   addHandlerSelectionChanged(tab, handler = function(h,...) {
     print('selection changed handler')
     print(paste('selection changed handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
@@ -175,16 +185,7 @@ if (!tpexist) {
   
   ebutton=gbutton("Edit", container = bg, handler = f)
   
-  addHandlerClicked(tab,handler=function(h,...){
-    tx=as.numeric(proc.time())[3]
-    elapsed=tx - .GlobalEnv$tt
-    .GlobalEnv$tt=tx
-    print(paste('clicked handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked,elapsed))
-    .GlobalEnv$EDITFlag=0
-    if(elapsed>.6 & len(svalue(tab)))
-      .GlobalEnv$EDITFlag=svalue(tab,index=TRUE)
-  })
-  
+
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
     if(answ){

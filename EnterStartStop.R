@@ -10,7 +10,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   dispose(ww)
   gtkMainQuit()
   })
-  
+  focus(obj)=TRUE
   addHandlerKeystroke(obj, handler = function(h,...){
     if(nchar(svalue(h$obj))==0){ 
       .GlobalEnv$ss=NULL
@@ -74,7 +74,6 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     gtkMainQuit()
   })
 
-  focus(obj)=TRUE
   gtkMain()
 }
 
