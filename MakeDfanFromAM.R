@@ -276,7 +276,7 @@ while(TRUE){
         gtkMainQuit()
       })
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
-
+      
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
         .GlobalEnv$nxflag=TRUE
@@ -428,7 +428,7 @@ while(TRUE){
     }
     
     if(changed | deleted){
-      dfix=which(grepl(getFnx(),dfan[,'filename'],fixed=TRUE))
+      dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
       ofn=dfan[dfix,'filename']
       dispose(w)
     }
@@ -444,6 +444,8 @@ while(TRUE){
             print(paste("file rename SUCCESSFUL from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
             renamed=TRUE
           }
+        }else{
+          fwind[,'filename']= dfan[dfix,'filename']
         }
       }
       if(!identical(trim(fwind[,1:4]),dfan[dfix,1:4]) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
