@@ -1,4 +1,5 @@
 gdfd=function(dfx) {
+  doneflag=FALSE
   print(paste('gdf double clicked-',.GlobalEnv$doubleClicked))
   .GlobalEnv$dfy=dfx
   for(x in 1:ncol(dfx)){
@@ -10,6 +11,7 @@ gdfd=function(dfx) {
   hy=gdf(dfx[,1:4],cont=ggp)
   addSpace(ggp,10)
   xxx=gbutton('DONE',cont=ggp,handler=function(h,...){
+    doneflag=TRUE
     dispose(hx)
   })
   addHandlerChanged(hy, handler = function(h,...) {
@@ -18,6 +20,10 @@ gdfd=function(dfx) {
     .GlobalEnv$dfy=svalue(h$obj,drop = FALSE)
   })
   IDD=addHandlerDestroy(hx,handler=function(h,...) {
+    if(!doneflag){
+      .GlobalEnv$dfy=dfx # discard changes
+      galert('Changes Discarded')
+    }
     print('hx destroyed');
     gtkMainQuit()})
   enabled(xxx)=FALSE
