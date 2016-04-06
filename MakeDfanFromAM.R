@@ -504,23 +504,12 @@ while(TRUE){
     if (len(fns) > 0) { # null HAS LENGTH 0
       doubleClicked=FALSE
       writeLines(fns,'fns.m3u') # Write playlist
-      # load('headfoot.RData')
-      # writeLines(as.character(c(
-      #   header,paste('<media src="',fns,'"/>'),footer
-      # ),sep = ''),'fns.wpl')
-      # #shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
-      # mpc="shell('mpc-hc64.exe %s')"
-      # ss=capture.output(cat(fns))
-      # cmdd=sprintf(mpc,ss)
-      # eval(parse(text=cmdd))
-      # unlink('~/fns.wpl')
       shell('mpc-hc64.exe fns.m3u')
       unlink('~/fns.m3u')
       Passt=TRUE
       unsorted=FALSE
       avail=FALSE
       emsg = 'OK'
-      
     }
   }
   if(exitF & !rebuild)
