@@ -1,5 +1,5 @@
 gdfd=function(dfx) {
-  doneflag=FALSE
+  .GlobalEnv$doneflag=FALSE
   print(paste('gdf double clicked-',.GlobalEnv$doubleClicked))
   .GlobalEnv$dfy=dfx
   for(x in 1:ncol(dfx)){
