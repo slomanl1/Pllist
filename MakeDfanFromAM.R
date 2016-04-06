@@ -23,6 +23,7 @@ fnsave=''
 convert=FALSE
 Fdate=FALSE
 rebuild=FALSE
+ORflag=FALSE
 while(TRUE){
   exitF=FALSE
   dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
@@ -249,7 +250,7 @@ while(TRUE){
   dfltidx=1
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
-  Passt=FALSE
+  Passt=TRUE
   liner='.'
   ANDflag=TRUE
   
