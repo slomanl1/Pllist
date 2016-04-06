@@ -12,7 +12,8 @@ if (!tpexist) {
   linerd=liner
   if(!ANDflag)
     linerd=gsub(' ','|',liner)
-  w <- gwindow(paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"),width = 1900,height=heit,parent = c(0,0))
+  w <- gwindow(paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"),
+               width = 1900,height=heit,parent = c(0,0),visible=FALSE)
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
@@ -52,7 +53,7 @@ if (!tpexist) {
       .GlobalEnv$doubleClicked=FALSE
       enabled(tab)=TRUE
       print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
-      if(!identical(tmpx,.GlobalEnv$fwind)){
+      if(!all(tmpx==fwind,na.rm = TRUE)){
         .GlobalEnv$changed=TRUE
         .GlobalEnv$Passt=TRUE
         gtkMainQuit()
@@ -293,8 +294,9 @@ if (!tpexist) {
   if(!ANDflag)
     linerd=gsub(' ','|',liner)
   svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
-  visible(w)=TRUE
 }
+visible(w)=TRUE
+getToolkitWidget(w)$move(0,0)
 if(exists('gxy'))
   if(isExtant(gxy))
     dispose(gxy)
