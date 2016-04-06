@@ -11,7 +11,7 @@ gdfd=function(dfx) {
   hy=gdf(dfx[,1:4],cont=ggp)
   addSpace(ggp,10)
   xxx=gbutton('DONE',cont=ggp,handler=function(h,...){
-    doneflag=TRUE
+    .GlobalEnv$doneflag=TRUE
     dispose(hx)
   })
   addHandlerChanged(hy, handler = function(h,...) {
@@ -20,7 +20,7 @@ gdfd=function(dfx) {
     .GlobalEnv$dfy=svalue(h$obj,drop = FALSE)
   })
   IDD=addHandlerDestroy(hx,handler=function(h,...) {
-    if(!doneflag){
+    if(!.GlobalEnv$doneflag){
       .GlobalEnv$dfy=dfx # discard changes
       galert('Changes Discarded')
     }
