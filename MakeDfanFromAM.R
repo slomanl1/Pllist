@@ -336,16 +336,6 @@ while(TRUE){
       }
     }else
       Passt=FALSE
-    
-    if(!exists('gxy') & !exitF){
-      lnr=liner
-      if(ORflag){
-        lnr=sub(' ',' | ',lnr)
-      }else{
-        lnr=sub(' ',' & ',lnr)}
-      gxy=galert(paste('Searching for',lnr),delay=1000)
-      Sys.sleep(1)
-    }
     ################ REBUILD an from dfan ################
     if(!exists('dfanNew')){
       dfanNew=dfan
@@ -375,6 +365,13 @@ while(TRUE){
     
     if (nchar(liner) > 0)
     {
+      lnr=liner
+      if(ORflag){
+        lnr=sub(' ',' | ',lnr)
+      }else{
+        lnr=sub(' ',' & ',lnr)}
+      gxy=galert(paste('Searching for',lnr),delay=1000)
+      Sys.sleep(1)
       dflt[len(dflt)+1] = liner
       dflt=unique(dflt[nchar(dflt)>0])
       dfltidx=which(dflt==liner)
@@ -423,10 +420,6 @@ while(TRUE){
     fnames=fnames[,c(5,1,2,3,4)]
     fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
     source('~/pllist.git/testplots.R')
-    if(avail & tpexist){
-      gxy=galert(paste('Searching for',liner),delay=1000)
-      Sys.sleep(1)
-    }
     
     if(changed | deleted){
       dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
