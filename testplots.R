@@ -71,7 +71,7 @@ if (!tpexist) {
     .GlobalEnv$tt=tx
     print(paste('clicked handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked,elapsed))
     .GlobalEnv$EDITFlag=0
-    if(elapsed>.6 & len(svalue(tab)))
+    if(elapsed>.9 & len(svalue(tab)))
       .GlobalEnv$EDITFlag=svalue(tab,index=TRUE)
   })
   
