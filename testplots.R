@@ -2,6 +2,7 @@ source('~/pllist.git/GDF.R')
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
 doubleClicked=FALSE
 gdfopen=FALSE
+metadata=''
 tt=as.numeric(proc.time())[3]
 if (!tpexist) {
   renamed = FALSE
@@ -215,8 +216,7 @@ if (!tpexist) {
   }
   )
   
-  wm <- gwindow("Metadata",width=700)
-  visible(wm) <- FALSE
+  wm <- gwindow("Metadata",width=700,visible = FALSE)
   gpm<- ggroup(horizontal=FALSE, container=wm)
   tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
                  handler = NULL)
@@ -229,12 +229,19 @@ if (!tpexist) {
           dispose(w)
       gtkMainQuit()})
   
+  gedit(metadata,cont=bgm,handler=function(h,...){
+    mdd=trim(paste(.GlobalEnv$metadata[,1],.GlobalEnv$metadata[,2]))
+    rng=which(grepl(svalue(h$obj),mdd,ignore.case = TRUE))
+    tabm[,]=.GlobalEnv$metadata[rng,]
+  })
+  
   gbutton("dismiss", container=bgm, handler = function(h,...) {
     visible(wm) <- FALSE;    
     if(exists('w')) 
       if(isExtant(w)) 
         enabled(w) <- TRUE
   })
+
   
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
@@ -261,6 +268,7 @@ if (!tpexist) {
     mm[,2]=substr(meta,pos+1,nchar(meta))
     mg=data.frame(mm,stringsAsFactors = FALSE)
     tabm[,]=mg
+    .GlobalEnv$metadata = mg
   }
   )
   
