@@ -7,8 +7,9 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   source("~/Local.R")
   fn=NULL
   shell('dir "C:\\MyVideos\\RPDNClips" /od/b > ddd.txt')
-  lns=readLines('ddd.txt')
+  lns1=readLines('ddd.txt')
   unlink('ddd.txt')
+  lns=lns1[file_ext(lns1)=='wmv']
   bn=gsub('[a-z|A-Z|_]','',lns)
   last=tail(sort(as.integer(bn)),1)
   
