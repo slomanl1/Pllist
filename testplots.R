@@ -53,12 +53,11 @@ if (!tpexist) {
       .GlobalEnv$doubleClicked=FALSE
       enabled(tab)=TRUE
       print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
-      if(!all(tmpx==fwind,na.rm = TRUE)){
+      for(i in 1:4)
+        if(is.na(tmpx[,i]))
+          tmpx[,i]=' '
+      if(!all(tmpx==fwind)){
         .GlobalEnv$changed=TRUE
-        .GlobalEnv$Passt=TRUE
-        gtkMainQuit()
-      }else{
-        .GlobalEnv$avail = TRUE
         .GlobalEnv$Passt=TRUE
         gtkMainQuit()
       }
@@ -187,7 +186,7 @@ if (!tpexist) {
   
   ebutton=gbutton("Edit", container = bg, handler = f)
   
-
+  
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
     if(answ){
@@ -242,7 +241,7 @@ if (!tpexist) {
       if(isExtant(w)) 
         enabled(w) <- TRUE
   })
-
+  
   
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
