@@ -14,7 +14,7 @@ svv=function(filename,errorCode,printF=TRUE) {
 }
 
 getDur = function(svtDur) {
-  svt=svtDur$cls
+  svt=svtDur$fname
   durF=svtDur$durF
   dur=NA
   for(i in 1:len(svt)){
@@ -32,7 +32,7 @@ getDur = function(svtDur) {
 
 file.remove(dir(pattern = 'file'))
 cd('~/')
-cls=NULL
+fname=NULL
 dwnlds=NULL
 choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','C:/RealPlayerDownloads',
           'c:/PNMTALL/NewDownloads', 'REDUCE only')
@@ -40,40 +40,40 @@ source('~/pllist.git/ChooseDIRS.R')
 if(len(sll)>0){
   slx=which(choices %in% sll)
   if(1 %in% slx)
-    cls=c(cls,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
+    fname=c(fname,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
   if(2 %in% slx){
-    cls=c(cls,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
-    cls=cls[!grepl('c:/PNMTALL/NewDownloads',cls)]}
+    fname=c(fname,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
+    fname=fname[!grepl('c:/PNMTALL/NewDownloads',fname)]}
   if(3 %in% slx)
-    cls=c(cls,dir('c:/MyVideos/rpdnclips',recursive = TRUE,full.names = TRUE))
+    fname=c(fname,dir('c:/MyVideos/rpdnclips',recursive = TRUE,full.names = TRUE))
   if(4 %in% slx)
-    cls=c(cls,dir('C:/RealPlayerDownloads',recursive = TRUE,full.names = TRUE))
+    fname=c(fname,dir('C:/RealPlayerDownloads',recursive = TRUE,full.names = TRUE))
   if(5 %in% slx)
     dwnlds=dir('c:/PNMTALL/NewDownloads',recursive = TRUE,full.names = TRUE)
-  cls=c(cls,dwnlds)
+  fname=c(fname,dwnlds)
   if(6 %in% slx)
-    cls=cls[grepl('REDUCE',cls) |grepl('MyVideo',cls)]
+    fname=fname[grepl('REDUCE',fname) |grepl('MyVideo',fname)]
   
-  cls=cls[which(!grepl('crdownload|ini|_REN',cls))]
-  fna=cls # all files (including _New's)
-  cls=cls[which(!grepl('_New',cls))]
-  if(len(cls)>0){
+  fname=fname[which(!grepl('crdownload|ini|_REN',fname))]
+  fna=fname # all files (including _New's)
+  fname=fname[which(!grepl('_New',fname))]
+  if(len(fname)>0){
     cla=fna[which(grepl('_New',fna))]
     dfn=data.frame(cla)
-    dfn$cls=sub('_New','',dfn$cla)
-    dfn$sz=file.size(dfn$cls)
+    dfn$fname=sub('_New','',dfn$cla)
+    dfn$sz=file.size(dfn$fname)
     dfn=dfn[order(dfn$sz),]
     dfn=dfn[!is.na(dfn$sz),]
     
-    nfns=paste(file_path_sans_ext(cls),'_New.',file_ext(cls),sep='')
-    dfa=data.frame(cls,sz=file.size(cls),nfns,durF=NA)
-    dfa$szp=ptn(dfa$sz)
+    nfns=paste(file_path_sans_ext(fname),'_New.',file_ext(fname),sep='')
+    dfa=data.frame(fname,sz=file.size(fname),nfns,durF=NA,fdate=file.mtime(fname))
+    dfa$fsize=ptn(dfa$sz)
     
     dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted to _New
     dfa=dfa[order(dfa$sz,decreasing=decreasing),]
-    nfns=paste(file_path_sans_ext(cls),'_New.',file_ext(cls),sep='')
-    dfa1=data.frame(cls,sz=file.size(cls),nfns,durF=NA)
-    dfa1$szp=ptn(dfa1$sz)
+    nfns=paste(file_path_sans_ext(fname),'_New.',file_ext(fname),sep='')
+    dfa1=data.frame(fname,sz=file.size(fname),nfns,durF=NA,fdate=file.mtime(fname))
+    dfa1$fsize=ptn(dfa1$sz)
     dfa1=subset(dfa1,!file.exists(as.character(dfa1$nfns))) # remove already converted to _New
     dfa=rbind(dfa1,dfa)
     
@@ -83,14 +83,14 @@ if(len(sll)>0){
       load('~/bads.RData')
     }
     
-    dfa=dfa[!toupper(dfa$cls) %in% toupper(bads$fname),]
-    dfa=dfa[!duplicated(dfa$cls),]
+    dfa=dfa[!toupper(dfa$fname) %in% toupper(bads$fname),]
+    dfa=dfa[!duplicated(dfa$fname),]
     dfa=dfa[order(dfa$sz,decreasing=decreasing),]
     done=FALSE
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
     ww=gwindow(title=ttl,width=1100,height=300)
     getToolkitWidget(ww)$move(0,0)
-    gtbl=gtable(dfa[,c('durF','szp','cls')],container=ww)
+    gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=ww)
     addHandlerDestroy(ww,handler = function(h,...){
       xx=shell(paste('handle',basename(of)),intern = TRUE)
       if(any(grepl(basename(of),xx))){
@@ -105,19 +105,19 @@ if(len(sll)>0){
       }
       .GlobalEnv$done=TRUE
     })
-    for(fn in dfa$cls)
+    for(fn in dfa$fname)
     { 
       print('------------------------------------------------------------------------------')
-      txl=(paste(len(dfa$cls)-which(fn==dfa$cls),'Files Remaining',
-                 ptn(sum(file.size(as.character(dfa$cls)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
+      txl=(paste(len(dfa$fname)-which(fn==dfa$fname),'Files Remaining',
+                 ptn(sum(file.size(as.character(dfa$fname)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
       svalue(ww)=txl
       print(txl)
-      rng=which(fn==dfa$cls):len(dfa$cls) #range pre-calc
-      durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('cls','durF')])
-      svv(as.character(dfa[rng[grepl('HEVC',durt)],'cls']),"Already HEVC")
+      rng=which(fn==dfa$fname):len(dfa$fname) #range pre-calc
+      durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('fname','durF')])
+      svv(as.character(dfa[rng[grepl('HEVC',durt)],'fname']),"Already HEVC")
       rng=rng[!grepl('HEVC',durt)]
       dfa[rng[1]:rng[min(len(rng),13)],'durF']=durt[rng]
-      gtbl[,]=dfa[rng,c('durF','szp','cls')]
+      gtbl[,]=dfa[rng,c('fdate','durF','fsize','fname')]
       svalue(gtbl)=1 # select first row
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
@@ -136,7 +136,7 @@ if(len(sll)>0){
       if(clflag & hevcFlag){
         svv(fn,"Already HEVC")
       }
-      if((clflag & !hevcFlag) | file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$cls==fn),'sz']){
+      if((clflag & !hevcFlag) | file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$fname==fn),'sz']){
         if(!hevcFlag){
           mtime=file.mtime(fn)
           msize=file.size(fn)
