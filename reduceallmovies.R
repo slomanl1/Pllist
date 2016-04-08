@@ -1,4 +1,6 @@
 svv=function(filename,errorCode,printF=TRUE) {
+  if(len(filename)==0)
+    return()
   if(file.exists('~/bads.RData'))
     load('~/bads.RData')
   badsa=data.frame(fname=NA,errorC=NA,md5s=NA)
@@ -111,8 +113,10 @@ if(len(sll)>0){
       svalue(ww)=txl
       print(txl)
       rng=which(fn==dfa$cls):len(dfa$cls) #range pre-calc
-      #clsx=paste(as.character(dfa[rng,'cls']),ptn(dfa[rng,'sz']))
-      dfa[rng[1]:rng[min(len(rng),13)],'durF']=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('cls','durF')])
+      durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('cls','durF')])
+      svv(as.character(dfa[rng[grepl('HEVC',durt)],'cls']),"Already HEVC")
+      rng=rng[!grepl('HEVC',durt)]
+      dfa[rng[1]:rng[min(len(rng),13)],'durF']=durt[rng]
       gtbl[,]=dfa[rng,c('durF','szp','cls')]
       svalue(gtbl)=1 # select first row
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
