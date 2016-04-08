@@ -1,3 +1,4 @@
+keep_above <- function(w, val=TRUE) w$widget$setKeepAbove(val)
 gdfd=function(dfx) {
   .GlobalEnv$doneflag=FALSE
   print(paste('gdf double clicked-',.GlobalEnv$doubleClicked))
