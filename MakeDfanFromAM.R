@@ -223,6 +223,7 @@ while(TRUE){
     for(cll in 1:ncol(dfan))
       dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
     
+    dfan=dfan[which(file.exists(dfan$filename)),]
     dfan$filename    = suppressWarnings(normalizePath(dfan$filename,winslash = '/'))
     dfanNew$filename = suppressWarnings(normalizePath(dfanNew$filename,winslash = '/'))
     dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
@@ -234,11 +235,12 @@ while(TRUE){
       dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
       dfanNew=dfan
     }else{
+      dfan=dfan[which(file.exists(dfan$filename)),]
       save(dfan,file='dfan.Rdata')
       print('Dfan.RData written') # added to save newly added files to dfan
     }
   }
-  
+  print(paste('Added:',extras))  
   
   
   tpexist=FALSE
@@ -493,6 +495,7 @@ while(TRUE){
       extras=paste("========",ofn) # remove old metadata associated with the old file
       procExtras()
       deleted=FALSE
+      dfan=dfan[which(file.exists(dfan$filename)),]
       dfan$filename = normalizePath(dfan$filename,winslash = '/')
       save(dfan,file='Dfan.RData')
       print('Dfan.Rdata written')
@@ -504,12 +507,23 @@ while(TRUE){
     if (len(fns) > 0) { # null HAS LENGTH 0
       doubleClicked=FALSE
       writeLines(fns,'fns.m3u') # Write playlist
+      # load('headfoot.RData')
+      # writeLines(as.character(c(
+      #   header,paste('<media src="',fns,'"/>'),footer
+      # ),sep = ''),'fns.wpl')
+      # #shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
+      # mpc="shell('mpc-hc64.exe %s')"
+      # ss=capture.output(cat(fns))
+      # cmdd=sprintf(mpc,ss)
+      # eval(parse(text=cmdd))
+      # unlink('~/fns.wpl')
       shell('mpc-hc64.exe fns.m3u')
       unlink('~/fns.m3u')
       Passt=TRUE
       unsorted=FALSE
       avail=FALSE
       emsg = 'OK'
+      
     }
   }
   if(exitF & !rebuild)
