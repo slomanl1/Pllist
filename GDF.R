@@ -14,6 +14,7 @@ gdfd=function(dfx) {
     .GlobalEnv$doneflag=TRUE
     dispose(hx)
   })
+  hx$widget$setKeepAbove(TRUE)
   addHandlerChanged(hy, handler = function(h,...) {
     enabled(xxx)=TRUE
     print(svalue(h$obj, drop = FALSE))
