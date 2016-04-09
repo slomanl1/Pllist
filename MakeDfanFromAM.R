@@ -115,7 +115,6 @@ while(TRUE){
       suppressWarnings(eval(parse(text = cmdy)))
       cmdx = sub('D:',paste('"',fpp,'"',sep=''),cmdd,fixed=TRUE)
       suppressWarnings(eval(parse(text = cmdx)))
-      print(paste('Added   ',fmissing[i],'to allmetadata'))
     }
     am1 = readLines('allmetadata.txt')
     am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
@@ -224,6 +223,7 @@ while(TRUE){
       dfan[which(dfan[,cll]=='NA'),cll]=NA # convert character "NA" to NA
     
     dfan=dfan[which(file.exists(dfan$filename)),]
+    dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
     dfan$filename    = suppressWarnings(normalizePath(dfan$filename,winslash = '/'))
     dfanNew$filename = suppressWarnings(normalizePath(dfanNew$filename,winslash = '/'))
     dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
@@ -240,8 +240,20 @@ while(TRUE){
       print('Dfan.RData written') # added to save newly added files to dfan
     }
   }
-  print(paste('Added:',extras))  
-  
+  if(len(fmissing)){
+    fms=dfan[which(dfan$filename %in% normalizePath(fmissing)),]
+    for (i in 1:len(fmissing)){
+      cat(paste('Added File:       ',fms[i]$filename,'to metadata\n'))
+      if(len(trim(fms[i]$Title)))
+        cat(paste('Added Title:    ',fms[i]$Title,'to metadata\n'))
+      if(len(trim(fms[i]$Comment)))
+        cat(paste('Added Comment:  ',fms[i]$Comment,'to metadata\n')) 
+      if(len(trim(fms[i]$SubTitle)))
+        cat(paste('Added SubTitle: ',fms[i]$SubTitle,'to metadata\n'))
+      if(len(trim(fms[i]$DMComment)))
+        cat(paste('Added DMComment:',fms[i]$DMComment,'to metadata\n')) 
+    }
+  }
   
   tpexist=FALSE
   avail=FALSE
@@ -255,6 +267,7 @@ while(TRUE){
   Passt=TRUE
   liner='.'
   ANDflag=TRUE
+  gxy=galert(paste('Searching for',liner))
   
   while(TRUE)
   {
@@ -367,13 +380,6 @@ while(TRUE){
     
     if (nchar(liner) > 0)
     {
-      lnr=liner
-      if(ORflag){
-        lnr=sub(' ',' | ',lnr)
-      }else{
-        lnr=sub(' ',' & ',lnr)}
-      gxy=galert(paste('Searching for',lnr),delay=1000)
-      Sys.sleep(1)
       dflt[len(dflt)+1] = liner
       dflt=unique(dflt[nchar(dflt)>0])
       dfltidx=which(dflt==liner)
@@ -504,27 +510,16 @@ while(TRUE){
     fnsave=ssv
     ssv = NULL #clear bones
     avail = FALSE
-    if (len(fns) > 0) { # null HAS LENGTH 0
-      doubleClicked=FALSE
-      writeLines(fns,'fns.m3u') # Write playlist
-      # load('headfoot.RData')
-      # writeLines(as.character(c(
-      #   header,paste('<media src="',fns,'"/>'),footer
-      # ),sep = ''),'fns.wpl')
-      # #shell("wmplayer c:\\Users\\Larry\\Documents\\fns.wpl")
-      # mpc="shell('mpc-hc64.exe %s')"
-      # ss=capture.output(cat(fns))
-      # cmdd=sprintf(mpc,ss)
-      # eval(parse(text=cmdd))
-      # unlink('~/fns.wpl')
-      shell('mpc-hc64.exe fns.m3u')
-      unlink('~/fns.m3u')
-      Passt=TRUE
-      unsorted=FALSE
-      avail=FALSE
-      emsg = 'OK'
-      
-    }
+    # if (len(fns) > 0) { # null HAS LENGTH 0
+    #   doubleClicked=FALSE
+    #   writeLines(fns,'fns.m3u') # Write playlist
+    #   shell('mpc-hc64.exe fns.m3u')
+    #   unlink('~/fns.m3u')
+    #   Passt=TRUE
+    #   unsorted=FALSE
+    #   avail=FALSE
+    #   emsg = 'OK'
+    # }
   }
   if(exitF & !rebuild)
     break
