@@ -22,9 +22,12 @@ if (!tpexist) {
                 handler = function(h,...) {
                   .GlobalEnv$ssv = getFnx()
                   .GlobalEnv$doubleClicked=TRUE
+                  enabled(w)=FALSE
                   print('Double clicked')
-                  dispose(w)
-                  gtkMainQuit()
+                  writeLines(ssv,'fns.m3u') # Write playlist
+                  shell('mpc-hc64.exe fns.m3u')
+                  unlink('~/fns.m3u')
+                  enabled(w)=TRUE
                 }
   )
   
@@ -138,6 +141,7 @@ if (!tpexist) {
     .GlobalEnv$ORflag = FALSE
     .GlobalEnv$avail = TRUE
     .GlobalEnv$Passt=TRUE
+    .GlobalEnv$srchF=TRUE
     gtkMainQuit()
   }
   )
@@ -148,6 +152,7 @@ if (!tpexist) {
     .GlobalEnv$ANDflag = FALSE
     .GlobalEnv$avail = TRUE
     .GlobalEnv$Passt=TRUE
+    .GlobalEnv$srchF=TRUE
     gtkMainQuit()
   }
   )
@@ -158,6 +163,7 @@ if (!tpexist) {
       .GlobalEnv$ANDflag = TRUE
       .GlobalEnv$avail = TRUE
       .GlobalEnv$Passt=TRUE
+      .GlobalEnv$srchF=TRUE
       gtkMainQuit()
     }
   })
@@ -299,7 +305,22 @@ getToolkitWidget(w)$move(0,0)
 if(exists('gxy'))
   if(isExtant(gxy))
     dispose(gxy)
+srchF=FALSE
 gtkMain()
+
+if(srchF){ 
+  srchF=FALSE
+  lnr=liner
+  if(ORflag){
+    lnr=sub(' ',' | ',lnr)
+  }else{
+    lnr=sub(' ',' & ',lnr)
+  }
+  gxy=galert(paste('Searching for',lnr))
+}
+
+
+
 
 
 
