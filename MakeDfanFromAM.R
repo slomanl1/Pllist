@@ -268,7 +268,7 @@ while(TRUE){
   Passt=TRUE
   liner='.'
   ANDflag=TRUE
-  gxy=galert(paste('Searching for',liner))
+  gxy=galert(paste('Searching for',liner),delay=1000)
   
   while(TRUE)
   {
@@ -375,12 +375,13 @@ while(TRUE){
     an=gsub("Subtitle: NA",'',an,ignore.case = TRUE)
     an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
     
-    
     if (is.null(liner))
       break
     
     if (nchar(liner) > 0)
     {
+      if(!exists('gxy'))
+        gxy=galert(paste('Searching for',liner),delay=1000)
       dflt[len(dflt)+1] = liner
       dflt=unique(dflt[nchar(dflt)>0])
       dfltidx=which(dflt==liner)
