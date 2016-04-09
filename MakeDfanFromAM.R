@@ -242,16 +242,17 @@ while(TRUE){
   }
   if(len(fmissing)){
     fms=dfan[which(dfan$filename %in% normalizePath(fmissing)),]
-    for (i in 1:len(fmissing)){
-      cat(paste('Added File:       ',fms[i]$filename,'to metadata\n'))
-      if(len(trim(fms[i]$Title)))
-        cat(paste('Added Title:    ',fms[i]$Title,'to metadata\n'))
-      if(len(trim(fms[i]$Comment)))
-        cat(paste('Added Comment:  ',fms[i]$Comment,'to metadata\n')) 
-      if(len(trim(fms[i]$SubTitle)))
-        cat(paste('Added SubTitle: ',fms[i]$SubTitle,'to metadata\n'))
-      if(len(trim(fms[i]$DMComment)))
-        cat(paste('Added DMComment:',fms[i]$DMComment,'to metadata\n')) 
+    fms[is.na(fms)]=''
+    for (i in 1:nrow(fms)){
+      cat(paste('Added File:       ',fms[i,]$filename,'to metadata\n'))
+      if(nchar(trim(fms[i,]$Title)))
+        cat(paste('Added Title:    ',fms[i,]$Title,'to metadata\n'))
+      if(nchar(trim(fms[i,]$Comment)))
+        cat(paste('Added Comment:  ',fms[i,]$Comment,'to metadata\n')) 
+      if(nchar(trim(fms[i,]$SubTitle)))
+        cat(paste('Added SubTitle: ',fms[i,]$SubTitle,'to metadata\n'))
+      if(nchar(trim(fms[i,]$DMComment)))
+        cat(paste('Added DMComment: ',fms[i,]$DMComment,'to metadata\n')) 
     }
   }
   
