@@ -1,3 +1,4 @@
+source('~/pllist.git/EnterStartStop.R') # galert in here
 svv=function(filename,errorCode,printF=TRUE) {
   if(len(filename)==0)
     return()
