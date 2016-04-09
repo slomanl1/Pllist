@@ -92,6 +92,7 @@ if(len(sll)>0){
     getToolkitWidget(ww)$move(0,0)
     gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=ww)
     addHandlerDestroy(ww,handler = function(h,...){
+      gxy=galert('Terminating FFMPEG',100)
       xx=shell(paste('handle',basename(of)),intern = TRUE)
       if(any(grepl(basename(of),xx))){
         pidx=xx[grepl('pid',xx)]
@@ -100,6 +101,7 @@ if(len(sll)>0){
         shell(paste('taskkill /PID',pid, '/F'))
         writeLines('progress=end',blockFile) # stop progress bar
         unlink(of)
+        dispose(gxy)
       }else{
         print('No ffmpeg.exe found')
       }
