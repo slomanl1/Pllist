@@ -96,9 +96,10 @@ while(TRUE){
           dmissing = zz[!dto %in% dts] # add records with new date to dmissing
         }
         ttl = which(substr(am,1,1) == '=')
+        ttl = c(which(substr(am,1,1) == '='),len(am)+1)
+        ttl=ttl[which(!is.na(am[ttl]))]
         xmissing = zz[!suppressWarnings(normalizePath(zz,winslash = '/')) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/'))]
         fmss = unique(suppressWarnings(normalizePath(c(dmissing,xmissing), winslash = "/")))
-        #fmissing=subset(fmss,!grepl('_New',fmss))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
         extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/')) %in% suppressWarnings(normalizePath(zz,winslash='/'))]
         dts = dto # replace old dates
@@ -120,12 +121,13 @@ while(TRUE){
     am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
     am=trim(am[!is.na(am) & nchar(am)>0] ) # clean up na and empty metadata)
     ttl = c(which(substr(am,1,1) == '='),len(am)+1)
+    ttl=ttl[which(!is.na(am[ttl]))]
     extras=c(extras,am[ttl][duplicated(am[ttl])])
   }
   ###########################################
   procExtras=function() {
     if(len(extras)>0){
-      exidxst=which(normalizePath(trim(substr(am[ttl],10,nchar(am[ttl]))),winslash = '/') %in% normalizePath(trim(substr(extras,10,nchar(extras))),winslash='/')) # extra indices in am[]
+      exidxst=trim(substr(am[ttl],10,nchar(am[ttl]))) %in% trim(substr(extras,10,nchar(extras)))
       exidxs=which(am %in% am[ttl][exidxst])      
       if(len(exidxs)){
         ttidxs=which(ttl%in%exidxs)
@@ -242,20 +244,21 @@ while(TRUE){
   }
   if(len(fmissing)){
     fms=dfan[which(dfan$filename %in% normalizePath(fmissing)),]
-    fms[is.na(fms)]=''
-    for (i in 1:nrow(fms)){
-      cat(paste('Added File:       ',fms[i,]$filename,'to metadata\n'))
-      if(nchar(trim(fms[i,]$Title)))
-        cat(paste('Added Title:    ',fms[i,]$Title,'to metadata\n'))
-      if(nchar(trim(fms[i,]$Comment)))
-        cat(paste('Added Comment:  ',fms[i,]$Comment,'to metadata\n')) 
-      if(nchar(trim(fms[i,]$SubTitle)))
-        cat(paste('Added SubTitle: ',fms[i,]$SubTitle,'to metadata\n'))
-      if(nchar(trim(fms[i,]$DMComment)))
-        cat(paste('Added DMComment: ',fms[i,]$DMComment,'to metadata\n')) 
+    if(nrow(fms)){
+      fms[is.na(fms)]=''
+      for (i in 1:nrow(fms)){
+        cat(paste('Added File:       ',fms[i,]$filename,'to metadata\n'))
+        if(nchar(trim(fms[i,]$Title)))
+          cat(paste('Added Title:    ',fms[i,]$Title,'to metadata\n'))
+        if(nchar(trim(fms[i,]$Comment)))
+          cat(paste('Added Comment:  ',fms[i,]$Comment,'to metadata\n')) 
+        if(nchar(trim(fms[i,]$SubTitle)))
+          cat(paste('Added SubTitle: ',fms[i,]$SubTitle,'to metadata\n'))
+        if(nchar(trim(fms[i,]$DMComment)))
+          cat(paste('Added DMComment: ',fms[i,]$DMComment,'to metadata\n')) 
+      }
     }
   }
-  
   tpexist=FALSE
   avail=FALSE
   changed=FALSE
