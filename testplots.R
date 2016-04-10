@@ -51,10 +51,14 @@ if (!tpexist) {
       enabled(ebutton)=FALSE # edit button
       enabled(xbutton)=FALSE # explorer button
       enabled(tab)=FALSE
+      enabled(dbgbutton)=FALSE # DISMISS button
+      enabled(rbb)=FALSE # rebuild button
       .GlobalEnv$fwind=gdfd(tmpx)
       .GlobalEnv$gdfopen=FALSE
       .GlobalEnv$doubleClicked=FALSE
-      enabled(tab)=TRUE
+      enabled(tab)=TRUE # rebuild button
+      enabled(dbgbutton)=TRUE # DISMISS button
+      enabled(rbb)=TRUE
       print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
       for(i in 1:4)
         if(is.na(tmpx[,i]))
@@ -291,12 +295,13 @@ if (!tpexist) {
   }
   )
   
-  gbutton("dismiss", container = bg, handler = function(h,...) {
+  dbgbutton=gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
     dispose(w)
     .GlobalEnv$gdfopen=FALSE
     gtkMainQuit()
   })
+  
   enabled(dbutton)=FALSE # delete button
   enabled(tbutton)=FALSE # TRIM button
   enabled(mbutton)=FALSE # metadata button
