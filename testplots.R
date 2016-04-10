@@ -114,8 +114,18 @@ if (!tpexist) {
   .GlobalEnv$tab <- tab
   addSpring(bg)
   
+  rbb=gbutton("REBUILD", container=bg, handler = function(h,...) {
+    .GlobalEnv$nxflag=TRUE
+    .GlobalEnv$rebuild=TRUE
+    .GlobalEnv$tpexist <- FALSE
+    dispose(w)
+    .GlobalEnv$gdfopen=FALSE
+    gtkMainQuit()
+  })
+  
   MLButton=gbutton("MakeLast.R", container = bg, handler = function(h,...) {
     gxx=galert('MAKELAST - WORKING',delay=1000)
+    enabled(rbb) = FALSE
     enabled(MLButton) = FALSE
     enabled(dbutton)=FALSE # delete button
     enabled(tbutton)=FALSE # TRIM button
@@ -131,6 +141,7 @@ if (!tpexist) {
         enabled(mbutton)=TRUE # metadata button
         enabled(ebutton)=TRUE # edit button  
         enabled(xbutton)=TRUE # explore button
+        enabled(rbb) = TRUE   # rebuild button
       }
     dispose(gxx)
   }
@@ -234,7 +245,7 @@ if (!tpexist) {
         if(isExtant(w)) 
           dispose(w)
       gtkMainQuit()})
-  
+
   gedit(metadata,cont=bgm,handler=function(h,...){
     mdd=trim(paste(.GlobalEnv$metadata[,1],.GlobalEnv$metadata[,2]))
     rng=which(grepl(svalue(h$obj),mdd,ignore.case = TRUE))
@@ -290,8 +301,11 @@ if (!tpexist) {
   enabled(ebutton)=FALSE # edit button  
   enabled(xbutton)=FALSE # explore button 
   enabled(MLButton) = FALSE # MakeLast
+  enabled(rbb) = FALSE
   enabled(ANDButton) = FALSE #
   enabled(ORButton) = FALSE #
+  enabled(rbb) = TRUE
+
   
 }else{
   tab[,]=fnames
@@ -306,6 +320,10 @@ if(exists('gxy'))
   if(isExtant(gxy))
     dispose(gxy)
 srchF=FALSE
+focus(xe)=TRUE
+focus(ge)=TRUE
+focus(tab)=TRUE # refresh initial message
+
 gtkMain()
 
 if(srchF){ 
