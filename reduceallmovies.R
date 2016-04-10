@@ -4,10 +4,7 @@ svv=function(filename,errorCode,printF=TRUE) {
     return()
   if(file.exists('~/bads.RData'))
     load('~/bads.RData')
-  badsa=data.frame(fname=NA,errorC=NA,md5s=NA)
-  badsa$fname=filename
-  badsa$errorC=errorCode
-  badsa$md5s=md5sum(filename)
+  badsa=data.frame(fname=filename,errorC=errorCode,md5s=md5sum(filename))
   bads=rbind(bads,badsa)
   if(printF)
     print(badsa$errorC)
@@ -119,7 +116,7 @@ if(len(sll)>0){
       durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('fname','durF')])
       svv(as.character(dfa[rng[grepl('HEVC',durt)],'fname']),"Already HEVC")
       rng=rng[!grepl('HEVC',durt)]
-      dfa[rng[1]:rng[min(len(rng),13)],'durF']=durt[rng]
+      dfa[rng[1]:rng[min(len(rng),13)],'durF']=durt[1:min(len(rng),13)]
       gtbl[,]=dfa[rng,c('fdate','durF','fsize','fname')]
       svalue(gtbl)=1 # select first row
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
