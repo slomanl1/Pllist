@@ -118,6 +118,8 @@ if (!tpexist) {
     .GlobalEnv$nxflag=TRUE
     .GlobalEnv$rebuild=TRUE
     .GlobalEnv$tpexist <- FALSE
+    .GlobalEnv$Passt=TRUE
+    .GlobalEnv$liner=NULL
     dispose(w)
     .GlobalEnv$gdfopen=FALSE
     gtkMainQuit()
