@@ -342,6 +342,7 @@ if(srchF){
     lnr=sub(' ',' & ',lnr)
   }
   gxy=galert(paste('Searching for',lnr),delay=1000)
+  Sys.sleep(1)
 }
 
 
