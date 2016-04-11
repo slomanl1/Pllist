@@ -272,6 +272,7 @@ while(TRUE){
   liner='.'
   ANDflag=TRUE
   gxy=galert(paste('Searching for',liner),delay=1000)
+  Sys.sleep(1)
   
   while(TRUE)
   {
@@ -383,8 +384,10 @@ while(TRUE){
     
     if (nchar(liner) > 0)
     {
-      if(!exists('gxy'))
+      if(!exists('gxy')){
         gxy=galert(paste('Searching for',liner),delay=1000)
+        Sys.sleep(1)
+      }
       dflt[len(dflt)+1] = liner
       dflt=unique(dflt[nchar(dflt)>0])
       dfltidx=which(dflt==liner)
