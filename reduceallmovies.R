@@ -88,6 +88,7 @@ if(len(sll)>0){
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
     ww=gwindow(title=ttl,width=1100,height=300)
     getToolkitWidget(ww)$move(0,0)
+    visible(ww)=FALSE
     gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=ww)
     addHandlerDestroy(ww,handler = function(h,...){
       gxy=galert('Terminating FFMPEG',100)
@@ -111,6 +112,7 @@ if(len(sll)>0){
       txl=(paste(len(dfa$fname)-which(fn==dfa$fname),'Files Remaining',
                  ptn(sum(file.size(as.character(dfa$fname)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
       svalue(ww)=txl
+      visible(ww)=FALSE
       print(txl)
       rng=which(fn==dfa$fname):len(dfa$fname) #range pre-calc
       durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('fname','durF')])
@@ -119,6 +121,7 @@ if(len(sll)>0){
       dfa[rng[1]:rng[min(len(rng),13)],'durF']=durt[1:min(len(rng),13)]
       gtbl[,]=dfa[rng,c('fdate','durF','fsize','fname')]
       svalue(gtbl)=1 # select first row
+      visible(ww)=TRUE
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
       clflag=FALSE
