@@ -24,6 +24,8 @@ convert=FALSE
 Fdate=FALSE
 rebuild=FALSE
 ORflag=FALSE
+ANDflag=TRUE
+liner='.'
 while(TRUE){
   exitF=FALSE
   dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
@@ -44,6 +46,7 @@ while(TRUE){
         rm(dfan)
         rm(dfanx)
         fnsave=''
+        load('~/liner.RData')
       }
       if(destroyed)
         stop('Aborted')
@@ -268,9 +271,8 @@ while(TRUE){
   dfltidx=1
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
+
   Passt=TRUE
-  liner='.'
-  ANDflag=TRUE
   gxy=galert(paste('Searching for',liner),delay=1000)
   Sys.sleep(1)
   

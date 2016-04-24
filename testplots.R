@@ -341,6 +341,7 @@ if(srchF){
   }else{
     lnr=sub(' ',' & ',lnr)
   }
+  save(liner,ORflag,ANDflag,file='~/liner.RData')
   gxy=galert(paste('Searching for',lnr),delay=1000)
   Sys.sleep(1)
 }
