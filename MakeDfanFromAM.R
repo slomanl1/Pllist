@@ -26,6 +26,8 @@ rebuild=FALSE
 ORflag=FALSE
 ANDflag=TRUE
 liner='.'
+save(liner,ORflag,ANDflag,file='~/liner.RData')
+
 while(TRUE){
   exitF=FALSE
   dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
