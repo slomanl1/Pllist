@@ -18,7 +18,6 @@ gdfd=function(dfx) {
   keep_above(hx,TRUE)
   addHandlerChanged(hy, handler = function(h,...) {
     enabled(xxx)=TRUE
-    print(svalue(h$obj, drop = FALSE))
     .GlobalEnv$dfy=svalue(h$obj,drop = FALSE)
   })
   IDD=addHandlerDestroy(hx,handler=function(h,...) {
