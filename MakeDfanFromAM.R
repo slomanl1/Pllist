@@ -166,6 +166,7 @@ while(TRUE){
     am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
     ttl = c(which(substr(am,1,1) == '='),len(am)+1)
+    ttl=ttl[which(!is.na(am[ttl]))]
     ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash = '/'))),na.rm = FALSE)
     if(ducc){
       print(paste(ducc,'Duplicates found'))  
