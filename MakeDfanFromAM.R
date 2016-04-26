@@ -179,11 +179,11 @@ while(TRUE){
     flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment','Description')
     pb = winProgressBar(title = "R progress bar", label = "",
                         min = 1, max = length(ttl)-1, initial = 0, width = 300)
-    for(i in 1:(len(ttl)-1)){
+    for(i in 1:(len(ttl))){
       setWinProgressBar(pb, i, title = paste('Parsing Metadata', label = ifelse(i>1,dirname(dfan[i-1,'filename']),'')))
       dfan[i,'filename']=  substr(am[ttl][i],10,nchar(am[ttl][i]))
-      j=1
-      while(ttl[i]+j < ttl[i+1]){
+      j=0
+      while(ttl[i]+j < ttl[i]){
         tmpp=am[ttl[i]+j]
         if(is.na(tmpp)){ # indicates terminal condition
           break
