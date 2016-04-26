@@ -127,7 +127,7 @@ while(TRUE){
     am=trim(am[!is.na(am) & nchar(am)>0] ) # clean up na and empty metadata)
     ttl = c(which(substr(am,1,1) == '='),len(am)+1)
     ttl=ttl[which(!is.na(am[ttl]))]
-    extras=c(extras,am[ttl][duplicated(am[ttl])])
+    extras=c(extras,am[ttl][duplicated(am[ttl])]) # fix duplicates
   }
   ###########################################
   procExtras=function() {
