@@ -100,9 +100,9 @@ if(len(sll)>0){
         shell(paste('taskkill /PID',pid, '/F'))
         writeLines('progress=end',blockFile) # stop progress bar
         unlink(of)
-        dispose(gxy)
       }else{
         print('No ffmpeg.exe found')
+        dispose(gxy)
       }
       .GlobalEnv$done=TRUE
     })
