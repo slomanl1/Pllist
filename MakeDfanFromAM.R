@@ -103,10 +103,11 @@ while(TRUE){
         ttl = which(substr(am,1,1) == '=')
         ttl = c(which(substr(am,1,1) == '='),len(am)+1)
         ttl=ttl[which(!is.na(am[ttl]))]
-        xmissing = zz[!suppressWarnings(normalizePath(zz,winslash = '/')) %in% suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/'))]
-        fmss = unique(suppressWarnings(normalizePath(c(dmissing,xmissing), winslash = "/")))
+        xmissing = zz[! (normalizePath(zz,winslash = '/')) %in%  (normalizePath(substr(am[ttl],10,1000),winslash='/'))]
+        fmss = unique( (normalizePath(c(dmissing,xmissing), winslash = "/")))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
-        extras = am[ttl][!suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash='/')) %in% suppressWarnings(normalizePath(zz,winslash='/'))]
+        #extrasO = am[ttl][! (normalizePath(substr(am[ttl],10,1000),winslash='/')) %in%  (normalizePath(zz,winslash='/'))]
+        extras=am[ttl][which(!file.exists(substr(am[ttl],10,1000)))]
         dts = dto # replace old dates
       }
     } 
@@ -118,9 +119,9 @@ while(TRUE){
                                     substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash='/')
       
       cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
-      suppressWarnings(eval(parse(text = cmdy)))
+       (eval(parse(text = cmdy)))
       cmdx = sub('D:',paste('"',fpp,'"',sep=''),cmdd,fixed=TRUE)
-      suppressWarnings(eval(parse(text = cmdx)))
+       (eval(parse(text = cmdx)))
     }
     am1 = readLines('allmetadata.txt')
     am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
@@ -167,7 +168,7 @@ while(TRUE){
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
     ttl = c(which(substr(am,1,1) == '='),len(am)+1)
     ttl=ttl[which(!is.na(am[ttl]))]
-    ducc=sum(duplicated(suppressWarnings(normalizePath(substr(am[ttl],10,1000),winslash = '/'))),na.rm = FALSE)
+    ducc=sum(duplicated( (normalizePath(substr(am[ttl],10,1000),winslash = '/'))),na.rm = FALSE)
     if(ducc){
       print(paste(ducc,'Duplicates found'))  
       stop('TERMINATED - DUPLICATES FOUND')
@@ -232,8 +233,8 @@ while(TRUE){
     
     dfan=dfan[which(file.exists(dfan$filename)),]
     dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
-    dfan$filename    = suppressWarnings(normalizePath(dfan$filename,winslash = '/'))
-    dfanNew$filename = suppressWarnings(normalizePath(dfanNew$filename,winslash = '/'))
+    dfan$filename    =  (normalizePath(dfan$filename,winslash = '/'))
+    dfanNew$filename =  (normalizePath(dfanNew$filename,winslash = '/'))
     dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
     save(dfan,dfg,file='dfan.Rdata')
     print('Dfan.RData written')
