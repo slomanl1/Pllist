@@ -166,9 +166,8 @@ while(TRUE){
     am1 = readLines('allmetadata.txt')
     am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
-    ttl = c(which(substr(am,1,1) == '='),len(am)+1)
-    ttl=ttl[which(!is.na(am[ttl]))]
-    ducc=sum(duplicated( (normalizePath(substr(am[ttl],10,1000),winslash = '/'))),na.rm = FALSE)
+    ttl = c(which(substr(am,1,1) == '='),len(am)+1) # add an NA at the end
+    ducc=sum(duplicated( (normalizePath(substr(am[ttl[which(!is.na(am[ttl]))]],10,1000),winslash = '/'))),na.rm = FALSE)
     if(ducc){
       print(paste(ducc,'Duplicates found'))  
       stop('TERMINATED - DUPLICATES FOUND')
@@ -196,6 +195,7 @@ while(TRUE){
         j=j+1
       }
     }
+    ttl=ttl[which(!is.na(am[ttl]))]
     dfan$Title=    trim(sub("Title                           :",'',dfan$Title))
     dfan$Comment=  trim(sub("Comment                         :",'',dfan$Comment))
     dfan$SubTitle= trim(sub("Subtitle                        :",'',dfan$SubTitle))
