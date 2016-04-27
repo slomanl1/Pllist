@@ -27,7 +27,36 @@ ORflag=FALSE
 ANDflag=TRUE
 liner='.'
 save(liner,ORflag,ANDflag,file='~/liner.RData')
-
+###########################################
+procExtras=function() {
+  if(len(extras)>0){
+    exidxst=trim(substr(am[ttl],10,nchar(am[ttl]))) %in% trim(substr(extras,10,nchar(extras)))
+    exidxs=which(am %in% am[ttl][exidxst])      
+    if(len(exidxs)){
+      ttidxs=which(ttl%in%exidxs)
+      for (i in 1:len(exidxs)){
+        nexttlidx=ttl[ttidxs[i]+1]
+        idx=ttl[ttidxs[i]]
+        if(is.na(nexttlidx)){
+          print(paste('removed from allmetadata.txt',am[idx]))
+          am[idx:len(am)]=NA
+          break #indicates terminal condition (last ttl)
+        }
+        j=0
+        while((idx+j)!=nexttlidx){
+          print(paste('removed from allmetadata.txt',am[idx+j]))
+          am[idx+j]=NA
+          j=j+1
+        }
+      }  
+      am=am[!is.na(am)]
+      .GlobalEnv$ttl = which(substr(am,1,1) == '=')
+      .GlobalEnv$am = am
+      writeLines(am,'allmetadata.txt')
+    }
+  }
+}
+####################################
 while(TRUE){
   exitF=FALSE
   dirs=c(dir('D:/PNMTALL',full.names = TRUE),dir('C:/PNMTALL',full.names = TRUE))
@@ -103,10 +132,13 @@ while(TRUE){
         ttl = which(substr(am,1,1) == '=')
         ttl = c(which(substr(am,1,1) == '='),len(am)+1)
         ttl=ttl[which(!is.na(am[ttl]))]
-        xmissing = zz[! (normalizePath(zz,winslash = '/',mustWork=NA)) %in%  (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=NA))]
-        fmss = unique( (normalizePath(c(dmissing,xmissing), winslash = "/")))
-        fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
         extras=am[ttl][which(!file.exists(substr(am[ttl],10,1000)))]
+        procExtras()
+        extras=''
+        xmissing = zz[! (normalizePath(zz,winslash = '/',mustWork=TRUE)) %in%  (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=TRUE))]
+        fmss = unique( (normalizePath(c(dmissing,xmissing), winslash = '/',mustWork=TRUE)))
+        fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
+
         dts = dto # replace old dates
       }
     } 
@@ -115,7 +147,7 @@ while(TRUE){
     for (i in 1:len(fmissing)) {
       cmdd = "shell('getm D: >> allmetadata.txt',translate=TRUE)"
       fpp = normalizePath(file.path(substr(fmissing[i],1,2),
-                                    substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash = '/',mustWork=NA)
+                                    substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash = '/',mustWork=TRUE)
       
       cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
        (eval(parse(text = cmdy)))
@@ -129,44 +161,15 @@ while(TRUE){
     ttl=ttl[which(!is.na(am[ttl]))]
     extras=c(extras,am[ttl][duplicated(am[ttl])]) # fix duplicates
   }
-  ###########################################
-  procExtras=function() {
-    if(len(extras)>0){
-      exidxst=trim(substr(am[ttl],10,nchar(am[ttl]))) %in% trim(substr(extras,10,nchar(extras)))
-      exidxs=which(am %in% am[ttl][exidxst])      
-      if(len(exidxs)){
-        ttidxs=which(ttl%in%exidxs)
-        for (i in 1:len(exidxs)){
-          nexttlidx=ttl[ttidxs[i]+1]
-          idx=ttl[ttidxs[i]]
-          if(is.na(nexttlidx)){
-            print(paste('removed from allmetadata.txt',am[idx]))
-            am[idx:len(am)]=NA
-            break #indicates terminal condition (last ttl)
-          }
-          j=0
-          while((idx+j)!=nexttlidx){
-            print(paste('removed from allmetadata.txt',am[idx+j]))
-            am[idx+j]=NA
-            j=j+1
-          }
-        }  
-        am=am[!is.na(am)]
-        .GlobalEnv$ttl = which(substr(am,1,1) == '=')
-        .GlobalEnv$am = am
-        writeLines(am,'allmetadata.txt')
-      }
-    }
-  }
-  ####################################
+
   if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
     rebuild=FALSE
     procExtras()
-    dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
+
     am = am[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am)]
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
     ttl = c(which(substr(am,1,1) == '='),len(am)+1) # add an NA at the end
-    ducc=sum(duplicated( (normalizePath(substr(am[ttl[which(!is.na(am[ttl]))]],10,1000),winslash = '/',mustWork=NA))),na.rm = FALSE)
+    ducc=sum(duplicated( (normalizePath(substr(am[ttl[which(!is.na(am[ttl]))]],10,1000),winslash = '/',mustWork=TRUE))),na.rm = FALSE)
     if(ducc){
       print(paste(ducc,'Duplicates found'))  
       stop('TERMINATED - DUPLICATES FOUND')
@@ -175,6 +178,7 @@ while(TRUE){
     print('sfname written')
     
     flds=c(NA,NA,NA,NA,'Title',NA,'Comment','SubTitle',NA,'DM Comment','Description')
+    dfan=data.frame(filename=NA,Title=NA,Comment=NA,SubTitle=NA,DMComment=NA)
     pb = winProgressBar(title = "R progress bar", label = "",
                         min = 1, max = length(ttl)-1, initial = 0, width = 300)
     for(i in 1:(len(ttl)-1)){
@@ -232,8 +236,8 @@ while(TRUE){
     
     dfan=dfan[which(file.exists(dfan$filename)),]
     dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
-    dfan$filename    =  (normalizePath(dfan$filename,winslash = '/',mustWork=NA))
-    dfanNew$filename =  (normalizePath(dfanNew$filename,winslash = '/',mustWork=NA))
+    dfan$filename    =  (normalizePath(dfan$filename,winslash = '/',mustWork=TRUE))
+    dfanNew$filename =  (normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE))
     dfan=dfan[!duplicated(dfan$filename)&!grepl('_original',dfan$filename),]
     save(dfan,dfg,file='dfan.Rdata')
     print('Dfan.RData written')
@@ -365,8 +369,8 @@ while(TRUE){
     if(!exists('dfanNew')){
       dfanNew=dfan
     }
-    dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=NA)
-    dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=NA)
+    dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
+    dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
     dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
     an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
              ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
@@ -473,7 +477,7 @@ while(TRUE){
         if(file_ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
           gmessage('Cannot write metadata to wmv or flv files')
         }else{
-          fnc=normalizePath(dfan[dfix,'filename'],winslash = '/',mustWork=NA)
+          fnc=normalizePath(dfan[dfix,'filename'],winslash = '/',mustWork=TRUE)
           print(paste('Updating Metadata in',fnc))
           cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
                      dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
@@ -491,13 +495,13 @@ while(TRUE){
         filename=dfan[dfix,'filename']
         dx=data.frame(dtn=NA,fn=NA,times=NA)
         dx$dtn=mtme # from testplots changed handler
-        dx[1,'fn']=normalizePath(as.character(filename),winslash = '/',mustWork=NA)
+        dx[1,'fn']=normalizePath(as.character(filename),winslash = '/',mustWork=TRUE)
         dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                             ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
         cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
         eval(parse(text=cmd))
       }
-      dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=NA)
+      dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
       if(renamed | changed){
         dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
         extras=paste("========",gsub('/','\\\\',ofn)) # remove old metadata associated with the old file
@@ -514,7 +518,7 @@ while(TRUE){
       procExtras()
       deleted=FALSE
       dfan=dfan[which(file.exists(dfan$filename)),]
-      dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=NA)
+      dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
       save(dfan,file='Dfan.RData')
       print('Dfan.Rdata written')
     }
