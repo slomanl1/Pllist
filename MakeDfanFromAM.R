@@ -369,6 +369,8 @@ while(TRUE){
     if(!exists('dfanNew')){
       dfanNew=dfan
     }
+    dfan=dfan[which(file.exists(dfan$filename)),]
+    dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
     dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
     dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
     dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
