@@ -131,7 +131,7 @@ if (!tpexist) {
   
   MLButton=gbutton("MakeLast.R", container = bg, handler = function(h,...) {
     gxx=galert('MAKELAST - WORKING',delay=1000)
-    enabled(rbb) = FALSE
+    enabled(rbb) = FALSE   # rebuild button
     enabled(MLButton) = FALSE
     enabled(dbutton)=FALSE # delete button
     enabled(tbutton)=FALSE # TRIM button
