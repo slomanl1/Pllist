@@ -91,7 +91,7 @@ if(len(sll)>0){
     visible(ww)=FALSE
     gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=ww)
     addHandlerDestroy(ww,handler = function(h,...){
-      gxy=galert('Terminating FFMPEG',100)
+      gxy=galert('Terminating FFMPEG',15)
       xx=shell(paste('handle',basename(of)),intern = TRUE)
       if(any(grepl(basename(of),xx))){
         pidx=xx[grepl('pid',xx)]
