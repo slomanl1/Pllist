@@ -213,15 +213,16 @@ if (!tpexist) {
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
     if(answ){
-      print(paste('Deleting',getFnx()))
-      if(unlink(getFnx()))
+      .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
+      print(paste('Deleting',.GlobalEnv$svt))
+      if(unlink(.GlobalEnv$svt))
         print('delete FAILED')
       else{
         .GlobalEnv$deleted=TRUE
         .GlobalEnv$Passt=TRUE
         visible(w) <- FALSE
         .GlobalEnv$tpexist=FALSE
-        writeLines(getFnx(),'file.tmp')
+        writeLines(.GlobalEnv$svt,'file.tmp')
         file.append('deletelog.txt','file.tmp') # update delete log
         unlink('file.tmp')
         gtkMainQuit()
