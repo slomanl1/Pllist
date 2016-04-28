@@ -138,7 +138,8 @@ while(TRUE){
         xmissing = zz[! (normalizePath(zz,winslash = '/',mustWork=TRUE)) %in%  (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=TRUE))]
         fmss = unique( (normalizePath(c(dmissing,xmissing), winslash = '/',mustWork=TRUE)))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
-
+        if(len(fmissing))
+           print(paste('Found',len(fmissing),'New Files to Add'))
         dts = dto # replace old dates
       }
     } 
@@ -272,6 +273,7 @@ while(TRUE){
   tpexist=FALSE
   avail=FALSE
   changed=FALSE
+  Passt=TRUE
   
   lnttl='Enter Search Criteria, Close to Exit'
   dflt = ''
@@ -279,10 +281,6 @@ while(TRUE){
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
 
-  Passt=TRUE
-  gxy=galert(paste('Searching for',liner),delay=1000)
-  Sys.sleep(1)
-  
   while(TRUE)
   {
     if(!Passt){
@@ -395,7 +393,7 @@ while(TRUE){
     
     if (nchar(liner) > 0)
     {
-      if(!exists('gxy')){
+      if(!exists('gxy') & !exists('gdframe')){
         gxy=galert(paste('Searching for',liner),delay=1000)
         Sys.sleep(1)
       }
@@ -438,7 +436,8 @@ while(TRUE){
       break
     
     gdfopen=FALSE
-    gdframe = get_list_content(pnoln,an[idxs])
+    if(!exists('gdframe'))
+      gdframe = get_list_content(pnoln,an[idxs])
     unsorted=TRUE
     fnames=gdframe
     fnames$comments=trim(fnames$comments)
@@ -450,6 +449,7 @@ while(TRUE){
     if(changed | deleted){
       dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
       ofn=dfan[dfix,'filename']
+      rm('gdframe')
       dispose(w)
     }
     
