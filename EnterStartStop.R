@@ -73,7 +73,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     dispose(ww)
     gtkMainQuit()
   })
-
+  focus(ww)=TRUE
   gtkMain()
 }
 
