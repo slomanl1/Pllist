@@ -273,6 +273,7 @@ while(TRUE){
   tpexist=FALSE
   avail=FALSE
   changed=FALSE
+  trimmed=FALSE
   
   lnttl='Enter Search Criteria, Close to Exit'
   dflt = ''
@@ -448,12 +449,18 @@ while(TRUE){
     fnames=fnames[,c(5,1,2,3,4)]
     fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
     source('~/pllist.git/testplots.R')
-    if(changed | deleted){
+    if(changed | deleted | trimmed){
       dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
       ofn=dfan[dfix,'filename']
-      dispose(w)
+      if(isExtant(w))
+        dispose(w)
     }
-    
+    if(trimmed){
+      fwind=dfan[dfix,]
+      mtme=file.mtime(dfan[dfix,'filename'])
+      changed=TRUE
+      trimmed=FALSE
+    }
     renamed=FALSE
     if(changed){
       if(fwind[,'filename']!=dfan[dfix,'filename']){

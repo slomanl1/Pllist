@@ -220,7 +220,7 @@ if (!tpexist) {
       else{
         .GlobalEnv$deleted=TRUE
         .GlobalEnv$Passt=TRUE
-        visible(w) <- FALSE
+        dispose(w)
         .GlobalEnv$tpexist=FALSE
         writeLines(.GlobalEnv$svt,'file.tmp')
         file.append('deletelog.txt','file.tmp') # update delete log
@@ -237,6 +237,12 @@ if (!tpexist) {
     .GlobalEnv$alrt=galert(svt,delay=10000)
     StartMyGUI()
     dispose(alrt)
+    .GlobalEnv$Passt=TRUE
+    .GlobalEnv$changed=TRUE # force rebuild
+    .GlobalEnv$trimmed=TRUE
+    dispose(w)
+    .GlobalEnv$tpexist=FALSE
+    gtkMainQuit()
   }
   )
   
