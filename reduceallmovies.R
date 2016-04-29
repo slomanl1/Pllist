@@ -32,6 +32,7 @@ file.remove(dir(pattern = 'file'))
 cd('~/')
 fname=NULL
 dwnlds=NULL
+of=''
 choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','C:/RealPlayerDownloads',
           'c:/PNMTALL/NewDownloads', 'REDUCE only')
 source('~/pllist.git/ChooseDIRS.R')
@@ -91,9 +92,10 @@ if(len(sll)>0){
     visible(ww)=FALSE
     gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=ww)
     addHandlerDestroy(ww,handler = function(h,...){
-      gxy=galert('Terminating FFMPEG',15)
+      if(nchar(of))
+        gxy=galert('Terminating FFMPEG',15)
       xx=shell(paste('handle',basename(of)),intern = TRUE)
-      if(any(grepl(basename(of),xx))){
+      if(any(grepl(basename(of),xx)) & nchar(of)){
         pidx=xx[grepl('pid',xx)]
         xxx=(as.numeric(unlist(strsplit(pidx,' '))))
         pid=xxx[!is.na(xxx)]
@@ -102,7 +104,10 @@ if(len(sll)>0){
         unlink(of)
       }else{
         print('No ffmpeg.exe found')
-        dispose(gxy)
+        if(exists('gxy')){
+          dispose(gxy)
+          rm(gxy)
+        }
       }
       .GlobalEnv$done=TRUE
     })
