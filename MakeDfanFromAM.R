@@ -138,7 +138,8 @@ while(TRUE){
         xmissing = zz[! (normalizePath(zz,winslash = '/',mustWork=TRUE)) %in%  (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=TRUE))]
         fmss = unique( (normalizePath(c(dmissing,xmissing), winslash = '/',mustWork=TRUE)))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
-
+        if(len(fmissing))
+          print(paste('Found',len(fmissing),'Files to Add'))
         dts = dto # replace old dates
       }
     } 
