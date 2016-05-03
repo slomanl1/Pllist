@@ -20,9 +20,9 @@ setwd(paste(pldrive,'My Playlists',sep=""))
 
 for (i in 1:length(wpls)) {
   lss=readLines(wpls[i])
-  lns=lss
+  lns=sub('c:','C:',lss,fixed=TRUE)
   print(wpls[i])
-  dupp=dups(lns[nchar(lns)>0])
+  dupp=dups(toupper(lns)[nchar(lns)>0])
   if(length(dupp)>0){
     print(paste(length(dupp),'dups found in',wpls[i]))
   }
