@@ -15,6 +15,7 @@ scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(as.integer(file.size(fnx)),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
 
+Passt=FALSE
 extras=NULL
 fmissing=NULL
 deleted=FALSE
@@ -138,8 +139,11 @@ while(TRUE){
         xmissing = zz[! (normalizePath(zz,winslash = '/',mustWork=TRUE)) %in%  (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=TRUE))]
         fmss = unique( (normalizePath(c(dmissing,xmissing), winslash = '/',mustWork=TRUE)))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
-        if(len(fmissing))
+        if(len(fmissing)){
           print(paste('Found',len(fmissing),'Files to Add'))
+          for(ppl in 1:len(fmissing))
+            print(paste('Adding :',fmissing[ppl]))
+            }
         dts = dto # replace old dates
       }
     } 
@@ -281,9 +285,9 @@ while(TRUE){
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
 
-  Passt=TRUE
-  gxy=galert(paste('Searching for',liner),delay=1000)
-  Sys.sleep(1)
+  #Passt=TRUE
+  #gxy=galert(paste('Searching for',liner),delay=1000)
+  #Sys.sleep(1)
   
   while(TRUE)
   {
