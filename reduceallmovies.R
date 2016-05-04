@@ -123,7 +123,7 @@ if(len(sll)>0){
       durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('fname','durF')])
       svv(as.character(dfa[rng[grepl('HEVC',durt)],'fname']),"Already HEVC")
       rng=rng[!grepl('HEVC',durt)]
-      dfa[rng[1]:rng[min(len(rng),13)],'durF']=durt[1:min(len(rng),13)]
+      dfa[1:min(len(rng),13),'durF']=durt[1:min(len(rng),13)]
       gtbl[,]=dfa[rng,c('fdate','durF','fsize','fname')]
       svalue(gtbl)=1 # select first row
       visible(ww)=TRUE
