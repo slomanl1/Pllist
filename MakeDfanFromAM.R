@@ -90,6 +90,7 @@ while(TRUE){
         unlink(sfname)
         unlink('dfltsave.RData') # clear search selections
         save(dirpaths,file='dirpaths.RData')
+        rebuild=TRUE
       }else{
         if(YesorNo=='')
           stop('Aborted')
@@ -172,7 +173,7 @@ while(TRUE){
     procExtras()
     
     am1 = readLines('allmetadata.txt')
-    am = am[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am)]
+    am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
     ttl = c(which(substr(am,1,1) == '='),len(am)+1) # add an NA at the end
     ducc=sum(duplicated( (normalizePath(substr(am[ttl[which(!is.na(am[ttl]))]],10,1000),winslash = '/',mustWork=TRUE))),na.rm = FALSE)
