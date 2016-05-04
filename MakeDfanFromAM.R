@@ -143,7 +143,7 @@ while(TRUE){
           print(paste('Found',len(fmissing),'Files to Add'))
           for(ppl in 1:len(fmissing))
             print(paste('Adding :',fmissing[ppl]))
-            }
+        }
         dts = dto # replace old dates
       }
     } 
@@ -155,9 +155,9 @@ while(TRUE){
                                     substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash = '/',mustWork=TRUE)
       
       cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
-       (eval(parse(text = cmdy)))
+      (eval(parse(text = cmdy)))
       cmdx = sub('D:',paste('"',fpp,'"',sep=''),cmdd,fixed=TRUE)
-       (eval(parse(text = cmdx)))
+      (eval(parse(text = cmdx)))
     }
     am1 = readLines('allmetadata.txt')
     am = am1[!grepl('Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
@@ -166,11 +166,12 @@ while(TRUE){
     ttl=ttl[which(!is.na(am[ttl]))]
     extras=c(extras,am[ttl][duplicated(am[ttl])]) # fix duplicates
   }
-
+  
   if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
     rebuild=FALSE
     procExtras()
-
+    
+    am1 = readLines('allmetadata.txt')
     am = am[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am)]
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
     ttl = c(which(substr(am,1,1) == '='),len(am)+1) # add an NA at the end
@@ -284,7 +285,7 @@ while(TRUE){
   dfltidx=1
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
-
+  
   #Passt=TRUE
   #gxy=galert(paste('Searching for',liner),delay=1000)
   #Sys.sleep(1)
