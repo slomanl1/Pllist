@@ -7,6 +7,7 @@ if(len(fls)>1){
     ofx=paste(od,svtt,sep = '\\')
     writeLines(' ',ofx)
     of=normalizePath(ofx,winslash='/')
+    unlink(ofx)
     if(len(svtt)){
       fls=paste("file '",fls,"'",sep='')
       writeLines(fls,'~/mylist.txt') 
