@@ -9,8 +9,8 @@ hevcs=hvc[grepl('Complete',hvc$hvc) & (hvc$df!=0),'hvc']
 hevcs=sub('Complete name                            : ','',hevcs)
 hevcs=normalizePath(hevcs,winslash = '/')
 bds=data.frame(fname=hevcs,errorC='Already HEVC',md5s=md5sum(hevcs))
-save(hvc,hevcs,bds,file='~/hvc.rdata')
 load('~/Bads.RData')
+save(hvc,hevcs,bds,bads,file='~/hvc.rdata') # add old bads for re-merge
 bads=bads[!grepl('Clips',bads$fname,ignore.case = TRUE),]
 bads=rbind(bads,bds)
 bads=bads[!duplicated(bads$fname),]
