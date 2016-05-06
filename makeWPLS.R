@@ -54,7 +54,8 @@ for( i in 2:len(sls)){
 }
 lsst=mfnfo$lsst
 ms=(lsst[!lsst %in% sls]) # missing
-unlink('c:/my playlists/missing.M3U')
+if (file.exists('c:/my playlists/missing.M3U'))
+  file.remove('c:/my playlists/missing.M3U')
 if(length(ms)>0)
   writeLines(paste('C:/MyVideos/RPDNClips/',ms,sep=''),'c:/my playlists/missing.M3U')
 
