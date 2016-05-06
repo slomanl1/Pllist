@@ -39,6 +39,7 @@ if(answ){
   {
     print('File Rename Failed')
   }else{
+    print('File Rename Success')
     mfnfog=merge(namer,mfnfo,by.x='ofn',by.y='lsst')
     mfnfog$lsst=mfnfog$newfn
     nms=subset(names(mfnfog),!grepl('.y',names(mfnfog)),fixed=TRUE)
