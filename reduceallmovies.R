@@ -53,7 +53,7 @@ if(len(sll)>0){
   if(6 %in% slx)
     fname=fname[grepl('REDUCE',fname) |grepl('MyVideo',fname)]
   
-  fname=fname[which(!grepl('crdownload|ini|_REN',fname))]
+  fname=fname[which(!grepl('crdownload|.ini|_REN',fname,fixed=TRUE))]
   fna=fname # all files (including _New's)
   fname=fname[which(!grepl('_New',fname))]
   if(len(fname)>0){
