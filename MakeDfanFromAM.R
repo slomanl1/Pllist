@@ -165,7 +165,8 @@ while(TRUE){
     am=trim(am[!is.na(am) & nchar(am)>0] ) # clean up na and empty metadata)
     ttl = c(which(substr(am,1,1) == '='),len(am)+1)
     ttl=ttl[which(!is.na(am[ttl]))]
-    extras=c(extras,am[ttl][duplicated(am[ttl])]) # fix duplicates
+    ducheck=normalizePath(substr(am[ttl[which(!is.na(am[ttl]))]],10,1000),winslash = '/',mustWork=TRUE)
+    extras=c(extras,am[ttl][duplicated(ducheck)]) # fix duplicates
   }
   
   if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
@@ -362,10 +363,12 @@ while(TRUE){
           exitF=TRUE # destroyed by user close, not linerw dispose
         gtkMainQuit()
       })
-      
+      focus(linerw)=TRUE
       gtkMain()
       
       if(!is.null(liner)){
+        gxy=galert(paste('Searching for',liner),delay=1000)
+        Sys.sleep(1)
         if(exists('w'))
           if(isExtant(w))
             dispose(w)
