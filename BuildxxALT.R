@@ -3,6 +3,9 @@ source(scriptStatsRemoveAll) #clear bones
 require(tcltk)
 source("~/Local.R")
 
+if (file.exists('c:/my playlists/missing.M3U'))
+  file.remove('c:/my playlists/missing.M3U')
+
 if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
   source('~/pllist.git/combiner.R')
   print('Combiner Done')
