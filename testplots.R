@@ -237,8 +237,11 @@ if (!tpexist) {
     .GlobalEnv$alrt=galert(svt,delay=10000)
     StartMyGUI()
     dispose(alrt)
+    .GlobalEnv$nxflag=TRUE
+    .GlobalEnv$rebuild=TRUE
+    .GlobalEnv$tpexist <- FALSE
     .GlobalEnv$Passt=TRUE
-    .GlobalEnv$changed=TRUE # force rebuild
+    .GlobalEnv$liner=NULL
     .GlobalEnv$trimmed=TRUE
     dispose(w)
     .GlobalEnv$tpexist=FALSE
