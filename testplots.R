@@ -200,6 +200,11 @@ if (!tpexist) {
     tab[,]=fnames[rng,]
   })
   
+  cxbutton=gbutton('CLR',cont=bg,handler= function(h,...){
+    rng=1:nrow(fnames)
+    tab[,]=fnames[rng,] 
+  })
+  
   xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
     fn=getFnx()
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
