@@ -347,9 +347,9 @@ if(srchF){
   srchF=FALSE
   lnr=liner
   if(ORflag){
-    lnr=sub(' ',' | ',lnr)
+    lnr=gsub(' ',' | ',lnr)
   }else{
-    lnr=sub(' ',' & ',lnr)
+    lnr=gsub(' ',' & ',lnr)
   }
   save(liner,ORflag,ANDflag,file='~/liner.RData')
   gxy=galert(paste('Searching for',lnr),delay=1000)
