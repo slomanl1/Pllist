@@ -57,7 +57,8 @@ if(grepl('mn',mns)){
 Sys.sleep(1)
 if(file.exists(blockFile)){
   timeout=3
-  pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000,label=svt,width=600) # tius is microseconds
+  if(!is.na(durx))
+    pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000,label=svt,width=600) # tius is microseconds
   while(TRUE){
     Sys.sleep(1)
     xx=tailfile(blockFile,10)
