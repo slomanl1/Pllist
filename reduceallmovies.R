@@ -7,7 +7,7 @@ svv=function(filename,errorCode,printF=TRUE) {
   badsa=data.frame(fname=filename,errorC=errorCode,md5s=md5sum(filename))
   bads=rbind(bads,badsa)
   if(printF)
-    print(badsa$errorC)
+    print(paste(badsa$fname,badsa$errorC))
   save(bads,file='~/bads.RData')
 }
 
@@ -114,16 +114,25 @@ if(len(sll)>0){
     for(fn in dfa$fname)
     { 
       print('------------------------------------------------------------------------------')
+      print(fn)
       txl=(paste(len(dfa$fname)-which(fn==dfa$fname),'Files Remaining',
                  ptn(sum(file.size(as.character(dfa$fname)),na.rm = TRUE)/1000),'Kbytes Remaining',Sys.time()))
       svalue(ww)=txl
       visible(ww)=FALSE
       print(txl)
+      durt1=getDur(dfa[which(fn==dfa$fname),c('fname','durF')])
+      if(grepl('HEVC|VC-1',durt1)){
+        print('HEVC/vc-1 FOUND')
+        svv(as.character(dfa[rng[which(grepl('HEVC',durt1))],'fname']),"Already HEVC")
+        svv(as.character(dfa[rng[which(grepl('VC-1',durt1))],'fname']),"Bad Size")
+        next
+      }
       rng=which(fn==dfa$fname):len(dfa$fname) #range pre-calc
       durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('fname','durF')])
-      svv(as.character(dfa[rng[grepl('HEVC',durt)],'fname']),"Already HEVC")
+
+      
       rng=rng[!grepl('HEVC',durt)]
-      dfa[1:min(len(rng),13),'durF']=durt[1:min(len(rng),13)]
+      dfa[rng[1:min(len(rng),13)],'durF']=durt[1:min(len(rng),13)]
       gtbl[,]=dfa[rng,c('fdate','durF','fsize','fname')]
       svalue(gtbl)=1 # select first row
       visible(ww)=TRUE
