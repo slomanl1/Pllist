@@ -367,7 +367,12 @@ while(TRUE){
       gtkMain()
       
       if(!is.null(liner)){
-        gxy=galert(paste('Searching for',liner),delay=1000)
+        if(ANDflag)
+          linerd=gsub(' ',' & ',liner)
+        else
+          linerd=gsub(' ',' | ',liner)
+        
+        gxy=galert(paste('Searching for',linerd),delay=1000)
         Sys.sleep(1)
         if(exists('w'))
           if(isExtant(w))
