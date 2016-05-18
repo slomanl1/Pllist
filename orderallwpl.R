@@ -1,5 +1,3 @@
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
-source(scriptStatsRemoveAll) #clear bones
 load('~/mfnfo.RData')
 source('~/Local.R') #get drive
 setwd(paste(pldrive,'My Playlists',sep=""))
@@ -25,3 +23,5 @@ for (j in 1:length(wpls)) {
 }
 
 save(mfnfo,wpls,file='~/mfnfo.RData') # update file mtime for chooser time test if mfnfo to date
+if(length(removers)>0)
+  print(paste('Removed -',removers))

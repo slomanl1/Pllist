@@ -64,6 +64,7 @@ save(mfnfo,wpls,file='~/mfnfo.RData')
 setwd(paste(pldrive,'My Playlists',sep=""))
 
 ###################### orderall ######################
+removers=NULL
 source('~/pllist.git/orderallwpl.R')
 
 

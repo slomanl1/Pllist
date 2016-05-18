@@ -43,6 +43,5 @@ for (i in 1:length(wpls)) {
 setwd("~/")
 mfnfo=mfnfo[mfnfo$lsst %in% lsst,]
 save(mfnfo,wpls,file='~/mfnfo.RData')
-if(length(removers)>0)
-  print(paste('Removed -',removers))
+
 
