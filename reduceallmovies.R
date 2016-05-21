@@ -90,7 +90,11 @@ if(len(sll)>0){
     ww=gwindow(title=ttl,width=1100,height=300)
     getToolkitWidget(ww)$move(0,0)
     visible(ww)=FALSE
-    gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=ww)
+    gp <- ggroup(horizontal = FALSE, container = ww)
+    pbx=gprogressbar(container = gp)
+    gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=gp)
+
+    svalue(pbx)=0
     addHandlerDestroy(ww,handler = function(h,...){
       if(nchar(of))
         gxy=galert('Terminating FFMPEG',15)
