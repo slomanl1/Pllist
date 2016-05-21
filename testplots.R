@@ -195,10 +195,25 @@ if (!tpexist) {
     }
   })
   
-  ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
-    rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
-    tab[,]=fnames[rng,]
-  })
+  initMain <- function() {
+    ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
+      rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
+      tab[,]=fnames[rng,]
+    })
+    
+    btn=gbutton('Clear RegEx',cont=bg)
+    list(
+      run = function(partner) {
+        addHandlerChanged(btn, handler = function(h, ...) {
+          svalue(partner$ge) <- ''
+        } )
+        visible(w) <- TRUE
+      },
+      ge = ge
+    )
+  }
+  xw=initMain()
+  xw$run(xw)
   
   xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
     fn=getFnx()
@@ -261,7 +276,7 @@ if (!tpexist) {
         if(isExtant(w)) 
           dispose(w)
       gtkMainQuit()})
-
+  
   gedit(metadata,cont=bgm,handler=function(h,...){
     mdd=trim(paste(.GlobalEnv$metadata[,1],.GlobalEnv$metadata[,2]))
     rng=which(grepl(svalue(h$obj),mdd,ignore.case = TRUE))
@@ -322,7 +337,7 @@ if (!tpexist) {
   enabled(ANDButton) = FALSE #
   enabled(ORButton) = FALSE #
   enabled(rbb) = TRUE
-
+  
   
 }else{
   tab[,]=fnames
