@@ -46,7 +46,7 @@ StartMyGUI <- function() {
         unlink(of)
         print('file renamed back to orig - REDUCE')
         dx=data.frame(dtn=NA,fn=NA,times=NA)
-        dx$dtn=mtime-3600 # sub 1 hr for DST
+        dx$dtn=mtime+(3600*7) # add 7hr for GMT to PDT
         dx$fn=normalizePath(as.character(ofn),winslash = '/')
         dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                        ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
