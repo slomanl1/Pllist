@@ -57,7 +57,7 @@ if(grepl('mn',mns)){
 Sys.sleep(1)
 if(file.exists(blockFile)){
   timeout=3
-  if(!is.na(durx))
+  if(!is.na(durx) & !exists('pbx'))
     pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000,label=svt,width=600) # tius is microseconds
   while(TRUE){
     Sys.sleep(1)
@@ -73,12 +73,20 @@ if(file.exists(blockFile)){
       break
     tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])
     pbtxt=paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%')
-    setWinProgressBar(pb,tius,pbtxt,label=svt)
+
+    if(exists('pbx')){
+      if(isExtant(pbx))
+        svalue(pbx)=round(tius/(durx*10000),1)
+    }else{
+      setWinProgressBar(pb,tius,pbtxt,label=svt)
+    }
     if(exists('ww'))
       if(isExtant(ww))
         svalue(ww) = pbtxt
   }
-  close(pb)
+  
+  if(!exists('pbx'))
+    close(pb)
   unlink(blockFile)
 }else{
   print('blockFile not found')
