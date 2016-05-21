@@ -1,5 +1,6 @@
 keep_above <- function(w, val=TRUE) w$widget$setKeepAbove(val)
 gdfd=function(dfx) {
+  .GlobalEnv$hyChanged=0
   .GlobalEnv$doneflag=FALSE
   print(paste('gdf double clicked-',.GlobalEnv$doubleClicked))
   .GlobalEnv$dfy=dfx
@@ -17,8 +18,10 @@ gdfd=function(dfx) {
   })
   keep_above(hx,TRUE)
   addHandlerChanged(hy, handler = function(h,...) {
+    print('changed handler hy')
     enabled(xxx)=TRUE
     .GlobalEnv$dfy=svalue(h$obj,drop = FALSE)
+    .GlobalEnv$hyChanged=1
   })
   IDD=addHandlerDestroy(hx,handler=function(h,...) {
     if(!.GlobalEnv$doneflag){
@@ -27,6 +30,22 @@ gdfd=function(dfx) {
     }
     print('hx destroyed');
     gtkMainQuit()})
+  
+  addHandlerKeystroke(hx, handler = function(h,...){
+    print('handler KS in GDF')
+    if(h$key=='\r'){
+      print('return detected')
+      if(.GlobalEnv$hyChanged==2){
+        .GlobalEnv$doneflag=TRUE
+        .GlobalEnv$hyChanged=FALSE
+        dispose(hx)
+      }else{
+        .GlobalEnv$hyChanged=2
+      }
+    }
+
+  })
+  
   enabled(xxx)=FALSE
   gtkMain()
   dfyy=.GlobalEnv$dfy
