@@ -1,5 +1,5 @@
 cd('c:/myvideos/rpdnclips')
-shell('mediainfo *.* | findstr "HEVC Complete" > c:\\Users\\Larry\\Documents\\hevc.txt')
+shell('mediainfo *.* | findstr "VC Complete" > c:\\Users\\Larry\\Documents\\hevc.txt')
 hvc=readLines('~/hevc.txt')
 hvc=data.frame(hvc,fc=NA)
 hvc$fc=as.numeric(as.factor(substr(hvc$hvc,1,10)))
