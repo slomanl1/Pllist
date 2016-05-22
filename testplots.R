@@ -353,7 +353,7 @@ if(exists('gxy'))
     dispose(gxy)
 srchF=FALSE
 focus(xe)=TRUE
-focus(ge)=TRUE
+#focus(ge)=TRUE
 focus(tab)=TRUE # refresh initial message
 
 gtkMain()
