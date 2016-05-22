@@ -112,7 +112,7 @@ StartMyGUI <- function() {
         print('file renamed back to orig - REDUCE')
         
         dx=data.frame(dtn=NA,fn=NA,times=NA)
-        dx$dtn=mtime+(8*3600) #add 8 hours to make GMT
+        dx$dtn=mtime+(7*3600) # add 7 hours to convert PDT to GMT
         dx$fn=normalizePath(as.character(svtO),winslash = '/')
         dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                        ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
