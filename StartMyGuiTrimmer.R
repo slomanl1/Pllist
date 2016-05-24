@@ -106,8 +106,8 @@ StartMyGUI <- function() {
         print(cmdd)
         eval(parse(text=cmdd))
         svt1=sub('TRIM','',svt)
-        svt2=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') # add _New to original filename
-        svtO=paste(odir,'\\',basename(svt2),sep='')
+        svt2=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') 
+        svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
         file.rename(svtt,svtO) # replace svt has trimmed with start to end
         file.rename('~/temppt.mp4',svt) # keep original file
         print('file renamed back to orig - REDUCE')
