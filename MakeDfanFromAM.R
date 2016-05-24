@@ -104,7 +104,8 @@ while(TRUE){
       zz1 = readLines('zz.txt')
       unlink('zz.txt')
       zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
-                        !grepl('RECYCLE|.txt|.RData|RPDN|.tmp|.crdownload|.exe|.rar',zz1,fixed=TRUE) &
+                        !(grepl('RECYCLE|RPDN',zz1,fixed=TRUE) | grepl('.exe',zz1,fixed=TRUE) | grepl('.crdownload',zz1,fixed=TRUE)|
+                            grepl('.rar',zz1,fixed=TRUE)|grepl('.txt',zz1,fixed=TRUE)) &
                         toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/',mustWork=TRUE)))]
       zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
       dirtbl=as.data.frame(table(as.character(dirname(zz))))
@@ -379,190 +380,191 @@ while(TRUE){
             dispose(w)
         tpexist=FALSE
       }
-    }else
-      Passt=FALSE
-    ################ REBUILD an from dfan ################
-    if(!exists('dfanNew')){
-      dfanNew=dfan
     }
-    dfan=dfan[which(file.exists(dfan$filename)),]
-    dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
-    dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
-    dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
-    dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
-    an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
-             ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
-             ifelse(is.na(dfanx$Comment)|!is.na(dfanx$DMComment),'',    paste('Comment: ',dfanx$Comment,sep='')),
-             ifelse(is.na(dfanx$DMComment) ,'', paste('Comment: ',dfanx$DMComment,sep='')))
+  }else
+    Passt=FALSE
+  ################ REBUILD an from dfan ################
+  if(!exists('dfanNew')){
+    dfanNew=dfan
+  }
+  dfan=dfan[which(file.exists(dfan$filename)),]
+  dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
+  dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
+  dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
+  dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
+  an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
+           ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
+           ifelse(is.na(dfanx$Comment)|!is.na(dfanx$DMComment),'',    paste('Comment: ',dfanx$Comment,sep='')),
+           ifelse(is.na(dfanx$DMComment) ,'', paste('Comment: ',dfanx$DMComment,sep='')))
+  
+  an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
+  an=sub("Title:NA",'',an)
+  an=sub("Title: NA",'',an)
+  an=gsub("Title:   ",'',an)
+  an=gsub(',','',an)
+  an=gsub('Comment:  ','Comment: ',an)
+  an=gsub("Comment: NA",'',an)
+  an=gsub('Subtitle:  ','Subtitle: ',an,ignore.case = TRUE)
+  an=gsub("Subtitle: NA",'',an,ignore.case = TRUE)
+  an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
+  
+  if (is.null(liner))
+    break
+  
+  if (nchar(liner) > 0)
+  {
+    if(!exists('gxy')){
+      gxy=galert(paste('Searching for',liner),delay=1000)
+      Sys.sleep(1)
+    }
+    dflt[len(dflt)+1] = liner
+    dflt=unique(dflt[nchar(dflt)>0])
+    dfltidx=which(dflt==liner)
+    if(dfltidx>1)
+      dflt=unique(dflt[c(dfltidx,1:len(dflt))])
+    dfltidx=which(dflt==liner)
+    save(dflt,dfltidx,file='dfltsave.RData')
+    srct=unlist(strsplit(toupper(liner),' '))
+    anttl=paste(dfanx$filename,an)
+    anttlu=toupper(anttl)
+    pnoln=NA
+    allc=NULL
     
-    an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
-    an=sub("Title:NA",'',an)
-    an=sub("Title: NA",'',an)
-    an=gsub("Title:   ",'',an)
-    an=gsub(',','',an)
-    an=gsub('Comment:  ','Comment: ',an)
-    an=gsub("Comment: NA",'',an)
-    an=gsub('Subtitle:  ','Subtitle: ',an,ignore.case = TRUE)
-    an=gsub("Subtitle: NA",'',an,ignore.case = TRUE)
-    an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
+    for (i in 1:len(srct))
+      allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
     
-    if (is.null(liner))
-      break
+    if(ANDflag)
+      idxs=as.integer(names(which(table(allc)==len(srct)))) # 'AND' condition
+    else
+      idxs=as.integer(names(which(table(allc)>0))) # 'OR' condition
     
-    if (nchar(liner) > 0)
+    if(len(idxs)==0)
     {
-      if(!exists('gxy')){
-        gxy=galert(paste('Searching for',liner),delay=1000)
-        Sys.sleep(1)
-      }
-      dflt[len(dflt)+1] = liner
-      dflt=unique(dflt[nchar(dflt)>0])
-      dfltidx=which(dflt==liner)
-      if(dfltidx>1)
-        dflt=unique(dflt[c(dfltidx,1:len(dflt))])
-      dfltidx=which(dflt==liner)
-      save(dflt,dfltidx,file='dfltsave.RData')
-      srct=unlist(strsplit(toupper(liner),' '))
-      anttl=paste(dfanx$filename,an)
-      anttlu=toupper(anttl)
-      pnoln=NA
-      allc=NULL
-      
-      for (i in 1:len(srct))
-        allc=c(allc,which(grepl(srct[i],anttlu,fixed = TRUE)))
-      
-      if(ANDflag)
-        idxs=as.integer(names(which(table(allc)==len(srct)))) # 'AND' condition
-      else
-        idxs=as.integer(names(which(table(allc)>0))) # 'OR' condition
-      
-      if(len(idxs)==0)
-      {
-        galert('Non found')
-        if(exists('w'))
-          if(isExtant(w))
-            dispose(w)
-        if(exists('gxy'))
-          if(isExtant(gxy))
-            dispose(gxy)
-        avail=FALSE
-        next
-      }
-      pnoln=dfanx[idxs,]$filename
-      fns = NULL  
-    }else
-      break
-    
-    gdfopen=FALSE
-    gdframe = get_list_content(pnoln,an[idxs])
-    unsorted=TRUE
-    fnames=gdframe
-    fnames$comments=trim(fnames$comments)
-    fnames$sell=''
-    fnames[fnames$fnx==fnsave,'sell']='++++'
-    fnames=fnames[,c(5,1,2,3,4)]
-    fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
-    source('~/pllist.git/testplots.R')
-    if(changed | deleted | trimmed){
-      dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
-      ofn=dfan[dfix,'filename']
-      if(isExtant(w))
-        dispose(w)
+      galert('Non found')
+      if(exists('w'))
+        if(isExtant(w))
+          dispose(w)
+      if(exists('gxy'))
+        if(isExtant(gxy))
+          dispose(gxy)
+      avail=FALSE
+      next
     }
-    if(trimmed){
-      fwind=dfan[dfix,]
-      mtme=file.mtime(dfan[dfix,'filename'])
-      changed=TRUE
-      trimmed=FALSE
+    pnoln=dfanx[idxs,]$filename
+    fns = NULL  
+  }else
+    break
+  
+  gdfopen=FALSE
+  gdframe = get_list_content(pnoln,an[idxs])
+  unsorted=TRUE
+  fnames=gdframe
+  fnames$comments=trim(fnames$comments)
+  fnames$sell=''
+  fnames[fnames$fnx==fnsave,'sell']='++++'
+  fnames=fnames[,c(5,1,2,3,4)]
+  fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
+  source('~/pllist.git/testplots.R')
+  if(changed | deleted | trimmed){
+    dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
+    ofn=dfan[dfix,'filename']
+    if(isExtant(w))
+      dispose(w)
+  }
+  if(trimmed){
+    fwind=dfan[dfix,]
+    mtme=file.mtime(dfan[dfix,'filename'])
+    changed=TRUE
+    trimmed=FALSE
+  }
+  renamed=FALSE
+  if(changed){
+    if(fwind[,'filename']!=dfan[dfix,'filename']){
+      answ=gconfirm('Rename - Are you Sure?')
+      if(answ){
+        if(!file.rename(dfan[dfix,'filename'],fwind[,'filename'])){ 
+          print(paste("file rename FAILED from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
+        }else{
+          print(paste("file rename SUCCESSFUL from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
+          renamed=TRUE
+        }
+      }else{
+        fwind[,'filename']= dfan[dfix,'filename']
+      }
     }
-    renamed=FALSE
-    if(changed){
-      if(fwind[,'filename']!=dfan[dfix,'filename']){
-        answ=gconfirm('Rename - Are you Sure?')
-        if(answ){
-          if(!file.rename(dfan[dfix,'filename'],fwind[,'filename'])){ 
-            print(paste("file rename FAILED from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
-          }else{
-            print(paste("file rename SUCCESSFUL from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
-            renamed=TRUE
-          }
-        }else{
-          fwind[,'filename']= dfan[dfix,'filename']
-        }
+    if(!identical(trim(fwind[,1:4]),dfan[dfix,1:4]) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
+      dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
+      print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
+      if(nchar(trim(dfan[dfix,'Comment']))==0){
+        dfan[dfix,'Comment']=NA
+      }else{
+        dfan[dfix,'DMComment']=dfan[dfix,'Comment']
       }
-      if(!identical(trim(fwind[,1:4]),dfan[dfix,1:4]) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
-        dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
-        print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
-        if(nchar(trim(dfan[dfix,'Comment']))==0){
-          dfan[dfix,'Comment']=NA
-        }else{
-          dfan[dfix,'DMComment']=dfan[dfix,'Comment']
-        }
-        if(file_ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
-          gmessage('Cannot write metadata to wmv or flv files')
-        }else{
-          fnc=normalizePath(dfan[dfix,'filename'],winslash = '/',mustWork=TRUE)
-          print(paste('Updating Metadata in',fnc))
-          cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
-                     dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
-          writeLines(cmdd,'Jester.R') 
-          print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
-          print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
-          print(paste('Added to allmetadata.txt Comment:',dfan[dfix,'Comment']))
-          source('jester.R')
-          ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
-          if(file.exists(ttllorig)){
-            unlink(ttllorig)
-          }else
-            print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
-        }
-        filename=dfan[dfix,'filename']
-        dx=data.frame(dtn=NA,fn=NA,times=NA)
-        dx$dtn=mtme # from testplots changed handler
-        dx[1,'fn']=normalizePath(as.character(filename),winslash = '/',mustWork=TRUE)
-        dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
-                            ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
-        cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
-        eval(parse(text=cmd))
+      if(file_ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
+        gmessage('Cannot write metadata to wmv or flv files')
+      }else{
+        fnc=normalizePath(dfan[dfix,'filename'],winslash = '/',mustWork=TRUE)
+        print(paste('Updating Metadata in',fnc))
+        cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
+                   dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
+        writeLines(cmdd,'Jester.R') 
+        print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
+        print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
+        print(paste('Added to allmetadata.txt Comment:',dfan[dfix,'Comment']))
+        source('jester.R')
+        ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
+        if(file.exists(ttllorig)){
+          unlink(ttllorig)
+        }else
+          print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
       }
-      dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
-      if(renamed | changed){
-        dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
-        extras=paste("========",gsub('/','\\\\',ofn)) # remove old metadata associated with the old file
-        procExtras()
-      }
-      save(dfan,file='Dfan.RData')
-      print('Dfan.Rdata written')
-      changed=FALSE
-      next #rebuild an from updated dfan
+      filename=dfan[dfix,'filename']
+      dx=data.frame(dtn=NA,fn=NA,times=NA)
+      dx$dtn=mtme # from testplots changed handler
+      dx[1,'fn']=normalizePath(as.character(filename),winslash = '/',mustWork=TRUE)
+      dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                          ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+      cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+      eval(parse(text=cmd))
     }
-    if(deleted){
-      dfan=dfan[rownames(dfan)!=dfix,] # remove deleted file from dfan and rebuild an
+    dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
+    if(renamed | changed){
+      dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
       extras=paste("========",gsub('/','\\\\',ofn)) # remove old metadata associated with the old file
       procExtras()
-      deleted=FALSE
-      dfan=dfan[which(file.exists(dfan$filename)),]
-      dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
-      save(dfan,file='Dfan.RData')
-      print('Dfan.Rdata written')
     }
-    fns = ssv
-    fnsave=ssv
-    ssv = NULL #clear bones
-    avail = FALSE
-    # if (len(fns) > 0) { # null HAS LENGTH 0
-    #   doubleClicked=FALSE
-    #   writeLines(fns,'fns.m3u') # Write playlist
-    #   shell('mpc-hc64.exe fns.m3u')
-    #   unlink('~/fns.m3u')
-    #   Passt=TRUE
-    #   unsorted=FALSE
-    #   avail=FALSE
-    #   emsg = 'OK'
-    # }
+    save(dfan,file='Dfan.RData')
+    print('Dfan.Rdata written')
+    changed=FALSE
+    next #rebuild an from updated dfan
   }
-  if(exitF & !rebuild)
-    break
+  if(deleted){
+    dfan=dfan[rownames(dfan)!=dfix,] # remove deleted file from dfan and rebuild an
+    extras=paste("========",gsub('/','\\\\',ofn)) # remove old metadata associated with the old file
+    procExtras()
+    deleted=FALSE
+    dfan=dfan[which(file.exists(dfan$filename)),]
+    dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
+    save(dfan,file='Dfan.RData')
+    print('Dfan.Rdata written')
+  }
+  fns = ssv
+  fnsave=ssv
+  ssv = NULL #clear bones
+  avail = FALSE
+  # if (len(fns) > 0) { # null HAS LENGTH 0
+  #   doubleClicked=FALSE
+  #   writeLines(fns,'fns.m3u') # Write playlist
+  #   shell('mpc-hc64.exe fns.m3u')
+  #   unlink('~/fns.m3u')
+  #   Passt=TRUE
+  #   unsorted=FALSE
+  #   avail=FALSE
+  #   emsg = 'OK'
+  # }
+}
+if(exitF & !rebuild)
+  break
 }
 ######################## close all windows (ignore errors) ##################
 xx=ls()
