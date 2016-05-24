@@ -12,7 +12,7 @@ gdfd=function(dfx) {
   ggp=ggroup(container = hx)
   hy=gdf(dfx[,1:4],cont=ggp)
   addSpace(ggp,10)
-  xxx=gbutton('DONE',cont=ggp,handler=function(h,...){
+  xxx=gbutton('OK',cont=ggp,handler=function(h,...){
     .GlobalEnv$doneflag=TRUE
     dispose(hx)
   })
