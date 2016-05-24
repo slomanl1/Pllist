@@ -52,10 +52,10 @@ if(answ){
     source('~/pllist.git/makeWPLS.R')
     load('~/bads.RData')
     load('~/namer.RData')
-    bads$bn=basename(as.character(bads$fname))
-    mgg=merge(namer[,c('ofn','newfn')],bads,by.x='ofn',by.y='bn')
+    cd('c:/myvideos/rpdnclips')
+    mgg=merge(namer[,c('newfn','md5s')],bads,by='md5s')
+    mgg$fname=normalizePath(mgg$newfn,winslash = '/')
     bads=mgg[,names(bads)[1:3]]
-    bads$fname=paste('C:/myVideos/RPDNClips/',bads$fname,sep='')
     save(bads,file='~/bads.RData')
   }
 }else{
