@@ -288,11 +288,7 @@ while(TRUE){
   dfltidx=1
   if(file.exists('dfltsave.RData'))
     load('dfltsave.RData')
-  
-  #Passt=TRUE
-  #gxy=galert(paste('Searching for',liner),delay=1000)
-  #Sys.sleep(1)
-  
+
   while(TRUE)
   {
     if(!Passt){
@@ -308,6 +304,7 @@ while(TRUE){
       obj =  gcombobox(dflt, editable=TRUE, container = ggp,handler=function(h,...){
         .GlobalEnv$liner=svalue(obj)
       })
+      getToolkitWidget(linerw)$move(0,0)
       
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
         .GlobalEnv$nxflag=TRUE
@@ -368,6 +365,8 @@ while(TRUE){
       gtkMain()
       
       if(!is.null(liner)){
+        if(liner=='')
+          liner='.'
         if(ANDflag)
           linerd=gsub(' ',' & ',liner)
         else
@@ -380,7 +379,6 @@ while(TRUE){
             dispose(w)
         tpexist=FALSE
       }
-    }
   }else
     Passt=FALSE
   ################ REBUILD an from dfan ################
