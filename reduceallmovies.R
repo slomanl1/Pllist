@@ -76,14 +76,14 @@ if(len(sll)>0){
     dfa1=subset(dfa1,!file.exists(as.character(dfa1$nfns))) # remove already converted to _New
     dfa=rbind(dfa1,dfa)
     
-    bads=data.frame(fname=NA,errorC=NA,md5s=NA)
-    
     if(file.exists('~/bads.RData')){
       load('~/bads.RData')
+    }else{
+      bads=data.frame(fname=NA,errorC=NA,md5s=NA)
     }
     
-    dfa=dfa[!toupper(dfa$fname) %in% toupper(bads$fname),]
     dfa=dfa[!duplicated(dfa$fname),]
+    dfa=dfa[!toupper(dfa$fname) %in% toupper(bads$fname),]
     dfa=dfa[order(dfa$sz,decreasing=decreasing),]
     done=FALSE
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
