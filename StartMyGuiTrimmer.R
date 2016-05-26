@@ -78,7 +78,8 @@ StartMyGUI <- function() {
         file.rename(svt,'~/temppt.mp4')
         if(.GlobalEnv$ToEnd){
           endtt='23:59:59'
-          .GlobalEnv$ToEnd=FALSE
+
+
         }
         if(!grepl(':',startt)){
           starttd=as.integer(startt)
@@ -110,7 +111,12 @@ StartMyGUI <- function() {
         svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
         file.rename(svtt,svtO) # replace svt has trimmed with start to end
         file.rename('~/temppt.mp4',svt) # keep original file
-        print('file renamed back to orig - REDUCE')
+        if(endtt=='23:59:59'){
+          shell(sprintf('nircmd moverecyclebin "%s"',svt),translate=TRUE)
+          print(paste(svt,'Moved to recycle bin'))
+        }else{
+          print('file renamed back to orig - REDUCE')
+        }
         
         dx=data.frame(dtn=NA,fn=NA,times=NA)
         dx$dtn=mtime+(7*3600) # add 7 hours to convert PDT to GMT
