@@ -477,17 +477,12 @@ while(TRUE){
   renamed=FALSE
   if(changed){
     if(fwind[,'filename']!=dfan[dfix,'filename']){
-      answ=gconfirm('Rename - Are you Sure?')
-      if(answ){
         if(!file.rename(dfan[dfix,'filename'],fwind[,'filename'])){ 
           print(paste("file rename FAILED from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
         }else{
           print(paste("file rename SUCCESSFUL from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
           renamed=TRUE
         }
-      }else{
-        fwind[,'filename']= dfan[dfix,'filename']
-      }
     }
     if(!identical(trim(fwind[,1:4]),dfan[dfix,1:4]) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
       dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
