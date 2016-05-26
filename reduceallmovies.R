@@ -65,16 +65,16 @@ if(len(sll)>0){
     dfn=dfn[!is.na(dfn$sz),]
     
     nfns=paste(file_path_sans_ext(fname),'_New.',file_ext(fname),sep='')
-    dfa=data.frame(fname,sz=file.size(fname),nfns,durF=NA,fdate=file.mtime(fname))
-    dfa$fsize=ptn(dfa$sz)
-    
-    dfa=subset(dfa,!file.exists(as.character(dfa$nfns))) # remove already converted to _New
-    dfa=dfa[order(dfa$sz,decreasing=decreasing),]
-    nfns=paste(file_path_sans_ext(fname),'_New.',file_ext(fname),sep='')
     dfa1=data.frame(fname,sz=file.size(fname),nfns,durF=NA,fdate=file.mtime(fname))
     dfa1$fsize=ptn(dfa1$sz)
-    dfa1=subset(dfa1,!file.exists(as.character(dfa1$nfns))) # remove already converted to _New
-    dfa=rbind(dfa1,dfa)
+    
+    dfa2=subset(dfa1,!file.exists(as.character(dfa1$nfns))) # remove already converted to _New
+    dfa3=dfa2[order(dfa2$sz,decreasing=decreasing),]
+    nfns=paste(file_path_sans_ext(fname),'_New.',file_ext(fname),sep='')
+    dfa4=data.frame(fname,sz=file.size(fname),nfns,durF=NA,fdate=file.mtime(fname))
+    dfa4$fsize=ptn(dfa4$sz)
+    dfa5=subset(dfa4,!file.exists(as.character(dfa4$nfns))) # remove already converted to _New
+    dfa6=rbind(dfa3,dfa5)
     
     if(file.exists('~/bads.RData')){
       load('~/bads.RData')
@@ -82,9 +82,9 @@ if(len(sll)>0){
       bads=data.frame(fname=NA,errorC=NA,md5s=NA)
     }
     
-    dfa=dfa[!duplicated(dfa$fname),]
-    dfa=dfa[!toupper(dfa$fname) %in% toupper(bads$fname),]
-    dfa=dfa[order(dfa$sz,decreasing=decreasing),]
+    dfa7=dfa6[!duplicated(dfa6$fname),]
+    dfa8=dfa7[!toupper(dfa7$fname) %in% toupper(bads$fname),]
+    dfa=dfa8[order(dfa8$sz,decreasing=decreasing),]
     done=FALSE
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
     ww=gwindow(title=ttl,width=1100,height=300)
