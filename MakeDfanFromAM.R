@@ -31,7 +31,7 @@ save(liner,ORflag,ANDflag,file='~/liner.RData')
 ###########################################
 procExtras=function() {
   if(len(extras)>0){
-    exidxst=trim(substr(am[ttl],10,nchar(am[ttl]))) %in% trim(substr(extras,10,nchar(extras)))
+    exidxst=trim(substr(am[ttl],10,nchar(am[ttl]))) %in% extras
     exidxs=which(am %in% am[ttl][exidxst])      
     if(len(exidxs)){
       ttidxs=which(ttl%in%exidxs)
@@ -56,6 +56,7 @@ procExtras=function() {
       writeLines(am,'allmetadata.txt')
     }
   }
+  extras=NULL
 }
 ####################################
 while(TRUE){
@@ -130,16 +131,15 @@ while(TRUE){
         dto = file.mtime(zz) # new file dates
         dmissing = NULL
         if (len(dts) == len(dto)){
-          dmissing = zz[!dto %in% dts] # add records with new date to dmissing
+          extras = zz[!dto %in% dts] # add records with new date to dmissing
         }
         ttl = which(substr(am,1,1) == '=')
         ttl = c(which(substr(am,1,1) == '='),len(am)+1)
         ttl=ttl[which(!is.na(am[ttl]))]
-        extras=am[ttl][which(!file.exists(substr(am[ttl],10,1000)))]
+        extras=c(extras,substr(am[ttl],10,1000)[which(!file.exists(substr(am[ttl],10,1000)))])
         procExtras()
-        extras=''
         xmissing = zz[! (normalizePath(zz,winslash = '/',mustWork=TRUE)) %in%  (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=TRUE))]
-        fmss = unique( (normalizePath(c(dmissing,xmissing), winslash = '/',mustWork=TRUE)))
+        fmss = unique((normalizePath(xmissing, winslash = '/',mustWork=TRUE)))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
         if(len(fmissing)){
           print(paste('Found',len(fmissing),'Files to Add'))
@@ -167,13 +167,12 @@ while(TRUE){
     ttl = c(which(substr(am,1,1) == '='),len(am)+1)
     ttl=ttl[which(!is.na(am[ttl]))]
     ducheck=normalizePath(substr(am[ttl[which(!is.na(am[ttl]))]],10,1000),winslash = '/',mustWork=TRUE)
-    extras=c(extras,am[ttl][duplicated(ducheck)]) # fix duplicates
+    extras=c(extras,substr(am[ttl],10,1000)[duplicated(ducheck)]) # fix duplicates
   }
   
   if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
     rebuild=FALSE
     procExtras()
-    
     am1 = readLines('allmetadata.txt')
     am = am1[!grepl('Codec|Ingredients|Pantry|Album Title|Handler|exiftool',am1)]
     am=trim(am[!is.na(am) & nchar(am)>0]) # clean up na and empty metadata
@@ -528,7 +527,7 @@ while(TRUE){
     dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
     if(renamed | changed){
       dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
-      extras=paste("========",ofn) # remove old metadata associated with the old file
+      extras=ofn # remove old metadata associated with the old file
       procExtras()
     }
     save(dfan,file='Dfan.RData')
@@ -538,7 +537,7 @@ while(TRUE){
   }
   if(deleted){
     dfan=dfan[rownames(dfan)!=dfix,] # remove deleted file from dfan and rebuild an
-    extras=paste("========",ofn) # remove old metadata associated with the old file
+    extras=ofn # remove old metadata associated with the old file
     procExtras()
     deleted=FALSE
     dfan=dfan[which(file.exists(dfan$filename)),]
