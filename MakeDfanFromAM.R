@@ -544,16 +544,6 @@ while(TRUE){
   fnsave=ssv
   ssv = NULL #clear bones
   avail = FALSE
-  # if (len(fns) > 0) { # null HAS LENGTH 0
-  #   doubleClicked=FALSE
-  #   writeLines(fns,'fns.m3u') # Write playlist
-  #   shell('mpc-hc64.exe fns.m3u')
-  #   unlink('~/fns.m3u')
-  #   Passt=TRUE
-  #   unsorted=FALSE
-  #   avail=FALSE
-  #   emsg = 'OK'
-  # }
 }
 if(exitF & !rebuild)
   break
