@@ -2,7 +2,6 @@ keep_above <- function(w, val=TRUE) w$widget$setKeepAbove(val)
 gdfd=function(dfx) {
   .GlobalEnv$hyChanged=0
   .GlobalEnv$doneflag=FALSE
-  #print(paste('gdf double clicked-',.GlobalEnv$doubleClicked))
   .GlobalEnv$dfy=dfx
   for(x in 1:ncol(dfx)){
     if(is.na(dfx[,x]))
