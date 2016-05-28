@@ -1,6 +1,5 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
-require(tcltk)
 source("~/Local.R")
 
 if (file.exists('c:/my playlists/missing.M3U'))
