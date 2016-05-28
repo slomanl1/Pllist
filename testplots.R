@@ -1,6 +1,5 @@
 source('~/pllist.git/GDF.R')
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
-doubleClicked=FALSE
 gdfopen=FALSE
 metadata=''
 tt=as.numeric(proc.time())[3]
@@ -21,9 +20,7 @@ if (!tpexist) {
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   .GlobalEnv$ssv = getFnx()
-                  .GlobalEnv$doubleClicked=TRUE
                   enabled(w)=FALSE
-                  print('Double clicked')
                   writeLines(ssv,'fns.m3u') # Write playlist
                   shell('mpc-hc64.exe fns.m3u')
                   unlink('~/fns.m3u')
@@ -31,7 +28,7 @@ if (!tpexist) {
                 }
   )
   
-  f = function(h,...) {
+  gf = function(h,...) {
     if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$gdfopen=TRUE # block edit
       print('gdfopen set')
@@ -55,11 +52,9 @@ if (!tpexist) {
       enabled(rbb)=FALSE # rebuild button
       .GlobalEnv$fwind=gdfd(tmpx)
       .GlobalEnv$gdfopen=FALSE
-      .GlobalEnv$doubleClicked=FALSE
       enabled(tab)=TRUE # rebuild button
       enabled(dbgbutton)=TRUE # DISMISS button
       enabled(rbb)=TRUE
-      print(paste('gdfd done2--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
       for(i in 1:4)
         if(is.na(tmpx[,i]))
           tmpx[,i]=' '
@@ -70,38 +65,22 @@ if (!tpexist) {
       }
     }
   }
-  
-  addHandlerClicked(tab,handler=function(h,...){
-    tx=as.numeric(proc.time())[3]
-    elapsed=tx - .GlobalEnv$tt
-    .GlobalEnv$tt=tx
-    print(paste('clicked handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked,elapsed))
-    .GlobalEnv$EDITFlag=0
-    if(elapsed>.9 & len(svalue(tab)))
-      .GlobalEnv$EDITFlag=svalue(tab,index=TRUE)
-  })
-  
+
   addHandlerSelectionChanged(tab, handler = function(h,...) {
-    print('selection changed handler')
-    print(paste('selection changed handler--gfdopen,doubleClicked',.GlobalEnv$gdfopen,.GlobalEnv$doubleClicked))
     fnx=getFnx()
     lenn=len(fnx)
-    if((.GlobalEnv$EDITFlag >0) & lenn==1 & (svalue(tab,index=TRUE)==.GlobalEnv$EDITFlag)){
-      f(h,...) # edit if not double clicked
-    }else{
-      if(lenn==1){
-        enabled(dbutton)=(len(svalue(tab))!=0) # delete button
-        enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
-        enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
-        enabled(ebutton)=(len(svalue(tab))!=0) # edit button
-        enabled(xbutton)=(len(svalue(tab))!=0) # explore button
-      }else{ 
-        enabled(dbutton)=FALSE # delete button
-        enabled(tbutton)=FALSE # TRIM button
-        enabled(mbutton)=FALSE # metadata button
-        enabled(ebutton)=FALSE # edit button
-        enabled(xbutton)=FALSE # explorer button
-      }
+    if(lenn==1){
+      enabled(dbutton)=(len(svalue(tab))!=0) # delete button
+      enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
+      enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
+      enabled(ebutton)=(len(svalue(tab))!=0) # edit button
+      enabled(xbutton)=(len(svalue(tab))!=0) # explore button
+    }else{ 
+      enabled(dbutton)=FALSE # delete button
+      enabled(tbutton)=FALSE # TRIM button
+      enabled(mbutton)=FALSE # metadata button
+      enabled(ebutton)=FALSE # edit button
+      enabled(xbutton)=FALSE # explorer button
     }
   })
   
@@ -111,8 +90,7 @@ if (!tpexist) {
     if(isExtant(wm))
       visible(wm) <- FALSE
     gtkMainQuit()
-  }
-  )
+  })
   
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
@@ -150,8 +128,7 @@ if (!tpexist) {
         enabled(rbb) = TRUE   # rebuild button
       }
     dispose(gxx)
-  }
-  )
+  })
   
   ANDButton=gbutton("AND", container = bg, handler = function(h,...) {
     .GlobalEnv$ANDflag = TRUE
@@ -160,8 +137,7 @@ if (!tpexist) {
     .GlobalEnv$Passt=TRUE
     .GlobalEnv$srchF=TRUE
     gtkMainQuit()
-  }
-  )
+  })
   font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
   
   ORButton=gbutton("OR", container = bg, handler = function(h,...) {
@@ -171,8 +147,7 @@ if (!tpexist) {
     .GlobalEnv$Passt=TRUE
     .GlobalEnv$srchF=TRUE
     gtkMainQuit()
-  }
-  )
+  })
   font(ORButton) <- c(color="blue", weight="bold") # initial 
   
   xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
@@ -222,9 +197,8 @@ if (!tpexist) {
     enabled(MLButton) = TRUE
   })
   
-  ebutton=gbutton("Edit", container = bg, handler = f)
-  
-  
+  ebutton=gbutton("Edit", container = bg, handler = gf)
+
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
     if(answ){
@@ -243,8 +217,8 @@ if (!tpexist) {
         gtkMainQuit()
       }
     }
-  }
-  )
+  })
+  
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
@@ -261,8 +235,7 @@ if (!tpexist) {
     dispose(w)
     .GlobalEnv$tpexist=FALSE
     gtkMainQuit()
-  }
-  )
+  })
   
   wm <- gwindow("Metadata",width=700,visible = FALSE)
   gpm<- ggroup(horizontal=FALSE, container=wm)
@@ -290,7 +263,6 @@ if (!tpexist) {
         enabled(w) <- TRUE
   })
   
-  
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
     svt=normalizePath(getFnx(),winslash = '/')
@@ -317,8 +289,7 @@ if (!tpexist) {
     mg=data.frame(mm,stringsAsFactors = FALSE)
     tabm[,]=mg
     .GlobalEnv$metadata = mg
-  }
-  )
+  })
   
   dbgbutton=gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
@@ -337,7 +308,6 @@ if (!tpexist) {
   enabled(ANDButton) = FALSE #
   enabled(ORButton) = FALSE #
   enabled(rbb) = TRUE
-  
   
 }else{
   tab[,]=fnames
