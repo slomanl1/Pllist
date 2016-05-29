@@ -1,4 +1,5 @@
 print('HELLO - FFMPEG PROGRESS BAR')
+source('~/pllist.git/StartMyGuiTrimmer.R') # for tailfile()
 setwd('~/')
 if(!exists('blockFile')){
   load('blockFileNames.RData')
@@ -10,37 +11,6 @@ gi=function (x, y)
 {
   ix = which(grepl(toupper(x), toupper(y), fixed = TRUE))
   return(y[grepl(toupper(x), toupper(y), fixed = TRUE)])
-}
-
-tailfile=function(file, n=6) {
-  bufferSize <- 1024L
-  size <- file.info(file)$size
-  
-  if (size < bufferSize) {
-    bufferSize <- size
-  }
-  
-  pos <- size - bufferSize
-  text <- character()
-  k <- 0L
-  
-  f <- file(file, "rb")
-  on.exit(close(f))
-  
-  while(TRUE) {
-    seek(f, where=pos)
-    chars <- readChar(f, nchars=bufferSize)
-    k <- k + length(gregexpr(pattern="\\n", text=chars)[[1L]])
-    text <- paste0(text, chars)
-    
-    if (k > n || pos == 0L) {
-      break
-    }
-    
-    pos <- max(pos-bufferSize, 0L)
-  }
-  
-  tail(strsplit(text, "\\n")[[1L]], n)
 }
 
 load(metaFile) # get metadata saved in reduceallmovies.R/StartMyGuiTrimmer.R
