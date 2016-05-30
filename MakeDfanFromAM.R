@@ -123,19 +123,25 @@ while(TRUE){
           nf = nf+ng
           fnss=dir(dirs[basename(dirs) %in% dirpath])
           setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng,';',(nfiles-nf),'files remaining'))
-          fnE=tail(dir(dirs[basename(dirs) %in% dirpath]),1) # last file in dircetory
           cx='start /LOW /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/getm.bat %s >> allmetadata.txt'
           cy=sprintf(cx,dirs[basename(dirs) %in% dirpath])
           shell(cy,wait = FALSE)
+          tries=0
           while(TRUE){
-            Sys.sleep(1)
+            tries=tries+1
+            print(paste("tries=",tries))
             xxt=tailfile('allmetadata.txt',10)
             xy=substr(tail(subset(xxt,grepl('=======',xxt)),1),10,1000)
-            if(len(xy)==0)
+            if(len(xy)==0){
+              Sys.sleep(1)
               next
+            }
             ww=which(basename(substr(xy,1,nchar(xy)-1))==fnss) # remove \r
-            if(len(ww)==0)
+            if(len(ww)==0){
+              Sys.sleep(1)
               next
+            }
+            Sys.sleep(.1)
             setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng-ww,';',(nfiles-nf-ww),'files remaining'))
             if(ww==len(fnss))
               break
@@ -501,9 +507,9 @@ while(TRUE){
       fwind=dfan[dfix,]
       mtme=file.mtime(dfan[dfix,'filename'])
       if(!is.na(mtme)){
-      changed=TRUE
-      trimmed=FALSE
-    }
+        changed=TRUE
+        trimmed=FALSE
+      }
     }
     renamed=FALSE
     if(changed){
