@@ -244,7 +244,7 @@ if (!tpexist) {
   bgm <- ggroup(container=gpm)
   addSpring(bgm)
   addHandlerDestroy(
-    tabm, handler = function(h,...) {
+    wm, handler = function(h,...) {
       if(exists('w')) 
         if(isExtant(w)) 
           dispose(w)
