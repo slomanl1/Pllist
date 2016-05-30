@@ -36,7 +36,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       dispose(ww)
       gtkMainQuit()
     }else{
-      print(svalue(h$obj))
+      #print(svalue(h$obj))
       .GlobalEnv$ToEnd=FALSE
       .GlobalEnv$ss=svalue(h$obj)}
   })
