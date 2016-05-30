@@ -500,8 +500,10 @@ while(TRUE){
     if(trimmed){
       fwind=dfan[dfix,]
       mtme=file.mtime(dfan[dfix,'filename'])
+      if(!is.na(mtme)){
       changed=TRUE
       trimmed=FALSE
+    }
     }
     renamed=FALSE
     if(changed){
