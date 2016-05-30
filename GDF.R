@@ -31,7 +31,7 @@ gdfd=function(dfx) {
     gtkMainQuit()})
   
   addHandlerKeystroke(hx, handler = function(h,...){
-    print('handler KS in GDF')
+    #print('handler KS in GDF')
     if(h$key=='\r'){
       #print('return detected')
       if(.GlobalEnv$hyChanged==2){
