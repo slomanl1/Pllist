@@ -174,6 +174,7 @@ if (!tpexist) {
     ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
       rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
       tab[,]=fnames[rng,]
+      svalue(w)=paste('REGEXP FILTER',svalue(h$obj),len(rng),'files')
     })
     
     btn=gbutton('Clear RegEx',cont=bg)
@@ -181,6 +182,8 @@ if (!tpexist) {
       run = function(partner) {
         addHandlerChanged(btn, handler = function(h, ...) {
           svalue(partner$ge) <- ''
+          svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
+          
         } )
         visible(w) <- TRUE
       },
