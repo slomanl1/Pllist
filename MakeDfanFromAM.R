@@ -50,7 +50,7 @@ procExtras=function() {
           j=j+1
         }
       }  
-      am=am[!is.na(am)]
+      am=am[!is.na(am)&!grepl('>',am)]
       .GlobalEnv$ttl = which(substr(am,1,1) == '=')
       .GlobalEnv$am = am
       writeLines(am,'allmetadata.txt')
@@ -85,6 +85,7 @@ while(TRUE){
         stop('Aborted')
       YesorNo=vall
       if(YesorNo=='YES'){
+        vall='No'
         dirpaths=select.list(basename(dirs),graphics = TRUE,multiple = TRUE,preselect = basename(dirs))
         if(len(dirpaths)==0)
           stop('Aborted')
@@ -141,22 +142,29 @@ while(TRUE){
           }
         }
         close(pb)
+        writeLines('','ttt.txt')
+        file.append('allmetadata.txt','ttt.txt') # fix incomplete line at EOF
+        unlink('ttt.txt')
         dts = file.mtime(zz) # file dates
-        #unlink('allmetadata.txt')
       }else{
         load(sfname)
         extras=NULL
         dto = file.mtime(zz) # new file dates
         dmissing = NULL
         if (len(dts) == len(dto)){
-          #extras = zz[!dto %in% dts] # add records with new date to dmissing
+          mssng=zz[!dto %in% dts]
+          if(len(mssng)){
+            print('Date Differences Detected')
+            dmissing=mssng # add records with new date to dmissing
+          }
         }
         ttl = which(substr(am,1,1) == '=')
         ttl = c(which(substr(am,1,1) == '='),len(am)+1)
         ttl=ttl[which(!is.na(am[ttl]))]
         extras=c(extras,substr(am[ttl],10,1000)[which(!file.exists(substr(am[ttl],10,1000)))])
         procExtras()
-        xmissing = zz[! (normalizePath(zz,winslash = '/',mustWork=TRUE)) %in%  (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=TRUE))]
+        xmissing = c(dmissing,zz[! (normalizePath(zz,winslash = '/',mustWork=TRUE)) %in%  
+                                   (normalizePath(substr(am[ttl],10,1000),winslash = '/',mustWork=TRUE))])
         fmss = unique((normalizePath(xmissing, winslash = '/',mustWork=TRUE)))
         fmissing=subset(fmss,!grepl('.crdownload|.exe|.msi',fmss))
         if(len(fmissing)){
@@ -190,7 +198,7 @@ while(TRUE){
       print('dupss found')
     extras=c(extras,dupss) # fix duplicates
   }
-
+  
   if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
     rebuild=FALSE
     procExtras()
@@ -533,7 +541,7 @@ while(TRUE){
         }
         filename=dfan[dfix,'filename']
         dx=data.frame(dtn=NA,fn=NA,times=NA)
-        dx$dtn=mtme # from testplots changed handler
+        dx$dtn=mtme+(3600*7) # from testplots changed handler (corrected for GMT differential)
         dx[1,'fn']=normalizePath(as.character(filename),winslash = '/',mustWork=TRUE)
         dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                             ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
