@@ -21,8 +21,14 @@ if (!tpexist) {
                 handler = function(h,...) {
                   .GlobalEnv$ssv = getFnx()
                   enabled(w)=FALSE
-                  writeLines(ssv,'fns.m3u') # Write playlist
-                  shell('mpc-hc64.exe fns.m3u')
+                  if(any(grepl('.flv',ssv)))
+                  {
+                    writeLines(gsub('/','\\\\',ssv),'fns.m3u') # Write playlist
+                    shell('"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
+                  }else{
+                    writeLines(ssv,'fns.m3u') # Write playlist
+                    shell('mpc-hc64.exe fns.m3u') 
+                  }
                   unlink('~/fns.m3u')
                   enabled(w)=TRUE
                 }
@@ -65,7 +71,7 @@ if (!tpexist) {
       }
     }
   }
-
+  
   addHandlerSelectionChanged(tab, handler = function(h,...) {
     fnx=getFnx()
     lenn=len(fnx)
@@ -174,6 +180,8 @@ if (!tpexist) {
     ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
       rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
       tab[,]=fnames[rng,]
+      .GlobalEnv$rang=rng
+      enabled(btns)=TRUE
       svalue(w)=paste('REGEXP FILTER',svalue(h$obj),len(rng),'files')
     })
     
@@ -183,15 +191,20 @@ if (!tpexist) {
         addHandlerChanged(btn, handler = function(h, ...) {
           svalue(partner$ge) <- ''
           svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
-          
+          enabled(btns)=FALSE
         } )
         visible(w) <- TRUE
       },
       ge = ge
     )
   }
+  
   xw=initMain()
   xw$run(xw)
+  btns=gbutton('Select',cont=bg,handler = function(h, ...) {
+    tab[,]=fnames
+    svalue(tab)=.GlobalEnv$rang
+  })
   
   xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
     fn=getFnx()
@@ -201,7 +214,7 @@ if (!tpexist) {
   })
   
   ebutton=gbutton("Edit", container = bg, handler = gf)
-
+  
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     answ=gconfirm('Are you Sure?')
     if(answ){
@@ -311,6 +324,7 @@ if (!tpexist) {
   enabled(ANDButton) = FALSE #
   enabled(ORButton) = FALSE #
   enabled(rbb) = TRUE
+  enabled(btns)=FALSE
   
 }else{
   tab[,]=fnames
