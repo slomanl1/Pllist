@@ -45,7 +45,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       .GlobalEnv$ss=NULL
     gtkMainQuit()})
   
-  olabel='OK'
+  olabel='TO/OK'
   if(allowEnter &!.GlobalEnv$Fdate)
     olabel='To'
   
