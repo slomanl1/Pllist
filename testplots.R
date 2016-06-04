@@ -35,6 +35,7 @@ if (!tpexist) {
   )
   
   gf = function(h,...) {
+    visible(ew)=FALSE
     if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$gdfopen=TRUE # block edit
       print('gdfopen set')
@@ -72,10 +73,25 @@ if (!tpexist) {
     }
   }
   
+  ew=gwindow(width=30,height=30,visible=FALSE,parent = c(0,0))
+  ewb=gbutton('EDIT',cont=ew,handler=gf)
+  addHandlerDestroy(ew,handler=function(h,...){
+    if(exists('w')) 
+      if(isExtant(w)) 
+        dispose(w)
+  })
+  
   addHandlerSelectionChanged(tab, handler = function(h,...) {
     fnx=getFnx()
     lenn=len(fnx)
     if(lenn==1){
+      visible(ew) = TRUE
+      focus(ew)=TRUE
+      fxx=svalue(tab,index=TRUE)
+      if(fxx<7)
+        fxx=fxx+5
+      print(paste('fxx=',fxx))
+      getToolkitWidget(ew)$move(0,(fxx-1)*20)
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
       enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
       enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
@@ -95,6 +111,8 @@ if (!tpexist) {
     .GlobalEnv$gdfopen=FALSE
     if(isExtant(wm))
       visible(wm) <- FALSE
+    if(isExtant(ew))
+      dispose(ew)
     gtkMainQuit()
   })
   
