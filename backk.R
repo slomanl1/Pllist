@@ -35,7 +35,7 @@ load('E:/mfnfo.RData')
 emfnfo=mfnfo
 load('~/mfnfo.RData')
 mgg=merge(mfnfo[,c('lsst','md5s')],emfnfo[,c('lsst','md5s')],by='md5s',all.x=TRUE)
-cd('C:/MyVideos/RPDNClips')
+cd('C:/PNMTALL/RPDNClips')
 fils=mgg[is.na(mgg$lsst.y),'lsst.x']
 if(len(fils)){
   print('Backing up RPDN Clips')
@@ -58,7 +58,7 @@ if(nrow(mm)){
 file.copy('~/mfnfo.RData','e:/mfnfo.RData',overwrite=TRUE)
 print('Done')
 ee=dir('e:/rpdn')
-cc=dir('c:/MyVideos/RPDNClips')
+cc=dir('c:/PNMTALL/RPDNClips')
 mm=ee[which(!ee%in% cc)]
 cd('E:/RPDN')
 mx=mm[file.remove(mm)]

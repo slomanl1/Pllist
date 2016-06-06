@@ -1,7 +1,7 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 source("~/Local.R")
-setwd('c:/MyVideos/rpdnclips')
+setwd('c:/PNMTALL/rpdnclips')
 load('~/mfnfo.RData') # load fnfo, lsst, wpls and xx
 lsst=mfnfo$lsst
 lsstn=gsub('_REN','',lsst)
@@ -52,7 +52,7 @@ if(answ){
     source('~/pllist.git/makeWPLS.R')
     load('~/bads.RData')
     load('~/namer.RData')
-    cd('c:/myvideos/rpdnclips')
+    cd('c:/PNMTALL/rpdnclips')
     mgg=merge(namer[,c('newfn','md5s')],bads,by='md5s')
     mgg$fname=normalizePath(mgg$newfn,winslash = '/')
     bads=mgg[,names(bads)[1:3]]

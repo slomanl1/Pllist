@@ -2,7 +2,7 @@
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 source("~/Local.R")
-setwd('c:/MyVideos/rpdnclips')
+setwd('c:/PNMTALL/rpdnclips')
 load('~/mfnfo.RData') # load fnfo, lsst, wpls and xx
 lsst=mfnfo$lsst
 lsstn=gsub('_REN','',lsst)

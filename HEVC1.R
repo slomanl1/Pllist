@@ -1,5 +1,5 @@
 source('~/pllist.git/BuildxxALT.R')
-cd('c:/myvideos/rpdnclips')
+cd('c:/PNMTALL/rpdnclips')
 load('~/mfnfo.RData')
 load('~/bads.RData')
 mg1=merge(mfnfo[,c('lsst','md5s')],bads,by='md5s')

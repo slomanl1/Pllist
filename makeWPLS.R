@@ -9,7 +9,7 @@ makeWpl=function(flist,slctor){
   load('~/headFoot.RData')
   header=sub('fns',file_path_sans_ext(slctor),header)
   header=sub('3611',len(flist),header)
-  js="            <media src=\"c:\\MyVideos\\RPDNClips\\%s\"/>"
+  js="            <media src=\"c:\\PNMTALL\\RPDNClips\\%s\"/>"
   adds=unique(sprintf(js,basename(flist)))
   lsx1=c(header,adds,footer)
   m3uname <- paste(pldrive,'My Playlists/',sep='')
@@ -28,7 +28,7 @@ for(selector in  wpls){
   if(selector=='wa1.wpl'){
     flist1=flist1[!flist1 %in% flisto]
   }
-  flist = paste(drive,'MyVideos/RPDNClips/',flist1,sep='')
+  flist = paste(drive,'PNMTALL/RPDNClips/',flist1,sep='')
   m3uname <- paste(pldrive,'My Playlists/',sep='')
   fname=file_path_sans_ext(selector)
   makeWpl(flist, selector)
@@ -57,9 +57,9 @@ ms=(lsst[!lsst %in% sls]) # missing
 if (file.exists('c:/my playlists/missing.M3U'))
   file.remove('c:/my playlists/missing.M3U')
 if(length(ms)>0)
-  writeLines(paste('C:/MyVideos/RPDNClips/',ms,sep=''),'c:/my playlists/missing.M3U')
+  writeLines(paste('C:/PNMTALL/RPDNClips/',ms,sep=''),'c:/my playlists/missing.M3U')
 
-setwd(paste(drive,'MyVideos/RPDNClips',sep=""))
+setwd(paste(drive,'PNMTALL/RPDNClips',sep=""))
 save(mfnfo,wpls,file='~/mfnfo.RData')
 setwd(paste(pldrive,'My Playlists',sep=""))
 

@@ -33,7 +33,7 @@ cd('~/')
 fname=NULL
 dwnlds=NULL
 of=''
-choices=c('D:/PNMTALL','C:/PNMTALL','C:/MyVideos/RPDNclips','C:/RealPlayerDownloads',
+choices=c('D:/PNMTALL','C:/PNMTALL','C:/PNMTALL/RPDNclips','C:/RealPlayerDownloads',
           'c:/PNMTALL/NewDownloads', 'REDUCE only')
 source('~/pllist.git/ChooseDIRS.R')
 if(len(sll)>0){
@@ -44,7 +44,7 @@ if(len(sll)>0){
     fname=c(fname,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
     fname=fname[!grepl('c:/PNMTALL/NewDownloads',fname)]}
   if(3 %in% slx)
-    fname=c(fname,dir('c:/MyVideos/rpdnclips',recursive = TRUE,full.names = TRUE))
+    fname=c(fname,dir('c:/PNMTALL/rpdnclips',recursive = TRUE,full.names = TRUE))
   if(4 %in% slx)
     fname=c(fname,dir('C:/RealPlayerDownloads',recursive = TRUE,full.names = TRUE))
   if(5 %in% slx)
