@@ -379,6 +379,11 @@ while(TRUE){
       }) 
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
+      eebutton=gbutton('EmptyTrash',cont=ggp,handler = function(h,...){
+          if(gconfirm('Are You Sure?')  )
+            shell('nircmd emptybin')
+      })
+      
       shell('nircmd win activate title "Enter Search Criteria"')
       
       addHandlerKeystroke(linerw, handler=function(h,...){
