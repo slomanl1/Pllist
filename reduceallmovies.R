@@ -171,7 +171,6 @@ if(len(sll)>0){
           cy=sprintf(cx,blockFile,fn, of)
           print(cy)
           shell(cy,wait = FALSE)
-          #system('"C:\\Program Files\\R\\R-3.2.4revised\\bin\\rscript.exe" pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
           source('~/pllist.git/FFMPEGProgressBar.R')
           medi=shell(paste('mediainfo "',of,'"',sep=''),intern = TRUE)
           if(done)
