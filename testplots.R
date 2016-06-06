@@ -3,6 +3,7 @@ getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
 gdfopen=FALSE
 metadata=''
 tt=as.numeric(proc.time())[3]
+Epasst=TRUE
 if (!tpexist) {
   renamed = FALSE
   ssv = NULL
@@ -19,6 +20,7 @@ if (!tpexist) {
   
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
+                  visible(ew)=FALSE
                   .GlobalEnv$ssv = getFnx()
                   enabled(w)=FALSE
                   if(any(grepl('.flv',ssv)))
@@ -76,9 +78,11 @@ if (!tpexist) {
   ew=gwindow(width=30,height=30,visible=FALSE,parent = c(0,0))
   ewb=gbutton('EDIT',cont=ew,handler=gf)
   addHandlerDestroy(ew,handler=function(h,...){
-    if(exists('w')) 
-      if(isExtant(w)) 
-        dispose(w)
+    .GlobalEnv$Passt=.GlobalEnv$Epasst |  .GlobalEnv$rebuild
+    .GlobalEnv$tpexist=FALSE
+    if(isExtant(w))
+      dispose(w)
+    gtkMainQuit()
   })
   
   addHandlerSelectionChanged(tab, handler = function(h,...) {
@@ -90,8 +94,7 @@ if (!tpexist) {
       fxx=svalue(tab,index=TRUE)
       if(fxx<7)
         fxx=fxx+5
-      print(paste('fxx=',fxx))
-      getToolkitWidget(ew)$move(0,(fxx-1)*20)
+      getToolkitWidget(ew)$move(nchar(fnx)*7,(fxx-1)*20)
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
       enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
       enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
@@ -111,8 +114,10 @@ if (!tpexist) {
     .GlobalEnv$gdfopen=FALSE
     if(isExtant(wm))
       visible(wm) <- FALSE
-    if(isExtant(ew))
+    if(isExtant(ew)){
+      .GlobalEnv$Epasst=FALSE
       dispose(ew)
+    }
     gtkMainQuit()
   })
   
@@ -256,7 +261,6 @@ if (!tpexist) {
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
-    print(paste('svt=',.GlobalEnv$svt))
     .GlobalEnv$alrt=galert(svt,delay=10000)
     StartMyGUI()
     dispose(alrt)
@@ -363,7 +367,7 @@ focus(tab)=TRUE # refresh initial message
 
 gtkMain()
 
-if(srchF){ 
+if(srchF){
   srchF=FALSE
   lnr=liner
   if(ORflag){
