@@ -428,7 +428,7 @@ while(TRUE){
     dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
     dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
     dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
-    dfanx=dfan[file.exists(dfan$filename)&dfan$filename %in% dfanNew$filename,]
+    dfanx=dfan[dfan$filename %in% dfanNew$filename,]
     an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
              ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
              ifelse(is.na(dfanx$Comment)|!is.na(dfanx$DMComment),'',    paste('Comment: ',dfanx$Comment,sep='')),
