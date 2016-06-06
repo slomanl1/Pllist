@@ -111,6 +111,8 @@ while(TRUE){
                         toupper(dirname(zz1)) %in% toupper(normalizePath((dirs),winslash = '/',mustWork=TRUE)))]
       zz=zz2[toupper(dirname(zz2)) %in% toupper(dirsx)]
       dirtbl=as.data.frame(table(as.character(dirname(zz))))
+      dirs=subset(dirs,dirs%in%dirtbl$Var1)
+      dirpaths=basename(dirs)
       nfiles=sum(dirtbl$Freq)
       nf=0
       if (!file.exists(sfname)) {
@@ -123,7 +125,7 @@ while(TRUE){
           nf = nf+ng
           fnss=dir(dirs[basename(dirs) %in% dirpath])
           setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng,';',(nfiles-nf),'files remaining'))
-          cx='start /LOW /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/getm.bat %s >> allmetadata.txt'
+          cx='start /HIGH /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/getm.bat %s >> allmetadata.txt'
           cy=sprintf(cx,dirs[basename(dirs) %in% dirpath])
           shell(cy,wait = FALSE)
           tries=0
@@ -425,8 +427,8 @@ while(TRUE){
     }
     dfan=dfan[which(file.exists(dfan$filename)),]
     dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
-    dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
-    dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
+    #dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
+    #dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
     dfanx=dfan[dfan$filename %in% dfanNew$filename,]
     an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
              ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
