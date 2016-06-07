@@ -32,7 +32,7 @@ StartMyGUI <- function() {
     blockFile=paste(bname,'.txt',sep='')
     save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
     print(paste(svt,of,file.mtime(svt)))
-    system('"C:\\Program Files\\R\\R-3.2.5\\bin\\rscript.exe" "C:\\Users\\Larry\\Documents\\pllist.git\\FFMPEGProgressBar.R',wait=FALSE)
+    system('"C:\\Program Files\\R\\R-3.2.5\\bin\\rscript.exe" "C:\\Users\\Larry\\Documents\\pllist.git\\FFMPEGProgressBarHelper.R',wait=FALSE)
     shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,svt,of))
     if(file.size(of)<600){
       print('Bad Size, failed to convert')
