@@ -1,4 +1,6 @@
 source('~/pllist.git/EnterStartStop.R') # galert in here
+source('~/pllist.git/FFMPEGProgressBar.R')
+
 svv=function(filename,errorCode,printF=TRUE) {
   if(len(filename)==0)
     return()
@@ -171,7 +173,8 @@ if(len(sll)>0){
           cy=sprintf(cx,blockFile,fn, of)
           print(cy)
           shell(cy,wait = FALSE)
-          source('~/pllist.git/FFMPEGProgressBar.R')
+
+          ffmpegProgressBar()
           medi=shell(paste('mediainfo "',of,'"',sep=''),intern = TRUE)
           if(done)
             break
