@@ -1,3 +1,11 @@
+source('~/pllist.git/StartMyGuiTrimmer.R') # for tailfile()
+gi=function (x, y) 
+{
+  ix = which(grepl(toupper(x), toupper(y), fixed = TRUE))
+  return(y[grepl(toupper(x), toupper(y), fixed = TRUE)])
+}
+
+ffmpegProgressBar = function() {
 print('HELLO - FFMPEG PROGRESS BAR')
 source('~/pllist.git/StartMyGuiTrimmer.R') # for tailfile()
 setwd('~/')
