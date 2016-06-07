@@ -219,6 +219,8 @@ while(TRUE){
       print(paste(ducc,'Duplicates found'))  
       stop('TERMINATED - DUPLICATES FOUND')
     }
+    am=gsub('\\','/',am,fixed=TRUE) # fix improper slash from getm
+    writeLines(am,'allmetadata.txt')
     save(am,ttl,dts,file = sfname)
     print('sfname written')
     
