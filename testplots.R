@@ -10,8 +10,11 @@ if (!tpexist) {
   
   heit=min(100+(nrow(fnames)*30),750)
   linerd=liner
-  if(!ANDflag)
+  if(ANDflag){
+    linerd=gsub(' ','&',liner)
+  }else{
     linerd=gsub(' ','|',liner)
+  }
   w <- gwindow(paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"),
                width = 1900,height=heit,parent = c(0,0),visible=FALSE)
   getToolkitWidget(w)$move(0,0)
