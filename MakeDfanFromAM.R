@@ -122,7 +122,7 @@ while(TRUE){
                             min = 1, max = nfiles, initial = 0, width = 300)
         for(dirpath in dirpaths){
           ng = dirtbl[which(dirpath==basename(as.character(dirtbl$Var1))),'Freq']
-          nf = nf+ng
+          
           fnss=dir(dirs[basename(dirs) %in% dirpath])
           setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng,';',(nfiles-nf),'files remaining'))
           cx='start /HIGH /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/getm.bat %s >> allmetadata.txt'
@@ -145,9 +145,11 @@ while(TRUE){
             }
             Sys.sleep(.1)
             setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng-ww,';',(nfiles-nf-ww),'files remaining'))
-            if(ww==len(fnss))
+            if(ww==len(fnss)){
+              nf = nf+ng
               break
           }
+        }
         }
         close(pb)
         writeLines('','ttt.txt')
