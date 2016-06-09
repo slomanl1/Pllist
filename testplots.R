@@ -97,6 +97,8 @@ if (!tpexist) {
       fxx=svalue(tab,index=TRUE)
       if(fxx<7)
         fxx=fxx+5
+      if(fxx>25)
+        fxx=25
       getToolkitWidget(ew)$move(nchar(fnx)*7,(fxx-1)*20)
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
       enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
