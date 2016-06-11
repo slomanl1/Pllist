@@ -8,6 +8,7 @@ ToEnd=FALSE
 .GlobalEnv$convert=FALSE
 .GlobalEnv$bOK=FALSE
 .GlobalEnv$Fdate=FALSE
+done=FALSE
 print('Trimmer hello')
 
 shell('nircmd win min process rscript.exe')
