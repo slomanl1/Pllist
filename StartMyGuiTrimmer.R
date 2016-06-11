@@ -5,56 +5,31 @@ StartMyGUI <- function() {
   startt=EnterStartStop()
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
-    svalue(.GlobalEnv$alrt)='Close to ABORT'
-    print('Convert H265')
-    bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
-    of=paste(bname,'.mp4',sep='')
-    addHandlerDestroy(.GlobalEnv$alrt,handler = function(h,...) {
-      print('ALRT DESTROYED')
-      xx=shell(paste('handle',basename(of)),intern = TRUE)
-      if(any(grepl(basename(of),xx))){
-        pidx=xx[grepl('pid',xx)]
-        xxx=(as.numeric(unlist(strsplit(pidx,' '))))
-        pid=xxx[!is.na(xxx)]
-        shell(paste('taskkill /PID',pid, '/F'))
-        writeLines('progress=end',blockFile) # stop progress bar
+    .GlobalEnv$clflag=grepl('rpdnclips',svt)
+    dispose(.GlobalEnv$alrt)
+    of=convH265(svt,ttl=svt)
+    if(file.exists(of))
+      if(file.size(of)<600){ #test here for premature abort with of deleted by galert handler
+        print('Bad Size, failed to convert')
         unlink(of)
-      }
-    })
-    metaFile=paste(bname,'.RData',sep='')
-    ddd=shell(paste('mediainfo "',svt,'"',sep=''),intern = TRUE)
-    if(any(grepl('HEVC',ddd)))
-    {
-      print('Already HEVC')
-      return()
-    }
-    save(ddd,file=metaFile)
-    blockFile=paste(bname,'.txt',sep='')
-    save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
-    print(paste(svt,of,file.mtime(svt)))
-    system('"C:\\Program Files\\R\\R-3.2.5\\bin\\rscript.exe" "C:\\Users\\Larry\\Documents\\pllist.git\\FFMPEGProgressBarHelper.R',wait=FALSE)
-    shell(sprintf('c:/Users/Larry/Documents/hexDump/bin/converth265P.bat %s %s %s',blockFile,svt,of))
-    if(file.size(of)<600){
-      print('Bad Size, failed to convert')
-      unlink(of)
-      unlink(blockFile)
-    }else{
-      ofn=sub('REDUCE','',svt)
-      if(!file.rename(of,ofn)){
-        print('file rename back to orig failed - REDUCE')
+        unlink(blockFile)
       }else{
-        unlink(of)
-        print('file renamed back to orig - REDUCE')
-        dx=data.frame(dtn=NA,fn=NA,times=NA)
-        dx$dtn=mtime+(3600*7) # add 7hr for GMT to PDT
-        dx$fn=normalizePath(as.character(ofn),winslash = '/')
-        dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
-                       ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
-        cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
-        eval(parse(text=cmd))
-        print('file mtime back to orig - REDUCE')
+        ofn=sub('REDUCE','',svt)
+        if(!file.rename(of,ofn)){
+          print('file rename back to orig failed - REDUCE')
+        }else{
+          unlink(of)
+          print('file renamed back to orig - REDUCE')
+          dx=data.frame(dtn=NA,fn=NA,times=NA)
+          dx$dtn=mtime+(3600*7) # add 7hr for GMT to PDT
+          dx$fn=normalizePath(as.character(ofn),winslash = '/')
+          dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                         ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+          cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+          eval(parse(text=cmd))
+          print('file mtime back to orig - REDUCE')
+        }
       }
-    }
     startt=NULL
   }else{
     if(.GlobalEnv$Fdate){
@@ -78,8 +53,8 @@ StartMyGUI <- function() {
         file.rename(svt,'~/temppt.mp4')
         if(.GlobalEnv$ToEnd){
           endtt='23:59:59'
-
-
+          
+          
         }
         if(!grepl(':',startt)){
           starttd=as.integer(startt)
