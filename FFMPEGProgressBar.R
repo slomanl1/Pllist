@@ -60,7 +60,7 @@ ffmpegProgressBar = function() {
       }
       if(exists('ww'))
         if(isExtant(ww))
-          svalue(ww) = pbtxt
+          svalue(ww) = paste(svt,pbtxt,'                            CLOSE to ABORT')
     }
     
     if(!exists('pbx'))
