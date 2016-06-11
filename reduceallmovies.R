@@ -1,5 +1,8 @@
 source('~/pllist.git/EnterStartStop.R') # galert in here
 source('~/pllist.git/FFMPEGProgressBar.R')
+source('~/pllist.git/ProtoConvertH265Func.R')
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 
 svv=function(filename,errorCode,printF=TRUE) {
   if(len(filename)==0)
@@ -87,36 +90,8 @@ if(len(sll)>0){
     dfa7=dfa6[!duplicated(dfa6$fname),]
     dfa8=dfa7[!toupper(dfa7$fname) %in% toupper(bads$fname),]
     dfa=dfa8[order(dfa8$sz,decreasing=decreasing),]
-    done=FALSE
-    ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
-    ww=gwindow(title=ttl,width=1100,height=300)
-    getToolkitWidget(ww)$move(0,0)
-    visible(ww)=FALSE
-    gp <- ggroup(horizontal = FALSE, container = ww)
-    pbx=gprogressbar(container = gp)
-    gtbl=gtable(dfa[,c('fdate','durF','fsize','fname')],container=gp)
 
-    svalue(pbx)=0
-    addHandlerDestroy(ww,handler = function(h,...){
-      if(nchar(of))
-        gxy=galert('Terminating FFMPEG',15)
-      xx=shell(paste('handle',basename(of)),intern = TRUE)
-      if(any(grepl(basename(of),xx)) & nchar(of)){
-        pidx=xx[grepl('pid',xx)]
-        xxx=(as.numeric(unlist(strsplit(pidx,' '))))
-        pid=xxx[!is.na(xxx)]
-        shell(paste('taskkill /PID',pid, '/F'))
-        writeLines('progress=end',blockFile) # stop progress bar
-        unlink(of)
-      }else{
-        print('No ffmpeg.exe found')
-        if(exists('gxy')){
-          dispose(gxy)
-          rm(gxy)
-        }
-      }
-      .GlobalEnv$done=TRUE
-    })
+    ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
     for(fn in dfa$fname)
     { 
       print('------------------------------------------------------------------------------')
@@ -136,10 +111,6 @@ if(len(sll)>0){
 
       durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('fname','durF')])
       dfa[rng[1:min(len(rng),13)],'durF']=durt[1:min(len(rng),13)]
-      visible(ww)=FALSE
-      gtbl[,]=dfa[rng,c('fdate','durF','fsize','fname')]
-      svalue(gtbl)=1 # select first row
-      visible(ww)=TRUE
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
       clflag=FALSE
@@ -147,78 +118,14 @@ if(len(sll)>0){
         clflag=TRUE
         nfn=sub('_New','',nfn)
       }
+      done=FALSE
       print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
-      bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
-      metaFile=paste(bname,'.RData',sep='')
-      ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
-      save(ddd,file=metaFile)
-      hevcFlag=any(grepl('HEVC',ddd))
-      
-      if(clflag & hevcFlag){
-        svv(fn,"Already HEVC")
-      }
-      if((clflag & !hevcFlag) | file.exists(fn) & !file.exists(nfn) & file.size(fn)==dfa[which(dfa$fname==fn),'sz']){
-        if(!hevcFlag){
-          mtime=file.mtime(fn)
-          msize=file.size(fn)
-          print(paste('Mtime=',mtime))
-          print(subset(ddd,grepl('Duration',ddd))[1])
-
-          of=paste(bname,'.mp4',sep='')
-          blockFile=paste(bname,'.txt',sep='')
-          svt=fn
-          save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
-          print(of)
-          cx='start /LOW /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/hexDump/bin/ffmpeg.exe -progress %s -i %s -c:v libx265 -c:a copy %s'
-          cy=sprintf(cx,blockFile,fn, of)
-          print(cy)
-          shell(cy,wait = FALSE)
-
-          ffmpegProgressBar()
-          medi=shell(paste('mediainfo "',of,'"',sep=''),intern = TRUE)
-          if(done)
-            break
-          if(file.exists(of)){
-            if(file.size(of)>1000){
-              if(any(grepl('HEVC',medi))){
-                unlink(nfn)
-                if(file.copy(of,nfn)){
-                  unlink(of)
-                  dx=data.frame(dtn=NA,fn=NA,times=NA)
-                  dx$dtn=mtime
-                  dx$fn=normalizePath(as.character(fn),winslash = '/')
-                  dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
-                                 ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
-                  shell(paste('c:/Users/Larry/Documents/fdd.bat "',
-                              nfn,'" ',dx$times,'' ,sep=''),translate = TRUE)
-                  
-                  print(paste('file mtime back to orig',file.mtime(nfn)))
-                  print(paste(fn,ptn(msize)))
-                  print(paste(nfn,ptn(file.size(nfn))))
-                  svv(nfn,'Already HEVC',FALSE)
-                  if(nfn!=fn)
-                    file.remove(fn)
-                }
-              }else{
-                svv(fn,'Bad Metadata')
-                unlink(of)
-              }
-            }else{
-              svv(fn,'Bad Size')
-              unlink(of)
-            }
-          }else{
-            svv(fn,'Bad Moov')
-          }
-        }else{
-          svv(fn,'Already HEVC')
-        }
-      }
-    }
-  }else{
-    print('NONE FOUND')
+      of=convH265(fn,ttl=fn,nfn)
+      if(nchar(of)==0 & done)
+        break # aborted
   }
   
   if(isExtant(ww))
     dispose(ww)
+  }
 }
