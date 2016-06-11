@@ -2,6 +2,7 @@ source('~/.RProfile') # required for standalone version
 len=function(x) length(x)
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
+source('~/pllist.git/ProtoConvertH265Func.R')
 
 ToEnd=FALSE
 .GlobalEnv$convert=FALSE
@@ -25,6 +26,7 @@ xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
 durx=paste(subset(xx,grepl('Format  ',xx))[2],subset(xx,grepl('Duration  ',xx))[1])
 dur=gsub('  ','',durx)
 print(paste('svt=',svt,dur))
-alrt=galert(paste(svt,dur),delay = 1000)	
+alrt=galert(paste(svt,dur),delay = 10000)	
 StartMyGUI()
-dispose(alrt)
+if(isExtant(alrt))
+  dispose(alrt)
