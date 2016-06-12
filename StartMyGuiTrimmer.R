@@ -5,9 +5,10 @@ StartMyGUI <- function() {
   startt=EnterStartStop()
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
+    .GlobalEnv$tpexists=FALSE
     .GlobalEnv$clflag=grepl('rpdnclips',svt)
     dispose(.GlobalEnv$alrt)
-    of=convH265(svt,ttl=svt)
+    of=convH265(svt,ttl=svt,svt)
     if(file.exists(of))
       if(file.size(of)<600){ #test here for premature abort with of deleted by galert handler
         print('Bad Size, failed to convert')
