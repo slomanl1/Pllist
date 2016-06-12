@@ -53,7 +53,7 @@ convH265 = function(fn, ttl,nfn=''){
         })
       }
       if(exists('dfa'))
-        .GlobalEnv$gtbl[,]=dfa[rng[1:13],c('fdate','durF','fsize','fname')]
+        .GlobalEnv$gtbl[,]=dfa[rng[1:min(len(rng),13)],c('fdate','durF','fsize','fname')]
       
       visible(.GlobalEnv$ww)=TRUE
       getToolkitWidget(.GlobalEnv$ww)$move(0,0)
