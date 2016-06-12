@@ -268,7 +268,9 @@ if (!tpexist) {
     startt=NULL
     .GlobalEnv$alrt=galert(svt,delay=10000)
     StartMyGUI()
-    dispose(alrt)
+    if(exists('alrt'))
+      if(isExtant(alrt))
+        dispose(alrt)
     .GlobalEnv$nxflag=TRUE
     .GlobalEnv$rebuild=TRUE
     .GlobalEnv$tpexist <- FALSE
