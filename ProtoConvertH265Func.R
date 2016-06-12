@@ -2,7 +2,6 @@ source('~/pllist.git/FFMPEGProgressBar.R')
 svv=function(x,y){print(paste(x,y))}
 convH265 = function(fn, ttl,nfn=''){
   print('Starting ConvH265 Proto')
-  browser()
   bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
   metaFile=paste(bname,'.RData',sep='')
   of=paste(bname,'.mp4',sep='')
