@@ -38,11 +38,14 @@ ffmpegProgressBar = function() {
     if(!is.na(durx) & !exists('pbx'))
       pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000,label=svt,width=600) # tius is microseconds
     while(TRUE){
+      if(.GlobalEnv$aborted)
+        break
       Sys.sleep(1)
       xx=tailfile(blockFile,10)
       if(len(xx)==0){
         timeout=timeout-1
         if(timeout==0){
+          print('TIMED OUT')
           break
         }
         next
