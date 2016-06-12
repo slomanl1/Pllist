@@ -91,6 +91,7 @@ while(TRUE){
           stop('Aborted')
         unlink(sfname)
         unlink('dfltsave.RData') # clear search selections
+        unlink('~/gdframe.RData')
         save(dirpaths,file='dirpaths.RData')
         rebuild=TRUE
       }else{
@@ -124,8 +125,9 @@ while(TRUE){
           ng = dirtbl[which(dirpath==basename(as.character(dirtbl$Var1))),'Freq']
           
           fnss=dir(dirs[basename(dirs) %in% dirpath])
+          fnss=subset(fnss,file_ext(fnss) %in% c('mp4','wmv','flv','asf','avi','mov'))
           setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng,';',(nfiles-nf),'files remaining'))
-          cx='start /HIGH /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/getm.bat %s >> allmetadata.txt'
+          cx='start /HIGH /B /WAIT c:/users/Larry/Documents/getm.bat %s >> allmetadata.txt'
           cy=sprintf(cx,dirs[basename(dirs) %in% dirpath])
           shell(cy,wait = FALSE)
           tries=0
@@ -138,18 +140,19 @@ while(TRUE){
               Sys.sleep(1)
               next
             }
-            ww=which(basename(substr(xy,1,nchar(xy)-1))==fnss) # remove \r
+            ww=which(basename(substr(xy,1,nchar(xy)-1))==fnss) # remove \r from xy
             if(len(ww)==0){
               Sys.sleep(1)
               next
             }
             Sys.sleep(.1)
             setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng-ww,';',(nfiles-nf-ww),'files remaining'))
+            print('PUNT')
             if(ww==len(fnss)){
               nf = nf+ng
               break
+            }
           }
-        }
         }
         close(pb)
         writeLines('','ttt.txt')
@@ -269,6 +272,7 @@ while(TRUE){
     if(file.exists('dfan.RData')){
       dfanNew=dfan
       load('dfan.RData')
+      dfan=dfan[dirname(dfan$filename)%in%dirtbl$Var1,]
     }else{ # load old dfan to get comments not written into metadata for wmv files
       dfanNew=dfan[0,]
     }
@@ -353,7 +357,6 @@ while(TRUE){
       })
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
       
-      
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = FALSE
@@ -385,10 +388,10 @@ while(TRUE){
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
       eebutton=gbutton('EmptyTrash',cont=ggp,handler = function(h,...){
-          if(gconfirm('Are You Sure?')  )
-            shell('nircmd emptybin')
+        if(gconfirm('Are You Sure?')  )
+          shell('nircmd emptybin')
       })
-      
+
       shell('nircmd win activate title "Enter Search Criteria"')
       
       addHandlerKeystroke(linerw, handler=function(h,...){
@@ -401,12 +404,23 @@ while(TRUE){
       })
       
       addHandlerDestroy(linerw, handler=function(h,...){
-        if(!.GlobalEnv$nxflag)
-          exitF=TRUE # destroyed by user close, not linerw dispose
+        if(!.GlobalEnv$nxflag){
+          .GlobalEnv$exitF=TRUE # destroyed by user close, not linerw dispose
+          .GlobalEnv$liner=NULL
+        }
         gtkMainQuit()
       })
       focus(linerw)=TRUE
+
+      FUN <- function(data) {
+        dd=shell('dir C:\\$recycle.bin /S/B/A',intern = TRUE)
+        rrxx=file.size(dd)
+        enabled(eebutton)=sum(rrxx)>129
+        }
+      a <- gtimer(250, FUN)
       gtkMain()
+      a$stop_timer()
+      rm('a')
       
       if(!is.null(liner)){
         if(liner=='')
@@ -417,7 +431,7 @@ while(TRUE){
           linerd=gsub(' ',' | ',liner)
         
         gxy=galert(paste('Searching for',linerd),delay=1000)
-        Sys.sleep(1)
+        Sys.sleep(.3)
         if(exists('w'))
           if(isExtant(w))
             dispose(w)
@@ -457,7 +471,7 @@ while(TRUE){
     {
       if(!exists('gxy')){
         gxy=galert(paste('Searching for',liner),delay=1000)
-        Sys.sleep(1)
+        Sys.sleep(.3)
       }
       dflt[len(dflt)+1] = liner
       dflt=unique(dflt[nchar(dflt)>0])
@@ -498,9 +512,45 @@ while(TRUE){
       break
     
     gdfopen=FALSE
-    gdframe = get_list_content(pnoln,an[idxs])
+    if(file.exists('~/gdframe.RData')){
+      idxnew=idxs
+      dfanN=dfan
+      load('~/gdframe.RData')
+      nfnns=dfanN[!dfanN[,'filename'] %in% dfan[,'filename'],'filename'] # get newly added files
+      ndels=dfan[!dfan[,'filename'] %in% dfanN[,'filename'],'filename'] # deleted files
+      
+      if(nrow(dfanN)==nrow(dfan)){
+        idxns=NULL
+        for(i in 2:5) {
+          idxns=c(idxns,which(!dfanN[,i] == dfan[,i])) # get idxns for changed an's
+        }
+        if(len(idxns)){
+          print('Found changed to add to gdframe')
+          idxns=unique(idxns)
+          idxg=which(gdframe$fnx==dfan[idxns,'filename'])
+          gdframe[idxg,]=get_list_content(dfan[idxns,'filename'],an[idxns])
+          if(any(duplicated(gdframe$fnx)))
+            browser()
+          dfan[idxns,]=dfanN[idxns,]
+        }
+      }
+      if(len(nfnns)){ # check for additions
+        print('Found new files to add to gdframe')
+        gdframe=rbind(gdframe,get_list_content(nfnns,'')) #add new files added
+        dfan=dfanN
+      }
+      if(len(ndels)){ # check for additions
+        print('Found files to delete from gdframe')
+        gdframe=gdframe[!gdframe$fnx %in% ndels,]
+        dfan=dfanN
+      }
+    }else{
+      print(system.time({gdframe = get_list_content(pnoln,an[idxs])}))      
+    }
+
+    save(dfan,gdframe,idxs,file='~/gdframe.RData')
     unsorted=TRUE
-    fnames=gdframe
+    fnames=gdframe[which(gdframe$fnx %in% pnoln),]
     fnames$comments=trim(fnames$comments)
     fnames$sell=''
     fnames[fnames$fnx==fnsave,'sell']='++++'
@@ -523,6 +573,7 @@ while(TRUE){
     }
     renamed=FALSE
     if(changed){
+      Passt=TRUE
       if(fwind[,'filename']!=dfan[dfix,'filename']){
         if(!file.rename(dfan[dfix,'filename'],fwind[,'filename'])){ 
           print(paste("file rename FAILED from=",dfan[dfix,'filename'],"to=",fwind[,'filename']))
