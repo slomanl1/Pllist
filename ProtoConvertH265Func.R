@@ -4,7 +4,7 @@ convH265 = function(fn, ttl,nfn=''){
   print('Starting ConvH265 Proto')
   bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
   metaFile=paste(bname,'.RData',sep='')
-  of=paste(bname,'.mp4',sep='')
+  .GlobalEnv$of=paste(bname,'.mp4',sep='')
   ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
   save(ddd,file=metaFile)
   hevcFlag=any(grepl('HEVC',ddd))
@@ -31,16 +31,16 @@ convH265 = function(fn, ttl,nfn=''){
         }
 
         addHandlerDestroy(ww,handler = function(h,...){
-          if(nchar(of))
+          if(nchar(.GlobalEnv$of))
             gxy=galert('Terminating FFMPEG',15)
-          xx=shell(paste('handle',basename(of)),intern = TRUE)
-          if(any(grepl(basename(of),xx)) & nchar(of)){
+          xx=shell(paste('handle',basename(.GlobalEnv$of)),intern = TRUE)
+          if(any(grepl(basename(.GlobalEnv$of),xx)) & nchar(.GlobalEnv$of)){
             pidx=xx[grepl('pid',xx)]
             xxx=(as.numeric(unlist(strsplit(pidx,' '))))
             pid=xxx[!is.na(xxx)]
             shell(paste('taskkill /PID',pid, '/F'))
             writeLines('progress=end',blockFile) # stop progress bar
-            print(paste('deleting',of,unlink(of))) # of deleted signals aborted
+            print(paste('deleting',.GlobalEnv$of,unlink(.GlobalEnv$of))) # of deleted signals aborted
             .GlobalEnv$aborted=TRUE
           }else{
             print('No ffmpeg.exe found')
@@ -63,24 +63,24 @@ convH265 = function(fn, ttl,nfn=''){
       print(paste('Mtime=',mtime))
       print(subset(ddd,grepl('Duration',ddd))[1])
       
-      of=paste(bname,'.mp4',sep='')
+      .GlobalEnv$of=paste(bname,'.mp4',sep='')
       blockFile=paste(bname,'.txt',sep='')
       svt=fn
       save(svt,blockFile,metaFile,file='~/blockFileNames.RData')
-      print(of)
+      print(.GlobalEnv$of)
       cx='start /LOW /B /WAIT /AFFINITY 0xe c:/users/Larry/Documents/hexDump/bin/ffmpeg.exe -progress %s -i %s -c:v libx265 -c:a copy %s'
-      cy=sprintf(cx,blockFile,fn, of)
+      cy=sprintf(cx,blockFile,fn, .GlobalEnv$of)
       print(cy)
       shell(cy,wait = FALSE)
       
       ffmpegProgressBar()
-      medi=shell(paste('mediainfo "',of,'"',sep=''),intern = TRUE)
-      if(file.exists(of)){
-        if(file.size(of)>1000){
+      medi=shell(paste('mediainfo "',.GlobalEnv$of,'"',sep=''),intern = TRUE)
+      if(file.exists(.GlobalEnv$of)){
+        if(file.size(.GlobalEnv$of)>1000){
           if(any(grepl('HEVC',medi))){
             unlink(nfn)
-            if(file.copy(of,nfn)){
-              unlink(of)
+            if(file.copy(.GlobalEnv$of,nfn)){
+              unlink(.GlobalEnv$of)
               dx=data.frame(dtn=NA,fn=NA,times=NA)
               dx$dtn=mtime
               dx$fn=normalizePath(as.character(fn),winslash = '/')
@@ -98,11 +98,11 @@ convH265 = function(fn, ttl,nfn=''){
             }
           }else{
             svv(fn,'Bad Metadata')
-            unlink(of)
+            unlink(.GlobalEnv$of)
           }
         }else{
           svv(fn,'Bad Size')
-          unlink(of)
+          unlink(.GlobalEnv$of)
         }
       }else{
         if(!done)
