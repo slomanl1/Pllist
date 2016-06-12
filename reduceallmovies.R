@@ -3,6 +3,7 @@ source('~/pllist.git/FFMPEGProgressBar.R')
 source('~/pllist.git/ProtoConvertH265Func.R')
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
+tpexists=FALSE
 
 svv=function(filename,errorCode,printF=TRUE) {
   if(len(filename)==0)
@@ -120,8 +121,8 @@ if(len(sll)>0){
       }
       done=FALSE
       print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
-      of=convH265(fn,ttl=fn,nfn)
-      if(nchar(of)==0 & done)
+      of=convH265(fn,ttl=fn,nfn) # Conversion routine
+      if(aborted | done)
         break # aborted
   }
   
