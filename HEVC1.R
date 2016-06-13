@@ -10,7 +10,6 @@ for(i in 1:len(mssng)){
   svt=normalizePath(mssng[i],winslash = '/')
   print(svt)
   cmdd=paste('shell("mediainfo.exe',svt,' >> c:/Users/Larry/Documents/meta.txt",mustWork=NA,translate=TRUE)')
-  print(svt)
   eval(parse(text=cmdd))
 }
 shell('findstr "VC Complete" c:\\Users\\Larry\\Documents\\meta.txt > c:\\Users\\Larry\\Documents\\hevc.txt')
@@ -40,9 +39,11 @@ avcs=data.frame(fname=normalizePath(avcs,winslash = '/'))
 bdx1=merge(bds,hevcss,by='fname')
 bdx1$errorC='Already HEVC'
 bdx2=merge(bds,vc1s,by='fname')
-bdx2$errorC='VC-1'
+if(nrow(bdx2))
+  bdx2$errorC='VC-1'
 bdx3=merge(bds,avcs,by='fname')
-bdx3$errorC='AVC'
+if(nrow(bdx3))
+  bdx3$errorC='AVC'
 bads=rbind(bdx1,bdx2,bdx3,bads)
 bads=bads[!duplicated(bads$fname),]
 save(bads, file = "~/bads.RData")
