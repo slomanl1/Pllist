@@ -18,7 +18,7 @@ convH265 = function(fn, ttl,nfn=''){
   ){
     
     if(!hevcFlag){
-      htt=300
+      htt=350
       if(!exists('dfa'))
         htt=50
       if(!.GlobalEnv$tpexists){
@@ -52,8 +52,10 @@ convH265 = function(fn, ttl,nfn=''){
           .GlobalEnv$done=TRUE
         })
       }
-      if(exists('dfa'))
+      if(exists('dfa')){
         .GlobalEnv$gtbl[,]=dfa[rng[1:min(len(rng),13)],c('fdate','durF','fsize','fname')]
+        svalue(gtbl)=which(fn == gtbl[1,]$fname)
+      }
       
       visible(.GlobalEnv$ww)=TRUE
       getToolkitWidget(.GlobalEnv$ww)$move(0,0)
