@@ -415,6 +415,7 @@ while(TRUE){
       FUN <- function(data) {
         dd=shell('dir C:\\$recycle.bin /S/B/A',intern = TRUE)
         rrxx=file.size(dd)
+        if(isExtant(eebutton))
         enabled(eebutton)=sum(rrxx)>129
         }
       a <- gtimer(250, FUN)
