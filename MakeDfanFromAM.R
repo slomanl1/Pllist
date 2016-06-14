@@ -92,6 +92,7 @@ while(TRUE){
         unlink(sfname)
         unlink('dfltsave.RData') # clear search selections
         unlink('~/gdframe.RData')
+        unlink('~/dfan.RData') # deal with this in dfg merge code below
         save(dirpaths,file='dirpaths.RData')
         rebuild=TRUE
       }else{
@@ -130,10 +131,7 @@ while(TRUE){
           cx='start /HIGH /B /WAIT c:/users/Larry/Documents/getm.bat %s >> allmetadata.txt'
           cy=sprintf(cx,dirs[basename(dirs) %in% dirpath])
           shell(cy,wait = FALSE)
-          tries=0
           while(TRUE){
-            tries=tries+1
-            print(paste("tries=",tries))
             xxt=tailfile('allmetadata.txt',10)
             xy=substr(tail(subset(xxt,grepl('=======',xxt)),1),10,1000)
             if(len(xy)==0){
@@ -147,7 +145,6 @@ while(TRUE){
             }
             Sys.sleep(.1)
             setWinProgressBar(pb, nf, title = paste(dirs[grepl(dirpath,dirs)][1],'-',ng-ww,';',(nfiles-nf-ww),'files remaining'))
-            print('PUNT')
             if(ww==len(fnss)){
               nf = nf+ng
               break
@@ -211,7 +208,8 @@ while(TRUE){
       print('dupss found')
     extras=c(extras,dupss) # fix duplicates
   }
-  
+  if(rebuild)
+    unlink('gdframe.Rdata')
   if(len(extras) | len(fmissing) | !file.exists(sfname) | rebuild){
     rebuild=FALSE
     procExtras()
@@ -387,7 +385,7 @@ while(TRUE){
       }) 
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
-      eebutton=gbutton('EmptyTrash',cont=ggp,handler = function(h,...){
+      .GlobalEnv$eebutton=gbutton('EmptyTrash',cont=ggp,handler = function(h,...){
         if(gconfirm('Are You Sure?')  )
           shell('nircmd emptybin')
       })
@@ -415,8 +413,9 @@ while(TRUE){
       FUN <- function(data) {
         dd=shell('dir C:\\$recycle.bin /S/B/A',intern = TRUE)
         rrxx=file.size(dd)
-        if(isExtant(eebutton))
-        enabled(eebutton)=sum(rrxx)>129
+        if(exists('eebutton'))
+          if(isExtant(.GlobalEnv$eebutton))
+            enabled(.GlobalEnv$eebutton)=sum(rrxx)>129
         }
       a <- gtimer(250, FUN)
       gtkMain()
@@ -441,7 +440,7 @@ while(TRUE){
     }else
       Passt=FALSE
     ################ REBUILD an from dfan ################
-    if(!exists('dfanNew')){
+    if(nrow(dfanNew)==0){
       dfanNew=dfan
     }
     dfan=dfan[which(file.exists(dfan$filename)),]
@@ -516,14 +515,14 @@ while(TRUE){
     if(file.exists('~/gdframe.RData')){
       idxnew=idxs
       dfanN=dfan
-      load('~/gdframe.RData')
+      load('~/gdframe.RData') # load dfan, gdframe
       nfnns=dfanN[!dfanN[,'filename'] %in% dfan[,'filename'],'filename'] # get newly added files
       ndels=dfan[!dfan[,'filename'] %in% dfanN[,'filename'],'filename'] # deleted files
       
       if(nrow(dfanN)==nrow(dfan)){
         idxns=NULL
         for(i in 2:5) {
-          idxns=c(idxns,which(!dfanN[,i] == dfan[,i])) # get idxns for changed an's
+          idxns=c(idxns,which(dfanN[,i]!=dfan[,i])) # get idxns for changed an's
         }
         if(len(idxns)){
           print('Found changed to add to gdframe')
