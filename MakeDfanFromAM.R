@@ -389,7 +389,7 @@ while(TRUE){
         if(gconfirm('Are You Sure?')  )
           shell('nircmd emptybin')
       })
-
+      
       shell('nircmd win activate title "Enter Search Criteria"')
       
       addHandlerKeystroke(linerw, handler=function(h,...){
@@ -409,14 +409,14 @@ while(TRUE){
         gtkMainQuit()
       })
       focus(linerw)=TRUE
-
+      
       FUN <- function(data) {
         dd=shell('dir C:\\$recycle.bin /S/B/A',intern = TRUE)
         rrxx=file.size(dd)
         if(exists('eebutton'))
           if(isExtant(.GlobalEnv$eebutton))
             enabled(.GlobalEnv$eebutton)=sum(rrxx)>129
-        }
+      }
       a <- gtimer(250, FUN)
       gtkMain()
       a$stop_timer()
@@ -440,8 +440,12 @@ while(TRUE){
     }else
       Passt=FALSE
     ################ REBUILD an from dfan ################
-    if(nrow(dfanNew)==0){
+    if(!exists('dfanNew')){
       dfanNew=dfan
+    }else{
+      if(nrow(dfanNew)==0){
+        dfanNew=dfan
+      }
     }
     dfan=dfan[which(file.exists(dfan$filename)),]
     dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
@@ -547,7 +551,7 @@ while(TRUE){
     }else{
       print(system.time({gdframe = get_list_content(pnoln,an[idxs])}))      
     }
-
+    
     save(dfan,gdframe,idxs,file='~/gdframe.RData')
     unsorted=TRUE
     fnames=gdframe[which(gdframe$fnx %in% pnoln),]
