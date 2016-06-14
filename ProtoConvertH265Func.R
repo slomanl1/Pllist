@@ -22,7 +22,7 @@ convH265 = function(fn, ttl,nfn=''){
       if(!exists('dfa'))
         htt=50
       if(!.GlobalEnv$tpexists){
-        .GlobalEnv$ww=gwindow(title=ttl,width=1100,height=htt,visible = FALSE)
+        .GlobalEnv$ww=gwindow(title=ttl,width=1400,height=htt,visible = FALSE)
         .GlobalEnv$gp <- ggroup(horizontal = FALSE, container = ww)
         .GlobalEnv$pbx=gprogressbar(0,container = gp)
         if(exists('dfa')){
