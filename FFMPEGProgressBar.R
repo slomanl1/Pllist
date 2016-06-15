@@ -53,7 +53,7 @@ ffmpegProgressBar = function() {
       if(any(grepl('progress=end',xx)))
         break
       tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])
-      pbtxt=paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%')
+      pbtxt=paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%  ')
       
       if(exists('pbx')){
         if(isExtant(pbx))
@@ -63,7 +63,7 @@ ffmpegProgressBar = function() {
       }
       if(exists('ww'))
         if(isExtant(ww))
-          svalue(ww) = paste(svt,pbtxt,'                            CLOSE to ABORT')
+          svalue(ww) = paste(svt,pbtxt,txl,'CLOSE to ABORT')
     }
     
     if(!exists('pbx'))
