@@ -402,6 +402,7 @@ while(TRUE){
       })
       
       addHandlerDestroy(linerw, handler=function(h,...){
+        a$stop_timer()
         if(!.GlobalEnv$nxflag){
           .GlobalEnv$exitF=TRUE # destroyed by user close, not linerw dispose
           .GlobalEnv$liner=NULL
@@ -413,13 +414,12 @@ while(TRUE){
       FUN <- function(data) {
         dd=shell('dir C:\\$recycle.bin /S/B/A',intern = TRUE)
         rrxx=file.size(dd)
-        if(exists('eebutton'))
+        if(exists('eebutton',envir=.GlobalEnv))
           if(isExtant(.GlobalEnv$eebutton))
             enabled(.GlobalEnv$eebutton)=sum(rrxx)>129
       }
       a <- gtimer(250, FUN)
       gtkMain()
-      a$stop_timer()
       rm('a')
       
       if(!is.null(liner)){
@@ -516,6 +516,7 @@ while(TRUE){
       break
     
     gdfopen=FALSE
+    rbdgf=FALSE
     if(file.exists('~/gdframe.RData')){
       idxnew=idxs
       dfanN=dfan
@@ -548,7 +549,16 @@ while(TRUE){
         gdframe=gdframe[!gdframe$fnx %in% ndels,]
         dfan=dfanN
       }
+      if(!all(idxnew %in% idxs)){
+        idxs=idxnew
+        rbdgf=TRUE
+      }
     }else{
+      rbdgf=TRUE
+    }
+    if(rbdgf){
+      dispose(gxy)
+      galert('Building gdframe',delay=8)
       print(system.time({gdframe = get_list_content(pnoln,an[idxs])}))      
     }
     
@@ -595,23 +605,28 @@ while(TRUE){
           dfan[dfix,'DMComment']=dfan[dfix,'Comment']
         }
         if(file_ext(trim(dfan[dfix,'filename']))%in% c('wmv','flv')){
-          gmessage('Cannot write metadata to wmv or flv files')
+          #gmessage('Cannot write metadata to wmv or flv files')
+          fnx=sub(file_ext(dfan[dfix,1]),'mp4',dfan[dfix,'filename'])
+          file.rename(dfan[dfix,1],fnx)
+          fnc=normalizePath(fnx,winslash = '/',mustWork=TRUE)
         }else{
           fnc=normalizePath(dfan[dfix,'filename'],winslash = '/',mustWork=TRUE)
-          print(paste('Updating Metadata in',fnc))
-          cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
-                     dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
-          writeLines(cmdd,'Jester.R') 
+        }
+        print(paste('Updating Metadata in',fnc))
+        cmdd=paste("shell('exiftool -DMComment=",'"',dfan[dfix,'Comment'],'" -Title=" ',
+                   dfan[dfix,'Title'],'", -SubTitle=" ',dfan[dfix,'SubTitle'],'" ',fnc,"')",sep='')
+        writeLines(cmdd,'Jester.R') 
+        source('jester.R')
+        ttllorig=paste(fnc,'_original',sep='')
+        if(file.exists(ttllorig)){
           print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
           print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
           print(paste('Added to allmetadata.txt Comment:',dfan[dfix,'Comment']))
-          source('jester.R')
-          ttllorig=paste(trim(dfan[dfix,'filename']),'_original',sep='')
-          if(file.exists(ttllorig)){
-            unlink(ttllorig)
-          }else
-            print(paste('Orig file not found for deletion - could be a WMV file',ttllorig))
+          unlink(ttllorig)
+        }else{
+          print(paste('Orig file not found for deletion - could be a WMV or flv file',ttllorig))
         }
+        file.rename(fnc,dfan[dfix,'filename'])
         filename=dfan[dfix,'filename']
         dx=data.frame(dtn=NA,fn=NA,times=NA)
         dx$dtn=mtme+(3600*7) # from testplots changed handler (corrected for GMT differential)
@@ -620,24 +635,23 @@ while(TRUE){
                             ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
         cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
         eval(parse(text=cmd))
-      }
-      dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
-      save(dfan,file='Dfan.RData')
-      print('Dfan.Rdata written')
-      if(renamed | changed){
-        dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
-        extras=normalizePath(ofn,mustWork = FALSE) # remove old metadata associated with the old file
-        procExtras()
-        save(am,ttl,dts,file = sfname)
-        print('sfname written')
-      }
-      
+        dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
+        save(dfan,file='Dfan.RData')
+        print('Dfan.Rdata written')
+        if(renamed | changed){
+          dfanNew[dfix,]=dfan[dfix,] # replace old filename with new like in dfan
+          extras=normalizePath(ofn,winslash = '/',mustWork = FALSE) # remove old metadata associated with the old file
+          procExtras()
+          save(am,ttl,dts,file = sfname)
+          print('sfname written')
+        }
+      }  
       changed=FALSE
       next #rebuild an from updated dfan
     }
     if(deleted){
       dfan=dfan[rownames(dfan)!=dfix,] # remove deleted file from dfan and rebuild an
-      extras=normalizePath(ofn,mustWork = FALSE) # remove old metadata associated with the old file
+      extras=normalizePath(ofn,winslash = '/',mustWork = FALSE) # remove old metadata associated with the old file
       procExtras()
       deleted=FALSE
       dfan=dfan[which(file.exists(dfan$filename)),]
