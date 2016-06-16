@@ -115,7 +115,7 @@ if(len(sll)>0){
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
       clflag=FALSE
-      if(grepl('rpdnclips',nfn)){
+      if(grepl('rpdnclips',nfn,ignore.case = TRUE)){
         clflag=TRUE
         nfn=sub('_New','',nfn)
       }
