@@ -6,7 +6,7 @@ StartMyGUI <- function() {
   if(.GlobalEnv$convert){
     .GlobalEnv$convert=FALSE
     .GlobalEnv$tpexists=FALSE
-    .GlobalEnv$clflag=grepl('rpdnclips',svt)
+    .GlobalEnv$clflag=grepl('rpdnclips',svt,ignore.case = TRUE)
     dispose(.GlobalEnv$alrt)
     of=convH265(svt,ttl=svt,svt)
     if(file.exists(of))
