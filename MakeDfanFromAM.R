@@ -348,7 +348,7 @@ while(TRUE){
       getToolkitWidget(linerw)$move(0,0)
       
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
-        a$stop_timer()
+ 
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = TRUE
         dispose(linerw)
@@ -357,7 +357,7 @@ while(TRUE){
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
-        a$stop_timer()
+ 
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = TRUE
@@ -367,7 +367,7 @@ while(TRUE){
       font(ORButton) <- c(color="blue", weight="bold") # initial 
       
       EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
-        a$stop_timer()
+ 
         .GlobalEnv$exitF=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = FALSE
@@ -377,7 +377,7 @@ while(TRUE){
       font(EXITButton) <- c(color="red", weight="bold") # initial 
       
       RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
-        a$stop_timer()
+ 
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$rebuild=TRUE
         .GlobalEnv$ANDflag = FALSE
@@ -398,7 +398,7 @@ while(TRUE){
       
       addHandlerKeystroke(linerw, handler=function(h,...){
         if(h$key=='\r'){
-          a$stop_timer()
+   
           .GlobalEnv$ANDflag = TRUE
           .GlobalEnv$nxflag=TRUE
           dispose(linerw)
@@ -407,7 +407,7 @@ while(TRUE){
       })
       
       addHandlerDestroy(linerw, handler=function(h,...){
-        a$stop_timer()
+ 
         if(!.GlobalEnv$nxflag){
           .GlobalEnv$exitF=TRUE # destroyed by user close, not linerw dispose
           .GlobalEnv$liner=NULL
@@ -559,12 +559,13 @@ while(TRUE){
           dfanN=dfanN1
         }
       }
+      nfnns=nfnns[!nfnns %in% gdframe$fnx] # remove already added new files ( from filename edits)
       if(len(nfnns)){ # check for additions
         print('Found new files to add to gdframe')
         gdframe=rbind(gdframe,get_list_content(nfnns,'')) #add new files added
         dfan=dfanN
       }
-      if(len(ndels)){ # check for additions
+      if(len(ndels)){ # check for deletions
         print('Found files to delete from gdframe')
         gdframe=gdframe[!gdframe$fnx %in% ndels,]
         dfan=dfanN
@@ -577,6 +578,9 @@ while(TRUE){
       rbdgf=TRUE
     }
     if(rbdgf){
+      if(exists('gxy'))
+        if(isExtant(gxy))
+          dispose(gxy)
       galert('Building gdframe',delay=8)
       print(system.time({gdframe = get_list_content(pnoln,an[idxs])}))      
     }
