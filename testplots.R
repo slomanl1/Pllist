@@ -332,6 +332,9 @@ if (!tpexist) {
     mm[,1]=substr(meta,1,pos-1)
     mm[,2]=substr(meta,pos+1,nchar(meta))
     mg=data.frame(mm,stringsAsFactors = FALSE)
+    cmts=mg[grepl('title|comment',mg$X1,ignore.case = TRUE),]
+    cmts=cmts[!duplicated(paste(trim(cmts$X1),trim(cmts$X2))),]
+    mg=rbind(cmts,mg)
     tabm[,]=mg
     .GlobalEnv$metadata = mg
   })
@@ -371,6 +374,17 @@ srchF=FALSE
 focus(xe)=TRUE
 #focus(ge)=TRUE
 focus(tab)=TRUE # refresh initial message
+
+FUN1 <- function(data) {
+  dd=shell('dir C:\\RealPlayerDownloads /S/B/A',intern = TRUE)
+  dd=dd[grepl('.mp4|.mov',dd)]
+  rrxx=file.size(dd)
+  if(exists('MLButton'))
+    if(isExtant(MLButton)){
+      try({enabled(MLButton)=sum(rrxx)>129},TRUE)
+    }
+}
+a1 <- gtimer(250, FUN1)
 
 gtkMain()
 
