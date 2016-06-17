@@ -71,7 +71,7 @@ while(TRUE){
     {
       vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
       print(paste('VNAME =',vname))
-      sfname = paste(substr(vname,1,nchar(vname) - 4),'.RData',sep = '')
+      sfname = '~/PNMTALL.RDATA'
       if(!rebuild){
         source('~/pllist.git/selecttt.R')
       }else{
@@ -348,6 +348,7 @@ while(TRUE){
       getToolkitWidget(linerw)$move(0,0)
       
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
+        a$stop_timer()
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = TRUE
         dispose(linerw)
@@ -356,6 +357,7 @@ while(TRUE){
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
+        a$stop_timer()
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = TRUE
@@ -365,6 +367,7 @@ while(TRUE){
       font(ORButton) <- c(color="blue", weight="bold") # initial 
       
       EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
+        a$stop_timer()
         .GlobalEnv$exitF=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = FALSE
@@ -374,6 +377,7 @@ while(TRUE){
       font(EXITButton) <- c(color="red", weight="bold") # initial 
       
       RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
+        a$stop_timer()
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$rebuild=TRUE
         .GlobalEnv$ANDflag = FALSE
@@ -394,6 +398,7 @@ while(TRUE){
       
       addHandlerKeystroke(linerw, handler=function(h,...){
         if(h$key=='\r'){
+          a$stop_timer()
           .GlobalEnv$ANDflag = TRUE
           .GlobalEnv$nxflag=TRUE
           dispose(linerw)
@@ -452,21 +457,27 @@ while(TRUE){
     #dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
     #dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
     dfanx=dfan[dfan$filename %in% dfanNew$filename,]
-    an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
-             ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
-             ifelse(is.na(dfanx$Comment)|!is.na(dfanx$DMComment),'',    paste('Comment: ',dfanx$Comment,sep='')),
-             ifelse(is.na(dfanx$DMComment) ,'', paste('Comment: ',dfanx$DMComment,sep='')))
     
-    an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
-    an=sub("Title:NA",'',an)
-    an=sub("Title: NA",'',an)
-    an=gsub("Title:   ",'',an)
-    an=gsub(',','',an)
-    an=gsub('Comment:  ','Comment: ',an)
-    an=gsub("Comment: NA",'',an)
-    an=gsub('Subtitle:  ','Subtitle: ',an,ignore.case = TRUE)
-    an=gsub("Subtitle: NA",'',an,ignore.case = TRUE)
-    an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
+    makeAN=function(dfanx){
+      an=paste(ifelse(is.na(dfanx$Title)     ,'', paste('Title: ',dfanx$Title,sep='')),
+               ifelse(!is.na(dfanx$SubTitle)&!nchar(dfanx$SubTitle)  ,'', paste('Subtitle: ',dfanx$SubTitle,sep='')),
+               ifelse(is.na(dfanx$Comment)|!is.na(dfanx$DMComment),'',    paste('Comment: ',dfanx$Comment,sep='')),
+               ifelse(is.na(dfanx$DMComment) ,'', paste('Comment: ',dfanx$DMComment,sep='')))
+      
+      an=gsub('Title:  ','Title: ',an,ignore.case = TRUE)
+      an=sub("Title:NA",'',an)
+      an=sub("Title: NA",'',an)
+      an=gsub("Title:   ",'',an)
+      an=gsub(',','',an)
+      an=gsub('Comment:  ','Comment: ',an)
+      an=gsub("Comment: NA",'',an)
+      an=gsub('Subtitle:  ','Subtitle: ',an,ignore.case = TRUE)
+      an=gsub("Subtitle: NA",'',an,ignore.case = TRUE)
+      an=gsub("Subtitle:NA",'',an,ignore.case = TRUE)
+      return(an)
+    }
+    
+    an=makeAN(dfanx)
     
     if (is.null(liner))
       break
@@ -525,18 +536,27 @@ while(TRUE){
       ndels=dfan[!dfan[,'filename'] %in% dfanN[,'filename'],'filename'] # deleted files
       
       if(nrow(dfanN)==nrow(dfan)){
-        idxns=NULL
-        for(i in 2:5) {
-          idxns=c(idxns,which(dfanN[,i]!=dfan[,i])) # get idxns for changed an's
-        }
-        if(len(idxns)){
+        dfanN1=dfanN[order(dfanN$filename),]
+        dfan1=dfan[order(dfan$filename),]
+        jaffa=matrix(NA,nrow(dfan1),5)
+        xx=NA
+        for(j in 2:5) 
+          for(i in 1:nrow(dfan1)) 
+            jaffa[i,j]=identical(dfan1[i,j],dfanN1[i,j])
+        for(i in 1:nrow(dfan1)) 
+          xx[i]=(all(jaffa[i,]))
+        idxnst=which(!xx)
+        if(len(idxnst)){
+          idxns=order(dfanN1$filename)[idxnst] # reorder indices to correspond with ordered (by filename) dfan/dfanN
           print('Found changed to add to gdframe')
           idxns=unique(idxns)
-          idxg=which(gdframe$fnx==dfan[idxns,'filename'])
-          gdframe[idxg,]=get_list_content(dfan[idxns,'filename'],an[idxns])
+          idxg=which(gdframe$fnx %in% dfan1[idxns,'filename']) # now calculate corresponding file name indies in gdframe
+          gdframe[idxg,]=get_list_content(dfanN1[idxns,'filename'],makeAN(dfanN1[idxns,]))
           if(any(duplicated(gdframe$fnx)))
             browser()
-          dfan[idxns,]=dfanN[idxns,]
+          dfan1[idxns,]=dfanN1[idxns,]
+          dfan=dfan1
+          dfanN=dfanN1
         }
       }
       if(len(nfnns)){ # check for additions
@@ -557,7 +577,6 @@ while(TRUE){
       rbdgf=TRUE
     }
     if(rbdgf){
-      dispose(gxy)
       galert('Building gdframe',delay=8)
       print(system.time({gdframe = get_list_content(pnoln,an[idxs])}))      
     }
@@ -599,8 +618,9 @@ while(TRUE){
       if(!identical(trim(fwind[,1:4]),dfan[dfix,1:4]) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
         dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
         print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
-        if(nchar(trim(dfan[dfix,'Comment']))==0){
+        if(nchar(trim(dfan[dfix,'Comment']))==0){ # indicates comment cleared by user edit
           dfan[dfix,'Comment']=NA
+          dfan[dfix,'DMComment']=NA
         }else{
           dfan[dfix,'DMComment']=dfan[dfix,'Comment']
         }
@@ -619,9 +639,9 @@ while(TRUE){
         source('jester.R')
         ttllorig=paste(fnc,'_original',sep='')
         if(file.exists(ttllorig)){
-          print(paste('Added to allmetadata.txt Title:',dfan[dfix,'Title']))
-          print(paste('Added to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
-          print(paste('Added to allmetadata.txt Comment:',dfan[dfix,'Comment']))
+          print(paste('Adding to allmetadata.txt Title:',dfan[dfix,'Title']))
+          print(paste('Adding to allmetadata.txt Subtitle:',dfan[dfix,'SubTitle']))
+          print(paste('Adding to allmetadata.txt Comment:',dfan[dfix,'Comment']))
           unlink(ttllorig)
         }else{
           print(paste('Orig file not found for deletion - could be a WMV or flv file',ttllorig))
