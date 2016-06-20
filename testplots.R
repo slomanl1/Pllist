@@ -381,7 +381,7 @@ FUN1 <- function(data) {
   rrxx=file.size(dd)
   if(exists('MLButton'))
     if(isExtant(MLButton)){
-      try({enabled(MLButton)=sum(rrxx)>129},TRUE)
+      enabled(MLButton)=sum(rrxx)>129
     }
 }
 a1 <- gtimer(250, FUN1)
