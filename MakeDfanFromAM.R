@@ -348,7 +348,6 @@ while(TRUE){
       getToolkitWidget(linerw)$move(0,0)
       
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
- 
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = TRUE
         dispose(linerw)
@@ -357,7 +356,6 @@ while(TRUE){
       font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
       
       ORButton=gbutton("OR", container = ggp, handler = function(h,...) {
- 
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = TRUE
@@ -367,7 +365,6 @@ while(TRUE){
       font(ORButton) <- c(color="blue", weight="bold") # initial 
       
       EXITButton=gbutton("-EXIT-", container = ggp, handler = function(h,...) {
- 
         .GlobalEnv$exitF=TRUE
         .GlobalEnv$ANDflag = FALSE
         .GlobalEnv$ORflag = FALSE
@@ -377,7 +374,6 @@ while(TRUE){
       font(EXITButton) <- c(color="red", weight="bold") # initial 
       
       RBButton=gbutton("REBUILD", container = ggp, handler = function(h,...) {
- 
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$rebuild=TRUE
         .GlobalEnv$ANDflag = FALSE
@@ -407,7 +403,6 @@ while(TRUE){
       })
       
       addHandlerDestroy(linerw, handler=function(h,...){
- 
         if(!.GlobalEnv$nxflag){
           .GlobalEnv$exitF=TRUE # destroyed by user close, not linerw dispose
           .GlobalEnv$liner=NULL
@@ -425,6 +420,7 @@ while(TRUE){
       }
       a <- gtimer(250, FUN)
       gtkMain()
+      a$stop_timer()
       rm('a')
       
       if(!is.null(liner)){
@@ -528,6 +524,8 @@ while(TRUE){
     
     gdfopen=FALSE
     rbdgf=FALSE
+    print('Starting dfan compare')
+    print(system.time({
     if(file.exists('~/gdframe.RData')){
       idxnew=idxs
       dfanN=dfan
@@ -536,24 +534,31 @@ while(TRUE){
       ndels=dfan[!dfan[,'filename'] %in% dfanN[,'filename'],'filename'] # deleted files
       
       if(nrow(dfanN)==nrow(dfan)){
+        print(system.time({
         dfanN1=dfanN[order(dfanN$filename),]
         dfan1=dfan[order(dfan$filename),]
+
         jaffa=matrix(NA,nrow(dfan1),5)
         xx=NA
+        k=1
+        pb=winProgressBar('dfan comapre PROGRESS',max=nrow(dfan)*4,width=600)
         for(j in 2:5) 
-          for(i in 1:nrow(dfan1)) 
+          for(i in 1:nrow(dfan1)){
+            k=k+1
+            setWinProgressBar(pb,k,'dfan compare',label='')
             jaffa[i,j]=identical(dfan1[i,j],dfanN1[i,j])
+          }
+        close(pb)
         for(i in 1:nrow(dfan1)) 
           xx[i]=(all(jaffa[i,]))
         idxnst=which(!xx)
+        }))
         if(len(idxnst)){
           idxns=order(dfanN1$filename)[idxnst] # reorder indices to correspond with ordered (by filename) dfan/dfanN
           print('Found changed to add to gdframe')
           idxns=unique(idxns)
           idxg=which(gdframe$fnx %in% dfan1[idxns,'filename']) # now calculate corresponding file name indies in gdframe
           gdframe[idxg,]=get_list_content(dfanN1[idxns,'filename'],makeAN(dfanN1[idxns,]))
-          if(any(duplicated(gdframe$fnx)))
-            browser()
           dfan1[idxns,]=dfanN1[idxns,]
           dfan=dfan1
           dfanN=dfanN1
@@ -576,7 +581,7 @@ while(TRUE){
       }
     }else{
       rbdgf=TRUE
-    }
+    } })) # system time
     if(rbdgf){
       if(exists('gxy'))
         if(isExtant(gxy))
