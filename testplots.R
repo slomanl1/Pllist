@@ -365,8 +365,8 @@ if (!tpexist) {
     linerd=gsub(' ','|',liner)
   svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
 }
-visible(w)=TRUE
 getToolkitWidget(w)$move(0,0)
+visible(w)=TRUE
 if(exists('gxy'))
   if(isExtant(gxy))
     dispose(gxy)
