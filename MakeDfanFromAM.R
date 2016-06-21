@@ -541,11 +541,11 @@ while(TRUE){
         jaffa=matrix(NA,nrow(dfan1),5)
         xx=NA
         k=1
-        pb=winProgressBar('dfan comapre PROGRESS',max=nrow(dfan)*4,width=600)
+        pb=winProgressBar('dfan compare PROGRESS',max=nrow(dfan)*4,width=600)
         for(j in 2:5) 
           for(i in 1:nrow(dfan1)){
             k=k+1
-            setWinProgressBar(pb,k,'dfan compare',label='')
+            setWinProgressBar(pb,k,'dfan compare PROGRESS',label='')
             jaffa[i,j]=identical(dfan1[i,j],dfanN1[i,j])
           }
         close(pb)
