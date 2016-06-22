@@ -139,7 +139,7 @@ galert=function(msg,delay=3)
   }else{
     gtext(msg,cont=g,font.attr = list(size=21))
   }
-  FUN=function(data) dispose(vvv)
-  a <- gtimer(delay*1000,one.shot=TRUE,FUN)
+  FUNz=function(data) dispose(vvv)
+  a <- gtimer(delay*1000,one.shot=TRUE,FUNz)
   return(vvv)
 }
