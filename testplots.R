@@ -1,6 +1,7 @@
 source('~/pllist.git/GDF.R')
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
 gdfopen=FALSE
+eww=NA
 metadata=''
 tt=as.numeric(proc.time())[3]
 Epasst=TRUE
@@ -23,7 +24,8 @@ if (!tpexist) {
   
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
-                  visible(ew)=FALSE
+                  if(isExtant(.GlobalEnv$eww))
+                    dispose(.GlobalEnv$eww)
                   .GlobalEnv$ssv = getFnx()
                   enabled(w)=FALSE
                   if(any(grepl('.flv',ssv)))
@@ -40,8 +42,9 @@ if (!tpexist) {
   )
   
   gf = function(h,...) {
-    visible(ew)=FALSE
-    if ((length(svalue(h$obj) > 0)) & !.GlobalEnv$gdfopen) {
+    print(svalue(h$action))
+    dispose(.GlobalEnv$eww)
+    if ((length(.GlobalEnv$fnx) > 0) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$gdfopen=TRUE # block edit
       print('gdfopen set')
       .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
@@ -67,31 +70,27 @@ if (!tpexist) {
       enabled(tab)=TRUE # rebuild button
       enabled(dbgbutton)=TRUE # DISMISS button
       enabled(rbb)=TRUE
-      for(i in 1:4)
-        if(is.na(tmpx[,i]))
-          tmpx[,i]=' '
-      if(!all(tmpx==fwind)){
+      if(!identical(tmpx,fwind)){
         .GlobalEnv$changed=TRUE
         .GlobalEnv$Passt=TRUE
         gtkMainQuit()
       }
     }
   }
-  
-  ew=gwindow(width=30,height=30,visible=FALSE,parent = c(0,0))
-  ewb=gbutton('EDIT',cont=ew,handler=gf)
-  addHandlerDestroy(ew,handler=function(h,...){
-    .GlobalEnv$Passt=.GlobalEnv$Epasst |  .GlobalEnv$rebuild
-    .GlobalEnv$tpexist=FALSE
-    if(isExtant(w))
-      dispose(w)
-    gtkMainQuit()
-  })
+
   
   addHandlerSelectionChanged(tab, handler = function(h,...) {
-    fnx=getFnx()
-    lenn=len(fnx)
+    .GlobalEnv$fnx=getFnx()
+    lenn=len(.GlobalEnv$fnx)
     if(lenn==1){
+      if(isExtant(.GlobalEnv$eww))
+        dispose(.GlobalEnv$eww)
+      ew=gwindow(width=30,height=30,visible=FALSE,parent = c(0,0))
+      ewb=gbutton('EDIT',cont=ew,handler=gf)
+      # addHandlerDestroy(ew,handler=function(h,...){
+      #   print('destroy ew')
+      # })
+      .GlobalEnv$eww=ew
       visible(ew) = TRUE
       focus(ew)=TRUE
       fxx=svalue(tab,index=TRUE)
@@ -119,10 +118,6 @@ if (!tpexist) {
     .GlobalEnv$gdfopen=FALSE
     if(isExtant(wm))
       visible(wm) <- FALSE
-    if(isExtant(ew)){
-      .GlobalEnv$Epasst=FALSE
-      dispose(ew)
-    }
     gtkMainQuit()
   })
   
@@ -136,6 +131,8 @@ if (!tpexist) {
     .GlobalEnv$tpexist <- FALSE
     .GlobalEnv$Passt=TRUE
     .GlobalEnv$liner=NULL
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     dispose(w)
     .GlobalEnv$gdfopen=FALSE
     gtkMainQuit()
@@ -165,6 +162,8 @@ if (!tpexist) {
   })
   
   ANDButton=gbutton("AND", container = bg, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     .GlobalEnv$ANDflag = TRUE
     .GlobalEnv$ORflag = FALSE
     .GlobalEnv$avail = TRUE
@@ -175,6 +174,8 @@ if (!tpexist) {
   font(ANDButton) <- c(color="yellow4" , weight="bold") # initial RED to indicate 'AND' condition
   
   ORButton=gbutton("OR", container = bg, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     .GlobalEnv$ORflag = TRUE
     .GlobalEnv$ANDflag = FALSE
     .GlobalEnv$avail = TRUE
@@ -206,6 +207,8 @@ if (!tpexist) {
   
   initMain <- function() {
     ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
+      if(isExtant(.GlobalEnv$eww))
+        dispose(.GlobalEnv$eww)
       rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
       tab[,]=fnames[rng,]
       .GlobalEnv$rang=rng
@@ -217,6 +220,8 @@ if (!tpexist) {
     list(
       run = function(partner) {
         addHandlerChanged(btn, handler = function(h, ...) {
+          if(isExtant(.GlobalEnv$eww))
+            dispose(.GlobalEnv$eww)
           svalue(partner$ge) <- ''
           svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
           enabled(btns)=FALSE
@@ -230,11 +235,15 @@ if (!tpexist) {
   xw=initMain()
   xw$run(xw)
   btns=gbutton('Select',cont=bg,handler = function(h, ...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     tab[,]=fnames
     svalue(tab)=.GlobalEnv$rang
   })
   
   xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     fn=getFnx()
     shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
           intern = TRUE)
@@ -244,6 +253,8 @@ if (!tpexist) {
   ebutton=gbutton("Edit", container = bg, handler = gf)
   
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     answ=gconfirm('Are you Sure?')
     if(answ){
       .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
@@ -264,6 +275,8 @@ if (!tpexist) {
   })
   
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
     startt=NULL
     .GlobalEnv$alrt=galert(svt,delay=10000)
@@ -310,6 +323,8 @@ if (!tpexist) {
   
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     svt=normalizePath(getFnx(),winslash = '/')
     print(svt)
     cmdd=paste('shell("mediainfo.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
@@ -341,6 +356,8 @@ if (!tpexist) {
   
   dbgbutton=gbutton("dismiss", container = bg, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     dispose(w)
     .GlobalEnv$gdfopen=FALSE
     gtkMainQuit()
@@ -379,14 +396,16 @@ FUN1 <- function(data) {
   dd=shell('dir C:\\RealPlayerDownloads /S/B/A',intern = TRUE)
   dd=dd[grepl('.mp4|.mov',dd)]
   rrxx=file.size(dd)
-  if(exists('MLButton'))
+  if(exists('MLButton')){
     if(isExtant(MLButton)){
       enabled(MLButton)=sum(rrxx)>129
     }
+  }
 }
 a1 <- gtimer(250, FUN1)
 
 gtkMain()
+a1$stop_timer()
 
 if(srchF){
   srchF=FALSE
