@@ -1,4 +1,5 @@
 source('~/pllist.git/StartMyGuiTrimmer.R') # for tailfile()
+txl=''
 gi=function (x, y) 
 {
   ix = which(grepl(toupper(x), toupper(y), fixed = TRUE))
