@@ -77,28 +77,21 @@ if (!tpexist) {
       }
     }
   }
-
   
   addHandlerSelectionChanged(tab, handler = function(h,...) {
+    zz=unlist(strsplit(shell('GetCursorPos.exe',intern = TRUE)," "))
     .GlobalEnv$fnx=getFnx()
     lenn=len(.GlobalEnv$fnx)
     if(lenn==1){
       if(isExtant(.GlobalEnv$eww))
         dispose(.GlobalEnv$eww)
       ew=gwindow(width=30,height=30,visible=FALSE,parent = c(0,0))
+      getToolkitWidget(ew)$move(zz[1],zz[2])
       ewb=gbutton('EDIT',cont=ew,handler=gf)
-      # addHandlerDestroy(ew,handler=function(h,...){
-      #   print('destroy ew')
-      # })
       .GlobalEnv$eww=ew
+      
       visible(ew) = TRUE
       focus(ew)=TRUE
-      fxx=svalue(tab,index=TRUE)
-      if(fxx<7)
-        fxx=fxx+5
-      if(fxx>25)
-        fxx=25
-      getToolkitWidget(ew)$move(nchar(fnx)*7,(fxx-1)*20)
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
       enabled(tbutton)=(len(svalue(tab))!=0) # TRIM button
       enabled(mbutton)=(len(svalue(tab))!=0) # metadata button
@@ -116,14 +109,21 @@ if (!tpexist) {
   addHandlerDestroy(w, handler = function(h,...) {
     .GlobalEnv$tpexist <- FALSE
     .GlobalEnv$gdfopen=FALSE
-    if(isExtant(wm))
-      visible(wm) <- FALSE
     gtkMainQuit()
   })
   
   bg <- ggroup(container = gp)
   .GlobalEnv$tab <- tab
   addSpring(bg)
+  
+  gg=gcheckbox('Include RPDN',cont=bg, checked=TRUE,handler = function(h,...) {
+    if(svalue(gg)){
+      rng=which(grepl('.',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
+    }else{
+      rng=which(!grepl('RPDNClips',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
+    }
+    tab[,]=fnames[rng,]
+  })
   
   rbb=gbutton("REBUILD", container=bg, handler = function(h,...) {
     .GlobalEnv$nxflag=TRUE
@@ -295,32 +295,6 @@ if (!tpexist) {
     gtkMainQuit()
   })
   
-  wm <- gwindow("Metadata",width=700,visible = FALSE)
-  gpm<- ggroup(horizontal=FALSE, container=wm)
-  tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
-                 handler = NULL)
-  bgm <- ggroup(container=gpm)
-  addSpring(bgm)
-  addHandlerDestroy(
-    wm, handler = function(h,...) {
-      if(exists('w')) 
-        if(isExtant(w)) 
-          dispose(w)
-      gtkMainQuit()})
-  
-  gedit(metadata,cont=bgm,handler=function(h,...){
-    mdd=trim(paste(.GlobalEnv$metadata[,1],.GlobalEnv$metadata[,2]))
-    rng=which(grepl(svalue(h$obj),mdd,ignore.case = TRUE))
-    tabm[,]=.GlobalEnv$metadata[rng,]
-  })
-  
-  gbutton("dismiss", container=bgm, handler = function(h,...) {
-    visible(wm) <- FALSE;    
-    if(exists('w')) 
-      if(isExtant(w)) 
-        enabled(w) <- TRUE
-  })
-  
   mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
     enabled(w) <- FALSE
     if(isExtant(.GlobalEnv$eww))
@@ -335,7 +309,12 @@ if (!tpexist) {
     eval(parse(text=cmdd))
     .GlobalEnv$meta=readLines('meta.txt')
     unlink('meta.txt')
-    visible(wm) <- TRUE
+    
+    wm <- gwindow("Metadata",width=700,visible = FALSE)
+    gpm<- ggroup(horizontal=FALSE, container=wm)
+    tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
+                   handler = NULL)
+    
     meta=meta[nchar(meta)>0]
     mm=matrix(NA,len(meta),2)
     pos=gregexpr(':',meta)
@@ -352,6 +331,24 @@ if (!tpexist) {
     mg=rbind(cmts,mg)
     tabm[,]=mg
     .GlobalEnv$metadata = mg
+    visible(wm) <- TRUE
+    bgm <- ggroup(container=gpm)
+    addSpring(bgm)
+    
+    gedit(metadata,cont=bgm,handler=function(h,...){
+      mdd=trim(paste(.GlobalEnv$metadata[,1],.GlobalEnv$metadata[,2]))
+      rng=which(grepl(svalue(h$obj),mdd,ignore.case = TRUE))
+      tabm[,]=.GlobalEnv$metadata[rng,]
+    })
+    gbutton("dismiss", container=bgm, handler = function(h,...) {
+      visible(wm) <- FALSE;    
+      if(exists('w')) 
+        if(isExtant(w)) 
+          enabled(w) <- TRUE
+    })
+    addHandlerDestroy(wm,function(h,...) {
+      enabled(w) <- TRUE
+    })
   })
   
   dbgbutton=gbutton("dismiss", container = bg, handler = function(h,...) {
@@ -397,6 +394,7 @@ FUN1 <- function(data) {
   dd=dd[grepl('.mp4|.mov',dd)]
   rrxx=file.size(dd)
   if(exists('MLButton')){
+    Sys.sleep(.5)
     if(isExtant(MLButton)){
       enabled(MLButton)=sum(rrxx)>129
     }
