@@ -14,7 +14,6 @@ if(exists('obj'))
 scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 get_list_content <- function (fnx,cmts) data.frame(fnx,Date=as.character(file.mtime(fnx)),Size=prettyNum(as.integer(file.size(fnx)),big.mark = ","),comments=cmts,stringsAsFactors =FALSE)
-interlock=0
 Passt=FALSE
 extras=NULL
 fmissing=NULL
@@ -414,11 +413,12 @@ while(TRUE){
       FUN <- function(data) {
         dd=shell('dir C:\\$recycle.bin /S/B/A',intern = TRUE)
         rrxx=file.size(dd)
-        if(exists('eebutton',envir=.GlobalEnv))
+        if(exists('eebutton',envir=.GlobalEnv)){
+          Sys.sleep(.5)
           if(isExtant(.GlobalEnv$eebutton)){
             enabled(.GlobalEnv$eebutton)=sum(rrxx)>129
-            .GlobalEnv$interlock=.GlobalEnv$interlock+1
           }
+        }
       }
       a <- gtimer(250, FUN)
       gtkMain()
@@ -528,57 +528,56 @@ while(TRUE){
     gdfopen=FALSE
     rbdgf=FALSE
     print('Starting dfan compare')
-    print(system.time({
-      if(file.exists('~/gdframe.RData')){
-        idxnew=idxs
-        dfanN=dfan
-        load('~/gdframe.RData') # load dfan, gdframe
-        if(!identical(dfanN,dfan)){
-          nfnns=dfanN[!dfanN[,'filename'] %in% dfan[,'filename'],'filename'] # get newly added files
-          ndels=dfan[!dfan[,'filename'] %in% dfanN[,'filename'],'filename'] # deleted files
-          
-          if(nrow(dfanN)==nrow(dfan)){
-            print(system.time({
-              dfanN1=dfanN[order(dfanN$filename),]
-              dfan1=dfan[order(dfan$filename),]
-              xx=NA
-              dx=dfan1[,2:5]
-              dy=dfanN1[,2:5]
-              print(system.time({for(i in 1:nrow(dfan)) xx[i]=(identical(dx[i,],dy[i,]))}))
-              idxnst=which(!xx)
-            }))
-          }else{
-            idxnst=NULL
-          }
-          if(len(idxnst)){
-            idxns=order(dfanN1$filename)[idxnst] # reorder indices to correspond with ordered (by filename) dfan/dfanN
-            print('Found changed to add to gdframe')
-            idxns=unique(idxns)
-            idxg=which(gdframe$fnx %in% dfan1[idxns,'filename']) # now calculate corresponding file name indies in gdframe
-            gdframe[idxg,]=get_list_content(dfanN1[idxns,'filename'],makeAN(dfanN1[idxns,]))
-            dfan1[idxns,]=dfanN1[idxns,]
-            dfan=dfan1
-            dfanN=dfanN1
-          }
+    if(file.exists('~/gdframe.RData')){
+      idxnew=idxs
+      dfanN=dfan
+      load('~/gdframe.RData') # load dfan, gdframe
+      if(!identical(dfanN,dfan)){
+        nfnns=dfanN[!dfanN[,'filename'] %in% dfan[,'filename'],'filename'] # get newly added files
+        ndels=dfan[!dfan[,'filename'] %in% dfanN[,'filename'],'filename'] # deleted files
+        
+        if(nrow(dfanN)==nrow(dfan)){
+          print(system.time({
+            dfanN1=dfanN[order(dfanN$filename),]
+            dfan1=dfan[order(dfan$filename),]
+            xx=NA
+            dx=dfan1[,2:5]
+            dy=dfanN1[,2:5]
+            print(system.time({for(i in 1:nrow(dfan)) xx[i]=(identical(dx[i,],dy[i,]))}))
+            idxnst=which(!xx)
+          }))
+        }else{
+          idxnst=NULL
         }
-        nfnns=nfnns[!nfnns %in% gdframe$fnx] # remove already added new files ( from filename edits)
-        if(len(nfnns)){ # check for additions
-          print('Found new files to add to gdframe')
-          gdframe=rbind(gdframe,get_list_content(nfnns,'')) #add new files added
-          dfan=dfanN
+        if(len(idxnst)){
+          idxns=order(dfanN1$filename)[idxnst] # reorder indices to correspond with ordered (by filename) dfan/dfanN
+          print(sprintf('Found %d files changed to update gdframe',len(idxnst)))
+          idxns=unique(idxns)
+          idxg=which(gdframe$fnx %in% dfan1[idxns,'filename']) # now calculate corresponding file name indies in gdframe
+          gdframe[idxg,]=get_list_content(dfanN1[idxns,'filename'],makeAN(dfanN1[idxns,]))
+          dfan1[idxns,]=dfanN1[idxns,]
+          dfan=dfan1
+          dfanN=dfanN1
         }
-        if(len(ndels)){ # check for deletions
-          print('Found files to delete from gdframe')
-          gdframe=gdframe[!gdframe$fnx %in% ndels,]
-          dfan=dfanN
-        }
-        if(!all(idxnew %in% idxs)){
-          idxs=idxnew
-          rbdgf=TRUE
-        }
-      }else{
+      }
+      nfnns=nfnns[!nfnns %in% gdframe$fnx] # remove already added new files ( from filename edits)
+      if(len(nfnns)){ # check for additions
+        print(sprintf('Found %d files to add to gdframe',len(nfnns)))
+        gdframe=rbind(gdframe,get_list_content(nfnns,'')) #add new files added
+        dfan=dfanN
+      }
+      if(len(ndels)){ # check for deletions
+        print(sprintf('Found %d files to delete from gdframe',len(ndels)))
+        gdframe=gdframe[!gdframe$fnx %in% ndels,]
+        dfan=dfanN
+      }
+      if(!all(idxnew %in% idxs)){
+        idxs=idxnew
         rbdgf=TRUE
-      } })) # system time
+      }
+    }else{
+      rbdgf=TRUE
+    }  
     if(rbdgf){
       if(exists('gxy'))
         if(isExtant(gxy))
