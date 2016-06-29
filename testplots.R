@@ -24,6 +24,7 @@ if (!tpexist) {
   
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
+                  print('tab hadner')
                   if(isExtant(.GlobalEnv$eww))
                     dispose(.GlobalEnv$eww)
                   .GlobalEnv$ssv = getFnx()
@@ -79,6 +80,7 @@ if (!tpexist) {
   }
   
   addHandlerSelectionChanged(tab, handler = function(h,...) {
+    print('selec hahdnawfr')
     zz=unlist(strsplit(shell('GetCursorPos.exe',intern = TRUE)," "))
     .GlobalEnv$fnx=getFnx()
     lenn=len(.GlobalEnv$fnx)
@@ -90,23 +92,39 @@ if (!tpexist) {
       gpp=ggroup(cont=ew)
       ewb=gbutton('EDIT',cont=gpp,handler=gf)
       ewb1=gbutton('DELETE',cont=gpp,handler=function(h,...) {
+        dispose(ew)
         unlink(fnx)
+        .GlobalEnv$deleted=TRUE
+        .GlobalEnv$Passt=TRUE
+        dispose(w)
       })
       ewb2=gbutton('TRIM',cont=gpp,handler=function(h,...) {
         dispose(ew)
         .GlobalEnv$svt=fnx
         StartMyGUI()
+        .GlobalEnv$nxflag=TRUE
+        .GlobalEnv$rebuild=TRUE
+        .GlobalEnv$tpexist <- FALSE
+        .GlobalEnv$Passt=TRUE
+        .GlobalEnv$liner=NULL
+        .GlobalEnv$trimmed=TRUE
+        dispose(w)
       })
       ewb3=gbutton('PLAY',cont=gpp,handler=function(h,...) {
+        visible(ew)=FALSE
         shell(fnx)
+        visible(ew)=TRUE
       })
       ewb4=gbutton('EXPLORE',cont=gpp,handler=function(h,...) {
         dispose(ew)
         shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fnx,'" ',',' ,sep=''),translate = TRUE, 
               intern = TRUE)
       })
+      ewb=gbutton('METADATA',cont=gpp,handler=function(h,...) {
+        editMeta()
+      })
       .GlobalEnv$eww=ew
-      
+
       visible(ew) = TRUE
       focus(ew)=TRUE
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
@@ -224,7 +242,7 @@ if (!tpexist) {
   
   initMain <- function() {
     ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
-      if(isExtant(.GlobalEnv$eww))
+      if(isExtant(.GlobalEnv$eww)) ################# PUT rpdn check box filter here #############
         dispose(.GlobalEnv$eww)
       rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
       tab[,]=fnames[rng,]
@@ -312,7 +330,7 @@ if (!tpexist) {
     gtkMainQuit()
   })
   
-  mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
+  editMeta=function() {
     enabled(w) <- FALSE
     if(isExtant(.GlobalEnv$eww))
       dispose(.GlobalEnv$eww)
@@ -327,7 +345,7 @@ if (!tpexist) {
     .GlobalEnv$meta=readLines('meta.txt')
     unlink('meta.txt')
     
-    wm <- gwindow("Metadata",width=700,visible = FALSE)
+    wm <- gwindow(paste("Metadata-",svt),width=700,visible = FALSE)
     gpm<- ggroup(horizontal=FALSE, container=wm)
     tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
                    handler = NULL)
@@ -352,7 +370,7 @@ if (!tpexist) {
     bgm <- ggroup(container=gpm)
     addSpring(bgm)
     
-    gedit(metadata,cont=bgm,handler=function(h,...){
+    rgx=gedit(' ',cont=bgm,handler=function(h,...){
       mdd=trim(paste(.GlobalEnv$metadata[,1],.GlobalEnv$metadata[,2]))
       rng=which(grepl(svalue(h$obj),mdd,ignore.case = TRUE))
       tabm[,]=.GlobalEnv$metadata[rng,]
@@ -363,9 +381,14 @@ if (!tpexist) {
         if(isExtant(w)) 
           enabled(w) <- TRUE
     })
+    focus(rgx)=TRUE
     addHandlerDestroy(wm,function(h,...) {
       enabled(w) <- TRUE
     })
+  }
+  
+  mbutton=gbutton("Metadata", container = bg, handler = function(h,...) {
+    editMeta()
   })
   
   dbgbutton=gbutton("dismiss", container = bg, handler = function(h,...) {
