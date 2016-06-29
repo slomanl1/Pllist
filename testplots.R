@@ -85,9 +85,26 @@ if (!tpexist) {
     if(lenn==1){
       if(isExtant(.GlobalEnv$eww))
         dispose(.GlobalEnv$eww)
-      ew=gwindow(width=30,height=30,visible=FALSE,parent = c(0,0))
+      ew=gwindow('Action',width=30,height=30,visible=FALSE,parent = c(0,0))
       getToolkitWidget(ew)$move(zz[1],zz[2])
-      ewb=gbutton('EDIT',cont=ew,handler=gf)
+      gpp=ggroup(cont=ew)
+      ewb=gbutton('EDIT',cont=gpp,handler=gf)
+      ewb1=gbutton('DELETE',cont=gpp,handler=function(h,...) {
+        unlink(fnx)
+      })
+      ewb2=gbutton('TRIM',cont=gpp,handler=function(h,...) {
+        dispose(ew)
+        .GlobalEnv$svt=fnx
+        StartMyGUI()
+      })
+      ewb3=gbutton('PLAY',cont=gpp,handler=function(h,...) {
+        shell(fnx)
+      })
+      ewb4=gbutton('EXPLORE',cont=gpp,handler=function(h,...) {
+        dispose(ew)
+        shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fnx,'" ',',' ,sep=''),translate = TRUE, 
+              intern = TRUE)
+      })
       .GlobalEnv$eww=ew
       
       visible(ew) = TRUE
