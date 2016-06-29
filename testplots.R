@@ -5,6 +5,9 @@ eww=NA
 metadata=''
 tt=as.numeric(proc.time())[3]
 Epasst=TRUE
+rang=1:nrow(fnames)
+regexfilt=''
+chula="Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"
 if (!tpexist) {
   renamed = FALSE
   ssv = NULL
@@ -16,7 +19,7 @@ if (!tpexist) {
   }else{
     linerd=gsub(' ','|',liner)
   }
-  w <- gwindow(paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"),
+  w <- gwindow(paste(linerd,nrow(fnames),'files',chula),
                width = 1900,height=heit,parent = c(0,0),visible=FALSE)
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
@@ -142,6 +145,8 @@ if (!tpexist) {
   })
   
   addHandlerDestroy(w, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     .GlobalEnv$tpexist <- FALSE
     .GlobalEnv$gdfopen=FALSE
     gtkMainQuit()
@@ -154,10 +159,16 @@ if (!tpexist) {
   gg=gcheckbox('Include RPDN',cont=bg, checked=TRUE,handler = function(h,...) {
     if(svalue(gg)){
       rng=which(grepl('.',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
+
     }else{
       rng=which(!grepl('RPDNClips',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
+
     }
+    rng=rng[rng %in% rang] # if rexExp filter in use rang contains the subset
     tab[,]=fnames[rng,]
+    svalue(w)=paste(len(rng),'files',chula)
+    if(len(rang)!=nrow(fnames))
+      svalue(w)=paste('REGEXP FILTER',.GlobalEnv$regexfilt,len(rng),'files',chula)
   })
   
   rbb=gbutton("REBUILD", container=bg, handler = function(h,...) {
@@ -245,10 +256,15 @@ if (!tpexist) {
       if(isExtant(.GlobalEnv$eww)) ################# PUT rpdn check box filter here #############
         dispose(.GlobalEnv$eww)
       rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
+      if(!svalue(gg)){
+        rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE)&
+        !grepl('RPDNClips',paste(fnames$fnx,fnames$comments)))
+      }
       tab[,]=fnames[rng,]
       .GlobalEnv$rang=rng
       enabled(btns)=TRUE
-      svalue(w)=paste('REGEXP FILTER',svalue(h$obj),len(rng),'files')
+      svalue(w)=paste('REGEXP FILTER',svalue(h$obj),len(rng),'files',chula)
+      .GlobalEnv$regexfilt=svalue(h$obj)
     })
     
     btn=gbutton('Clear RegEx',cont=bg)
@@ -258,7 +274,8 @@ if (!tpexist) {
           if(isExtant(.GlobalEnv$eww))
             dispose(.GlobalEnv$eww)
           svalue(partner$ge) <- ''
-          svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
+          .GlobalEnv$regexfilt=''
+          svalue(w)=paste(linerd,nrow(fnames[rang,]),'files',chula)
           enabled(btns)=FALSE
         } )
         visible(w) <- TRUE
@@ -417,7 +434,7 @@ if (!tpexist) {
   linerd=liner
   if(!ANDflag)
     linerd=gsub(' ','|',liner)
-  svalue(w)=paste(linerd,nrow(fnames),"Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n")
+  svalue(w)=paste(linerd,nrow(fnames),'files',chula)
 }
 getToolkitWidget(w)$move(0,0)
 visible(w)=TRUE
