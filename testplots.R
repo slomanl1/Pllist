@@ -27,7 +27,6 @@ if (!tpexist) {
   
   tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
-                  print('tab hadner')
                   if(isExtant(.GlobalEnv$eww))
                     dispose(.GlobalEnv$eww)
                   .GlobalEnv$ssv = getFnx()
@@ -83,7 +82,6 @@ if (!tpexist) {
   }
   
   addHandlerSelectionChanged(tab, handler = function(h,...) {
-    print('selec hahdnawfr')
     zz=unlist(strsplit(shell('GetCursorPos.exe',intern = TRUE)," "))
     .GlobalEnv$fnx=getFnx()
     lenn=len(.GlobalEnv$fnx)
@@ -96,6 +94,7 @@ if (!tpexist) {
       ewb=gbutton('EDIT',cont=gpp,handler=gf)
       ewb1=gbutton('DELETE',cont=gpp,handler=function(h,...) {
         dispose(ew)
+        .GlobalEnv$svt=fnx
         unlink(fnx)
         .GlobalEnv$deleted=TRUE
         .GlobalEnv$Passt=TRUE
