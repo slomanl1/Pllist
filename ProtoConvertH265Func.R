@@ -29,7 +29,7 @@ convH265 = function(fn, ttl,nfn=''){
           .GlobalEnv$gtbl=gtable(dfa[0,c('fdate','durF','fsize','fname')],container=gp)
           addHandlerDoubleclick(gtbl,handler=function(h,...) {
             idx=svalue(h$obj,index=TRUE)
-            shell(dfa[idx,'fname'])
+            shell(gtbl[idx,'fname'])
             })
           .GlobalEnv$tpexists=TRUE
         }
