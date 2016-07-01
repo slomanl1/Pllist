@@ -30,6 +30,7 @@ convH265 = function(fn, ttl,nfn=''){
           addHandlerDoubleclick(gtbl,handler=function(h,...) {
             idx=svalue(h$obj,index=TRUE)
             shell(gtbl[idx,'fname'])
+            svalue(gtbl)=which(fn == gtbl[1,]$fname)
             })
           .GlobalEnv$tpexists=TRUE
         }
