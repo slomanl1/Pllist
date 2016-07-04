@@ -37,7 +37,7 @@ ffmpegProgressBar = function() {
   if(file.exists(blockFile)){
     timeout=3
     if(!is.na(durx) & !exists('pbx'))
-      pb=winProgressBar('FFMPEG PROGRESS',max=durx*1000000,label=svt,width=600) # tius is microseconds
+      pb=winProgressBar('FFMPEG PROGRESS',max=durx*100000,label=svt,width=600) # tius is microseconds
     while(TRUE){
       if(.GlobalEnv$aborted)
         break
@@ -53,12 +53,12 @@ ffmpegProgressBar = function() {
       }
       if(any(grepl('progress=end',xx)))
         break
-      tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])
-      pbtxt=paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*1000000),round(tius/(durx*10000),1),'%  ')
+      tius=as.integer(strsplit(gi('out_time_ms',tail(xx)),'=')[[1]][2])/10
+      pbtxt=paste('FFMPEG PROGRESS',ptn(tius),'/',ptn(durx*100000),round(tius/(durx*1000),1),'%  ')
       
       if(exists('pbx')){
         if(isExtant(pbx))
-          svalue(pbx)=round(tius/(durx*10000),1)
+          svalue(pbx)=round(tius/(durx*1000),1)
       }else{
         setWinProgressBar(pb,tius,pbtxt,label=svt)
       }
