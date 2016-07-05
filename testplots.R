@@ -100,17 +100,19 @@ if (!tpexist) {
         .GlobalEnv$Passt=TRUE
         dispose(w)
       })
-      ewb2=gbutton('TRIM',cont=gpp,handler=function(h,...) {
+      ewb2=gbutton("TRIM",cont=gpp,handler=function(h,...) {
         dispose(ew)
         .GlobalEnv$svt=fnx
         StartMyGUI()
-        .GlobalEnv$nxflag=TRUE
-        .GlobalEnv$rebuild=TRUE
-        .GlobalEnv$tpexist <- FALSE
-        .GlobalEnv$Passt=TRUE
-        .GlobalEnv$liner=NULL
-        .GlobalEnv$trimmed=TRUE
-        dispose(w)
+        if(!is.null(.GlobalEnv$ss)){
+          .GlobalEnv$nxflag=TRUE
+          .GlobalEnv$rebuild=TRUE
+          .GlobalEnv$tpexist <- FALSE
+          .GlobalEnv$Passt=TRUE
+          .GlobalEnv$liner=NULL
+          .GlobalEnv$trimmed=TRUE
+          dispose(w)
+        }
       })
       ewb3=gbutton('PLAY',cont=gpp,handler=function(h,...) {
         visible(ew)=FALSE
@@ -126,7 +128,7 @@ if (!tpexist) {
         editMeta()
       })
       .GlobalEnv$eww=ew
-
+      
       visible(ew) = TRUE
       focus(ew)=TRUE
       enabled(dbutton)=(len(svalue(tab))!=0) # delete button
@@ -158,10 +160,10 @@ if (!tpexist) {
   gg=gcheckbox('Include RPDN',cont=bg, checked=TRUE,handler = function(h,...) {
     if(svalue(gg)){
       rng=which(grepl('.',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
-
+      
     }else{
       rng=which(!grepl('RPDNClips',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
-
+      
     }
     rng=rng[rng %in% rang] # if rexExp filter in use rang contains the subset
     tab[,]=fnames[rng,]
@@ -253,11 +255,11 @@ if (!tpexist) {
   initMain <- function() {
     ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
       if(isExtant(.GlobalEnv$eww)) ################# PUT rpdn check box filter here #############
-        dispose(.GlobalEnv$eww)
+      dispose(.GlobalEnv$eww)
       rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
       if(!svalue(gg)){
         rng=which(grepl(svalue(h$obj),paste(fnames$fnx,fnames$comments),ignore.case = TRUE)&
-        !grepl('RPDNClips',paste(fnames$fnx,fnames$comments)))
+                    !grepl('RPDNClips',paste(fnames$fnx,fnames$comments)))
       }
       tab[,]=fnames[rng,]
       .GlobalEnv$rang=rng
@@ -335,15 +337,17 @@ if (!tpexist) {
     if(exists('alrt'))
       if(isExtant(alrt))
         dispose(alrt)
-    .GlobalEnv$nxflag=TRUE
-    .GlobalEnv$rebuild=TRUE
-    .GlobalEnv$tpexist <- FALSE
-    .GlobalEnv$Passt=TRUE
-    .GlobalEnv$liner=NULL
-    .GlobalEnv$trimmed=TRUE
-    dispose(w)
-    .GlobalEnv$tpexist=FALSE
-    gtkMainQuit()
+    if(!is.null(.GlobalEnv$ss)){
+      .GlobalEnv$nxflag=TRUE
+      .GlobalEnv$rebuild=TRUE
+      .GlobalEnv$tpexist <- FALSE
+      .GlobalEnv$Passt=TRUE
+      .GlobalEnv$liner=NULL
+      .GlobalEnv$trimmed=TRUE
+      dispose(w)
+      .GlobalEnv$tpexist=FALSE
+      gtkMainQuit()
+    }
   })
   
   editMeta=function() {

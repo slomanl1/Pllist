@@ -2,6 +2,7 @@ library(gWidgets2)
 options(guiToolkit = "RGtk2") 
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
+source('~/pllist.git/ProtoConvertH265Func.R')
 
 setwd('~/')
 if(exists('w'))

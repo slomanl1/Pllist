@@ -4,10 +4,13 @@ StartMyGUI <- function() {
   file.remove(dir(pattern = 'file'))
   startt=EnterStartStop()
   if(.GlobalEnv$convert){
+    .GlobalEnv$ss=NULL
     .GlobalEnv$convert=FALSE
     .GlobalEnv$tpexists=FALSE
     .GlobalEnv$clflag=grepl('rpdnclips',svt,ignore.case = TRUE)
-    dispose(.GlobalEnv$alrt)
+    if(exists('alrt'))
+      if(isExtant(alrt))
+        dispose(alrt)
     of=convH265(svt,ttl=svt,svt)
     if(file.exists(of))
       if(file.size(of)<600){ #test here for premature abort with of deleted by galert handler
@@ -29,6 +32,7 @@ StartMyGUI <- function() {
           cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
           eval(parse(text=cmd))
           print('file mtime back to orig - REDUCE')
+          .GlobalEnv$ss=-1
         }
       }
     startt=NULL
@@ -54,8 +58,8 @@ StartMyGUI <- function() {
         file.rename(svt,'~/temppt.mp4')
         if(.GlobalEnv$ToEnd){
           endtt='23:59:59'
-          
-          
+        }else{ 
+          .GlobalEnv$ss=NULL # indicates output dir is realplayerd
         }
         if(!grepl(':',startt)){
           starttd=as.integer(startt)
