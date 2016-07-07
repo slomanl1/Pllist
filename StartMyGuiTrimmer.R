@@ -42,7 +42,7 @@ StartMyGUI <- function() {
       .GlobalEnv$Fdate=TRUE
     }
   }
-  if(!.GlobalEnv$Fdate){  
+  if(!.GlobalEnv$Fdate & !.GlobalEnv$Fmeta){  
     print(paste('len startt=',len(startt)))
     if(len(startt)>0){
       print(paste('startt=',startt))

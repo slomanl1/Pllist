@@ -8,6 +8,7 @@ ToEnd=FALSE
 .GlobalEnv$convert=FALSE
 .GlobalEnv$bOK=FALSE
 .GlobalEnv$Fdate=FALSE
+.GlobalEnv$Fmeta=FALSE
 done=FALSE
 print('Trimmer hello')
 

@@ -1,3 +1,58 @@
+editMeta=function() {
+  cd('~/')
+  svt=normalizePath(svt,winslash = '/')
+  print(svt)
+  cmdd=paste('shell("mediainfo.exe',svt,' >meta.txt",mustWork=NA,translate=TRUE)')
+  print(cmdd)
+  eval(parse(text=cmdd))
+  cmdd=paste('shell("exiftool',svt,' >>meta.txt",mustWork=NA,translate=TRUE)')
+  print(cmdd)
+  eval(parse(text=cmdd))
+  .GlobalEnv$meta=readLines('meta.txt')
+  unlink('meta.txt')
+  
+  wm <- gwindow(paste("Metadata-",svt),width=700,visible = FALSE)
+  gpm<- ggroup(horizontal=FALSE, container=wm)
+  tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
+                 handler = NULL)
+  
+  meta=meta[nchar(meta)>0]
+  mm=matrix(NA,len(meta),2)
+  pos=gregexpr(':',meta)
+  for (i in 1:len(meta))
+    pos[i]=pos[[i]][1]
+  pos=unlist(pos)
+  pos[pos==-1]=1
+  meta[pos==1]=paste(':',meta[pos==1])
+  mm[,1]=substr(meta,1,pos-1)
+  mm[,2]=substr(meta,pos+1,nchar(meta))
+  mg=data.frame(mm,stringsAsFactors = FALSE)
+  cmts=mg[grepl('title|comment',mg$X1,ignore.case = TRUE),]
+  cmts=cmts[!duplicated(paste(trim(cmts$X1),trim(cmts$X2))),]
+  mg=rbind(cmts,mg)
+  tabm[,]=mg
+  .GlobalEnv$metadata = mg
+  visible(wm) <- TRUE
+  bgm <- ggroup(container=gpm)
+  addSpring(bgm)
+  
+  rgx=gedit(' ',cont=bgm,handler=function(h,...){
+    mdd=trim(paste(.GlobalEnv$metadata[,1],.GlobalEnv$metadata[,2]))
+    rng=which(grepl(svalue(h$obj),mdd,ignore.case = TRUE))
+    tabm[,]=.GlobalEnv$metadata[rng,]
+  })
+  
+  gbutton("dismiss", container=bgm, handler = function(h,...) {
+    visible(wm) <- FALSE;
+    gtkMainQuit()
+  })
+  focus(rgx)=TRUE
+  addHandlerDestroy(wm,function(h,...) {
+    gtkMainQuit()
+  })
+  gtkMain()
+}
+
 ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   .GlobalEnv$bOK=TRUE
   .GlobalEnv$ss=-1
@@ -72,12 +127,13 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       }
     })
     
-    fbutton=gbutton("FDATE", container=ggp,handler=function(h,...)
-    {
-      .GlobalEnv$Fdate=TRUE
-      dispose(ww)
-      gtkMainQuit()
-    })
+    if(!allowEnter)
+      fbutton=gbutton("FDATE", container=ggp,handler=function(h,...)
+      {
+        .GlobalEnv$Fdate=TRUE
+        dispose(ww)
+        gtkMainQuit()
+      })
     
     if(!allowEnter)
       Cbutton=gbutton("Convert", container=ggp,handler=function(h,...){
@@ -86,6 +142,15 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
         gtkMainQuit()
       })
   }
+  if(!allowEnter)
+    mdbutton=gbutton("Metadata", container=ggp,handler=function(h,...) 
+    {
+      editMeta()
+      .GlobalEnv$Fmeta=TRUE # exit immediately after ww close
+      dispose(ww)
+      gtkMainQuit()
+    })
+  
   xbutton=gbutton("Cancel", container=ggp,handler=function(h,...) 
   {
     .GlobalEnv$ss=NULL
