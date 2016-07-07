@@ -23,6 +23,7 @@ nexistpas=FALSE
 fnsave=''
 convert=FALSE
 Fdate=FALSE
+Fmeta=FALSE
 rebuild=FALSE
 ORflag=FALSE
 ANDflag=TRUE
