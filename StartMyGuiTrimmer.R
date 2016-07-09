@@ -86,28 +86,36 @@ StartMyGUI <- function() {
         cmdd=paste('shell("ffmpeg.exe -ss',starttd,' -i c:/users/Larry/Documents/temppt.mp4 -t',endttd,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
         print(cmdd)
         eval(parse(text=cmdd))
-        svt1=sub('TRIM','',svt)
-        svt2=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') 
-        svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
-        file.rename(svtt,svtO) # replace svt has trimmed with start to end
-        file.rename('~/temppt.mp4',svt) # keep original file
-        if(endtt=='23:59:59'){
-          shell(sprintf('nircmd moverecyclebin "%s"',svt),translate=TRUE)
-          print(paste(svt,'Moved to recycle bin'))
+        xx=shell(paste('exiftool -r',svtt),intern = TRUE) # get metadata
+        zz=fi('Duration',xx)[1]
+        if(len(unlist(gregexpr(':',zz[1])))>1){
+          svt1=sub('TRIM','',svt)
+          svt2=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') 
+          svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
+          file.rename(svtt,svtO) # replace svt has trimmed with start to end
+          
+          file.rename('~/temppt.mp4',svt) # keep original file
+          if(endtt=='23:59:59'){
+            shell(sprintf('nircmd moverecyclebin "%s"',svt),translate=TRUE)
+            print(paste(svt,'Moved to recycle bin'))
+          }else{
+            print('file renamed back to orig - REDUCE')
+          }
+          
+          dx=data.frame(dtn=NA,fn=NA,times=NA)
+          dx$dtn=mtime+(7*3600) # add 7 hours to convert PDT to GMT
+          dx$fn=normalizePath(as.character(svtO),winslash = '/')
+          dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                         ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+          cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+          eval(parse(text=cmd))
+          print('file mtime back to orig - REDUCE')
+          print(file.mtime(svtO))
         }else{
-          print('file renamed back to orig - REDUCE')
+          galert('trim failed')
+          file.rename('~/temppt.mp4',svt) # keep original file
+          file.remove(svtt)
         }
-        
-        dx=data.frame(dtn=NA,fn=NA,times=NA)
-        dx$dtn=mtime+(7*3600) # add 7 hours to convert PDT to GMT
-        dx$fn=normalizePath(as.character(svtO),winslash = '/')
-        dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
-                       ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
-        cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
-        eval(parse(text=cmd))
-        print('file mtime back to orig - REDUCE')
-        print(file.mtime(svtO))
-        #gmessage(paste(cmd,file.mtime(svtO),svtO))
       }else
         print('Invalid start/end time')
     }
