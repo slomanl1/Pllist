@@ -88,7 +88,7 @@ if(len(sll)>0){
       bads=data.frame(fname=NA,errorC=NA,md5s=NA)
     }
     
-    dfa7=dfa6[!duplicated(dfa6$fname),]
+    dfa7=dfa6[!duplicated(toupper(dfa6$fname)),]
     dfa8=dfa7[!toupper(dfa7$fname) %in% toupper(bads$fname),]
     dfa=dfa8[order(dfa8$sz,decreasing=decreasing),]
 
