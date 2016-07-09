@@ -89,7 +89,7 @@ if (!tpexist) {
       if(isExtant(.GlobalEnv$eww))
         dispose(.GlobalEnv$eww)
       ew=gwindow('Action',width=30,height=30,visible=FALSE,parent = c(0,0))
-      getToolkitWidget(ew)$move(zz[1],zz[2])
+      getToolkitWidget(ew)$move(ifelse(as.numeric(zz[1])>1200,"1200",zz[1]),zz[2])
       gpp=ggroup(cont=ew)
       ewb=gbutton('EDIT',cont=gpp,handler=gf)
       ewb1=gbutton('DELETE',cont=gpp,handler=function(h,...) {
@@ -125,6 +125,7 @@ if (!tpexist) {
               intern = TRUE)
       })
       ewb=gbutton('METADATA',cont=gpp,handler=function(h,...) {
+        dispose(ew)
         editMeta()
       })
       .GlobalEnv$eww=ew
