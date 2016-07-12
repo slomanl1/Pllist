@@ -88,7 +88,9 @@ if (!tpexist) {
     if(lenn==1){
       if(isExtant(.GlobalEnv$eww))
         dispose(.GlobalEnv$eww)
-      ew=gwindow('Action',width=30,height=30,visible=FALSE,parent = c(0,0))
+      shell('nircmd win close title "Action"')
+      .GlobalEnv$eww=gwindow('Action',width=30,height=30,visible=FALSE,parent = c(0,0))
+      ew=.GlobalEnv$eww
       getToolkitWidget(ew)$move(ifelse(as.numeric(zz[1])>1200,"1200",zz[1]),zz[2])
       gpp=ggroup(cont=ew)
       ewb=gbutton('EDIT',cont=gpp,handler=gf)
@@ -128,7 +130,7 @@ if (!tpexist) {
         dispose(ew)
         editMeta()
       })
-      .GlobalEnv$eww=ew
+
       
       visible(ew) = TRUE
       focus(ew)=TRUE
