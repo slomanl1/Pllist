@@ -701,3 +701,5 @@ wdws1=xx[which(classes=='GWindow')]
 wdws=wdws1[sapply(1:length(wdws1),function(x) eval(parse(text=paste('isExtant(',wdws1,')')[x])))]
 if(len(wdws))
   classes=sapply(1:length(wdws),function(x) eval(parse(text=paste('dispose(',wdws,')')[x])))
+shell('nircmd win close title "Action"')
+
