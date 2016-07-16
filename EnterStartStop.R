@@ -73,17 +73,19 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     .GlobalEnv$odir=dirname(svt)
   
   .GlobalEnv$chosen=FALSE
-  gx=gedit(text=.GlobalEnv$odir, cont=ggp, handler=function(h,...){
-    if(!.GlobalEnv$chosen){
-      .GlobalEnv$chosen=TRUE
-      odirnew=choose.dir()
-      if(!is.na(odirnew)){
-        svalue(gx)=odirnew
-      }else{
-        .GlobalEnv$chosen=FALSE
+  if(!.GlobalEnv$Fdate){
+    gx=gedit(text=.GlobalEnv$odir, cont=ggp, handler=function(h,...){
+      if(!.GlobalEnv$chosen){
+        .GlobalEnv$chosen=TRUE
+        odirnew=choose.dir()
+        if(!is.na(odirnew)){
+          svalue(gx)=odirnew
+        }else{
+          .GlobalEnv$chosen=FALSE
+        }
       }
-    }
-  })
+    })
+  }
   
   addHandlerKeystroke(obj, handler = function(h,...){
     if(nchar(svalue(h$obj))==0){ 
@@ -100,9 +102,9 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       .GlobalEnv$ss=NULL
     gtkMainQuit()})
   
-  olabel='TO/OK'
-  if(allowEnter &!.GlobalEnv$Fdate)
-    olabel='To'
+  olabel='TO'
+  if(.GlobalEnv$Fdate)
+    olabel='OK'
   
   obutton=gbutton(olabel, container=ggp,handler=function(h,...)
   {
