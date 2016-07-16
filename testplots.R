@@ -6,6 +6,13 @@ metadata=''
 tt=as.numeric(proc.time())[3]
 Epasst=TRUE
 rang=1:nrow(fnames)
+rang=which(!grepl('RPDNClips',fnames$fnx))
+checked=FALSE
+if(len(linerd))
+  if(toupper(linerd)=='RPDNCLIPS'){
+    checked=TRUE
+    rang=which(grepl('RPDNClips',fnames$fnx))
+  }
 regexfilt=''
 chula="Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"
 if (!tpexist) {
@@ -19,13 +26,13 @@ if (!tpexist) {
   }else{
     linerd=gsub(' ','|',liner)
   }
-  w <- gwindow(paste(linerd,nrow(fnames),'files',chula),
+  w <- gwindow(paste(linerd,nrow(fnames[rang,]),'files',chula),
                width = 1900,height=heit,parent = c(0,0),visible=FALSE)
   getToolkitWidget(w)$move(0,0)
   gp <- ggroup(horizontal = FALSE, container = w)
   .GlobalEnv$tpexist <- TRUE
   
-  tab <- gtable(fnames, container = gp, expand = TRUE,multiple = TRUE,
+  tab <- gtable(fnames[rang,], container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
                   if(isExtant(.GlobalEnv$eww))
                     dispose(.GlobalEnv$eww)
@@ -103,6 +110,7 @@ if (!tpexist) {
         dispose(w)
       })
       ewb2=gbutton("TRIM",cont=gpp,handler=function(h,...) {
+        .GlobalEnv$Fdate=FALSE
         dispose(ew)
         .GlobalEnv$svt=fnx
         StartMyGUI()
@@ -126,11 +134,27 @@ if (!tpexist) {
         shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fnx,'" ',',' ,sep=''),translate = TRUE, 
               intern = TRUE)
       })
+      mvb=gbutton('MOVE',cont=gpp,handler=function(h,...) {
+        dispose(ew)
+        xx=c(dir('C:/pnmtall',full.names = TRUE),dir('d:/pnmtall',full.names = TRUE))
+        drr=xx[menu(xx,graphics=TRUE)]
+        rrss=gconfirm('Are You Sure you wanna move')
+        if(rrss){
+          rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
+          if(!result){
+            galert('File Move NOT Successful')
+          }else{
+            galert('File Move was Successful')
+            .GlobalEnv$Passt=TRUE
+            dispose(w)
+          }
+        }
+      })
       ewb=gbutton('METADATA',cont=gpp,handler=function(h,...) {
         dispose(ew)
         editMeta()
       })
-
+      
       
       visible(ew) = TRUE
       focus(ew)=TRUE
@@ -160,10 +184,10 @@ if (!tpexist) {
   .GlobalEnv$tab <- tab
   addSpring(bg)
   
-  gg=gcheckbox('Include RPDN',cont=bg, checked=TRUE,handler = function(h,...) {
+  gg=gcheckbox('Include RPDN',cont=bg, checked=checked,handler = function(h,...) {
     if(svalue(gg)){
       rng=which(grepl('.',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
-      
+      rang=rng
     }else{
       rng=which(!grepl('RPDNClips',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
       
@@ -434,6 +458,7 @@ if (!tpexist) {
   enabled(ORButton) = FALSE #
   enabled(rbb) = TRUE
   enabled(btns)=FALSE
+  enabled(gg)=!checked
   
 }else{
   tab[,]=fnames
