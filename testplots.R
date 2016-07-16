@@ -394,8 +394,27 @@ if (!tpexist) {
     
     wm <- gwindow(paste("Metadata-",svt),width=700,visible = FALSE)
     gpm<- ggroup(horizontal=FALSE, container=wm)
-    tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE,
-                   handler = NULL)
+    tabm <- gtable('', chosencol = 2, container=gpm, expand=TRUE
+                   ,handler=function(h,...){
+                     lnn=tabm[svalue(h$obj,index=TRUE),]
+                     if(grepl('Date',lnn$X1)){
+                        gxx=trim(unlist(strsplit(lnn$X2,' |:|\\-')))
+                        fss=paste(gxx[2],'-',gxx[3],'-',gxx[4],' ',gxx[5],':',gxx[6],':',gxx[7],sep='')
+                        if(len(fss)){
+                          print(paste('fss=',fss,svt))
+                          dx=data.frame(dtn=NA,fn=NA,times=NA)
+                          dx[1,'dtn']=fss
+                          dx$dtn=as.POSIXlt(dx$dtn)+(7*3600) # add 7 hours to make GMT
+                          dx[1,'fn']=normalizePath(as.character(svt),winslash = '/')
+                          dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                                              ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+                          
+                          cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+                          eval(parse(text=cmd))
+                          dispose(wm)
+                        }
+                     }
+                     })
     
     meta=meta[nchar(meta)>0]
     mm=matrix(NA,len(meta),2)
