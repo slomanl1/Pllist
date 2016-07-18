@@ -1,4 +1,5 @@
 source('~/pllist.git/GDF.R')
+source('~/pllist.git/FFMPEGProgressBar.R')
 getFnx = function() return(tab[svalue(tab,index=TRUE),'fnx'])
 gdfopen=FALSE
 eww=NA
