@@ -1,3 +1,14 @@
+tryCatch.W.E=function(expr) # from demo(error.catching)
+{
+  W <- NULL
+  w.handler <- function(w){ # warning handler
+    W <<- w
+    invokeRestart("muffleWarning")
+  }
+  list(value = withCallingHandlers(tryCatch(expr, error = function(e) e),
+                                   warning = w.handler), warning = W)
+}
+
 editMeta=function() {
   cd('~/')
   svt=normalizePath(svt,winslash = '/')
@@ -167,8 +178,18 @@ EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FA
   .GlobalEnv$ss=NULL
   while(TRUE){
     ALTGinput(x,allowEnter)
-    startt= .GlobalEnv$ss   
+    startt= .GlobalEnv$ss  
     if(len(startt)>0){
+      if(.GlobalEnv$Fdate){
+        xx=tryCatch.W.E(as.POSIXlt(startt))
+        if(!grepl('error',xx$value,ignore.case = TRUE)){
+          .GlobalEnv$BypassE=TRUE
+          .GlobalEnv$ss=as.character(xx$value)
+          break # good date
+        }
+      print('BAD DATE')
+      .GlobalEnv$Fdate=FALSE
+      }
       if(!is.na(as.integer(startt))){
         break # good integer
       }else{

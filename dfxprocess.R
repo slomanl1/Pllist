@@ -1,7 +1,6 @@
 source('~/pllist.git/EnterStartStop.R')
 require(gdata)
 
-dx=data.frame(dtn=NA,fn=NA,times=NA)
 if(!exists('Fdate')){
   Fdate=FALSE
 }else{
@@ -10,10 +9,15 @@ if(!exists('Fdate')){
 if(!Fdate)
   filename=file.choose()
 
-ALTGinput("Enter mod date/time", TRUE)
+if(!exists('BypassE')){
+  BypassE=FALSE
+}
+
+if(!BypassE)
+  ALTGinput("Enter mod date/time", TRUE)
 if(len(ss)){
   print(paste('ss=',ss,filename))
-  
+  dx=data.frame(dtn=NA,fn=NA,times=NA)
   dx[1,'dtn']=ss
   dx$dtn=as.POSIXlt(dx$dtn)+(7*3600) # add 7 hours to make GMT
   dx[1,'fn']=normalizePath(as.character(filename),winslash = '/')
