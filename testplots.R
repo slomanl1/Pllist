@@ -7,13 +7,15 @@ metadata=''
 tt=as.numeric(proc.time())[3]
 Epasst=TRUE
 rang=1:nrow(fnames)
-rang=which(!grepl('RPDNClips',fnames$fnx))
-checked=FALSE
+if(!checked)
+  rang=which(!grepl('RPDNClips',fnames$fnx))
+
 if(len(linerd))
-  if(toupper(linerd)=='RPDNCLIPS'){
+  if(toupper(linerd)=='RPDNCLIPS'|all(dirname(as.character(fnames$fnx))=="C:/PNMTALL/RPDNClips")){
     checked=TRUE
     rang=which(grepl('RPDNClips',fnames$fnx))
   }
+
 regexfilt=''
 chula="Choose One or More Files or choose single file and Right Click to Edit Name/Comments\n"
 if (!tpexist) {
@@ -101,8 +103,8 @@ if (!tpexist) {
       ew=.GlobalEnv$eww
       getToolkitWidget(ew)$move(ifelse(as.numeric(zz[1])>1200,"1200",zz[1]),zz[2])
       gpp=ggroup(cont=ew)
-      ewb=gbutton('EDIT',cont=gpp,handler=gf)
-      ewb1=gbutton('DELETE',cont=gpp,handler=function(h,...) {
+      ewb=gbutton("EDIT",cnt=gpp,handler=gf)
+      ewb1=gbutton("DELETE",cont=gpp,handler=function(h,...) {
         dispose(ew)
         .GlobalEnv$svt=fnx
         unlink(fnx)
@@ -125,35 +127,35 @@ if (!tpexist) {
           dispose(w)
         }
       })
-      ewb3=gbutton('PLAY',cont=gpp,handler=function(h,...) {
+      ewb3=gbutton("PLAY",cont=gpp,handler=function(h,...) {
         visible(ew)=FALSE
         shell(fnx)
         visible(ew)=TRUE
       })
-      ewb4=gbutton('EXPLORE',cont=gpp,handler=function(h,...) {
+      ewb4=gbutton("EXPLORE",cont=gpp,handler=function(h,...) {
         dispose(ew)
         shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fnx,'" ',',' ,sep=''),translate = TRUE, 
               intern = TRUE)
       })
-      mvb=gbutton('MOVE',cont=gpp,handler=function(h,...) {
+      mvb=gbutton("MOVE",cont=gpp,handler=function(h,...) {
         dispose(ew)
         xx=c(dir('C:/pnmtall',full.names = TRUE),dir('d:/pnmtall',full.names = TRUE))
         drr=xx[menu(xx,graphics=TRUE)]
         if(len(drr)){
-        rrss=gconfirm('Are You Sure you wanna move')
-        if(rrss){
-          rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
-          if(!result){
-            galert('File Move NOT Successful')
-          }else{
-            galert('File Move was Successful')
-            .GlobalEnv$Passt=TRUE
-            dispose(w)
+          rrss=gconfirm('Are You Sure you wanna move')
+          if(rrss){
+            rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
+            if(!result){
+              galert('File Move NOT Successful')
+            }else{
+              galert('File Move was Successful')
+              .GlobalEnv$Passt=TRUE
+              dispose(w)
+            }
           }
         }
-        }
       })
-      ewb=gbutton('METADATA',cont=gpp,handler=function(h,...) {
+      ewb=gbutton("METADATA",cont=gpp,handler=function(h,...) {
         dispose(ew)
         editMeta()
       })
@@ -189,11 +191,12 @@ if (!tpexist) {
   
   gg=gcheckbox('Include RPDN',cont=bg, checked=checked,handler = function(h,...) {
     if(svalue(gg)){
+      .GlobalEnv$checked=TRUE
       rng=which(grepl('.',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
       rang=rng
     }else{
       rng=which(!grepl('RPDNClips',paste(fnames$fnx,fnames$comments),ignore.case = TRUE))
-      
+      .GlobalEnv$checked=FALSE
     }
     rng=rng[rng %in% rang] # if rexExp filter in use rang contains the subset
     tab[,]=fnames[rng,]
@@ -298,7 +301,7 @@ if (!tpexist) {
       .GlobalEnv$regexfilt=svalue(h$obj)
     })
     
-    btn=gbutton('Clear RegEx',cont=bg)
+    btn=gbutton("Clear RegEx",cont=bg)
     list(
       run = function(partner) {
         addHandlerChanged(btn, handler = function(h, ...) {
@@ -317,7 +320,7 @@ if (!tpexist) {
   
   xw=initMain()
   xw$run(xw)
-  btns=gbutton('Select',cont=bg,handler = function(h, ...) {
+  btns=gbutton("Select",cont=bg,handler = function(h, ...) {
     if(isExtant(.GlobalEnv$eww))
       dispose(.GlobalEnv$eww)
     tab[,]=fnames
@@ -401,23 +404,23 @@ if (!tpexist) {
                    ,handler=function(h,...){
                      lnn=tabm[svalue(h$obj,index=TRUE),]
                      if(grepl('Date',lnn$X1)){
-                        gxx=trim(unlist(strsplit(lnn$X2,' |:|\\-')))
-                        fss=paste(gxx[2],'-',gxx[3],'-',gxx[4],' ',gxx[5],':',gxx[6],':',gxx[7],sep='')
-                        if(len(fss)){
-                          print(paste('fss=',fss,svt))
-                          dx=data.frame(dtn=NA,fn=NA,times=NA)
-                          dx[1,'dtn']=fss
-                          dx$dtn=as.POSIXlt(dx$dtn)+(7*3600) # add 7 hours to make GMT
-                          dx[1,'fn']=normalizePath(as.character(svt),winslash = '/')
-                          dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
-                                              ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
-                          
-                          cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
-                          eval(parse(text=cmd))
-                          dispose(wm)
-                        }
+                       gxx=trim(unlist(strsplit(lnn$X2,' |:|\\-')))
+                       fss=paste(gxx[2],'-',gxx[3],'-',gxx[4],' ',gxx[5],':',gxx[6],':',gxx[7],sep='')
+                       if(len(fss)){
+                         print(paste('fss=',fss,svt))
+                         dx=data.frame(dtn=NA,fn=NA,times=NA)
+                         dx[1,'dtn']=fss
+                         dx$dtn=as.POSIXlt(dx$dtn)+(7*3600) # add 7 hours to make GMT
+                         dx[1,'fn']=normalizePath(as.character(svt),winslash = '/')
+                         dx[1,'times']=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
+                                             ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
+                         
+                         cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')
+                         eval(parse(text=cmd))
+                         dispose(wm)
+                       }
                      }
-                     })
+                   })
     
     meta=meta[nchar(meta)>0]
     mm=matrix(NA,len(meta),2)
@@ -480,7 +483,7 @@ if (!tpexist) {
   enabled(ORButton) = FALSE #
   enabled(rbb) = TRUE
   enabled(btns)=FALSE
-  enabled(gg)=!checked
+  #enabled(gg)=!checked
   
 }else{
   tab[,]=fnames

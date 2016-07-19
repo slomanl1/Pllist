@@ -27,6 +27,7 @@ Fmeta=FALSE
 rebuild=FALSE
 ORflag=FALSE
 ANDflag=TRUE
+checked=FALSE
 liner='.'
 save(liner,ORflag,ANDflag,file='~/liner.RData')
 ###########################################
@@ -599,6 +600,7 @@ while(TRUE){
     source('~/pllist.git/testplots.R')
     if(changed | deleted | trimmed){
       dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
+      
       ofn=dfan[dfix,'filename']
       if(isExtant(w))
         dispose(w)
