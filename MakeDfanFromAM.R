@@ -386,7 +386,7 @@ while(TRUE){
       }) 
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
       
-      .GlobalEnv$eebutton=gbutton('EmptyTrash',cont=ggp,handler = function(h,...){
+      .GlobalEnv$eebutton=gbutton("EmptyTrash",cont=ggp,handler = function(h,...){
         if(gconfirm('Are You Sure?')  )
           shell('nircmd emptybin')
       })
