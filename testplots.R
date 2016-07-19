@@ -139,6 +139,7 @@ if (!tpexist) {
         dispose(ew)
         xx=c(dir('C:/pnmtall',full.names = TRUE),dir('d:/pnmtall',full.names = TRUE))
         drr=xx[menu(xx,graphics=TRUE)]
+        if(len(drr)){
         rrss=gconfirm('Are You Sure you wanna move')
         if(rrss){
           rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
@@ -149,6 +150,7 @@ if (!tpexist) {
             .GlobalEnv$Passt=TRUE
             dispose(w)
           }
+        }
         }
       })
       ewb=gbutton('METADATA',cont=gpp,handler=function(h,...) {
