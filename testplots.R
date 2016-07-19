@@ -103,7 +103,7 @@ if (!tpexist) {
       ew=.GlobalEnv$eww
       getToolkitWidget(ew)$move(ifelse(as.numeric(zz[1])>1200,"1200",zz[1]),zz[2])
       gpp=ggroup(cont=ew)
-      ewb=gbutton("EDIT",cnt=gpp,handler=gf)
+      ewb=gbutton("EDIT",cont=gpp,handler=gf)
       ewb1=gbutton("DELETE",cont=gpp,handler=function(h,...) {
         dispose(ew)
         .GlobalEnv$svt=fnx
