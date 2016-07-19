@@ -24,7 +24,7 @@ gdfd=function(dfx) {
   hy4=gedit(dfx[1,4],cont=ggp,handler=dhll,action=4,initial.msg = 'Sub Title')
 
   addSpace(ggp,10)
-  xxx=gbutton('OK',cont=ggp,handler=function(h,...){
+  xxx=gbutton("OK",cont=ggp,handler=function(h,...){
     .GlobalEnv$doneflag=TRUE
     dispose(hx)
   })
