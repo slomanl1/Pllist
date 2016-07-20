@@ -107,7 +107,7 @@ if (!tpexist) {
       ewb1=gbutton("DELETE",cont=gpp,handler=function(h,...) {
         dispose(ew)
         .GlobalEnv$svt=fnx
-        unlink(fnx)
+        shell(sprintf('nircmd moverecyclebin "%s"',fnx),translate=TRUE)
         .GlobalEnv$deleted=TRUE
         .GlobalEnv$Passt=TRUE
         dispose(w)
@@ -139,10 +139,11 @@ if (!tpexist) {
       })
       mvb=gbutton("MOVE",cont=gpp,handler=function(h,...) {
         dispose(ew)
+        dircoach=strsplit(basename(fnx),'-')[[1]][[1]]
         xx=c(dir('C:/pnmtall',full.names = TRUE),dir('d:/pnmtall',full.names = TRUE))
-        drr=xx[menu(xx,graphics=TRUE)]
-        if(len(drr)){
-          rrss=gconfirm('Are You Sure you wanna move')
+        drr=select.list(xx,graphics=TRUE,preselect = xx[which(grepl(dircoach,xx))])
+        if(nchar(drr)){
+          rrss=gconfirm(paste('Are You Sure you wanna move to',drr))
           if(rrss){
             rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
             if(!result){
@@ -341,23 +342,15 @@ if (!tpexist) {
   dbutton=gbutton("Delete", container = bg, handler = function(h,...) {
     if(isExtant(.GlobalEnv$eww))
       dispose(.GlobalEnv$eww)
-    answ=gconfirm('Are you Sure?')
-    if(answ){
-      .GlobalEnv$svt=normalizePath(getFnx(),winslash = '/')
-      print(paste('Deleting',.GlobalEnv$svt))
-      if(unlink(.GlobalEnv$svt))
-        print('delete FAILED')
-      else{
-        .GlobalEnv$deleted=TRUE
-        .GlobalEnv$Passt=TRUE
-        dispose(w)
-        .GlobalEnv$tpexist=FALSE
-        writeLines(.GlobalEnv$svt,'file.tmp')
-        file.append('deletelog.txt','file.tmp') # update delete log
-        unlink('file.tmp')
-        gtkMainQuit()
-      }
-    }
+    shell(sprintf('nircmd moverecyclebin "%s"',.GlobalEnv$svt),translate=TRUE) 
+    .GlobalEnv$deleted=TRUE
+    .GlobalEnv$Passt=TRUE
+    dispose(w)
+    .GlobalEnv$tpexist=FALSE
+    writeLines(.GlobalEnv$svt,'file.tmp')
+    file.append('deletelog.txt','file.tmp') # update delete log
+    unlink('file.tmp')
+    gtkMainQuit()
   })
   
   tbutton=gbutton("TRIM", container = bg, handler = function(h,...) {
