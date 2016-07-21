@@ -141,19 +141,24 @@ if (!tpexist) {
         dispose(ew)
         dircoach=strsplit(basename(fnx),'-')[[1]][[1]]
         xx=c(dir('C:/pnmtall',full.names = TRUE),dir('d:/pnmtall',full.names = TRUE))
-        drr=select.list(xx,graphics=TRUE,preselect = xx[which(grepl(dircoach,xx))])
-        if(nchar(drr)){
-          rrss=gconfirm(paste('Are You Sure you wanna move to',drr))
-          if(rrss){
-            rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
-            if(!result){
-              galert('File Move NOT Successful')
-            }else{
-              galert('File Move was Successful')
-              .GlobalEnv$Passt=TRUE
-              dispose(w)
+        preselect=xx[which(grepl(dircoach,xx))]
+        if(len(preselect)){
+          drr=select.list(xx,graphics=TRUE,preselect = preselect)
+          if(nchar(drr)){
+            rrss=gconfirm(paste('Are You Sure you wanna move to',drr))
+            if(rrss){
+              rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
+              if(!result){
+                galert('File Move NOT Successful')
+              }else{
+                galert('File Move was Successful')
+                .GlobalEnv$Passt=TRUE
+                dispose(w)
+              }
             }
           }
+        }else{
+          galert('Cannot move RPDN clips')
         }
       })
       ewb=gbutton("METADATA",cont=gpp,handler=function(h,...) {
