@@ -87,13 +87,34 @@ StartMyGUI <- function() {
         print(cmdd)
         eval(parse(text=cmdd))
         xx=shell(paste('exiftool -r',svtt),intern = TRUE) # get metadata
-        zz=fi('Duration',xx)[1]
-        if(len(unlist(gregexpr(':',zz[1])))>1){
+        zzo=fi('Duration',xx)[1]
+        print(paste('zzo =',zzo))
+        if(len(unlist(gregexpr(':',zzo[1])))>1){
           svt1=sub('TRIM','',svt)
           svt2=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') 
           svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
           file.rename(svtt,svtO) # replace svt has trimmed with start to end
-          
+          if(!.GlobalEnv$ToEnd){
+            wed=gwindow("Edit Filename",height=30,width=800)
+            ged=gedit(svtO,cont=wed,handler=function(h,...){
+              nfn=svalue(h$obj)
+              if(nfn !=svtO){
+                result=file.rename(svtO,nfn)
+                if(!result){
+                  galert('File Rename failed')
+                }else{
+                  svtO=nfn # for restore original Fdate
+                  galert('File Rename Successful')
+                }
+              }
+              dispose(wed)
+              gtkMainQuit()
+            })
+            addHandlerDestroy(wed,handler=function(h,...){
+              gtkMainQuit()
+            })
+            gtkMain()
+          }
           file.rename('~/temppt.mp4',svt) # keep original file
           if(endtt=='23:59:59'){
             shell(sprintf('nircmd moverecyclebin "%s"',svt),translate=TRUE)
