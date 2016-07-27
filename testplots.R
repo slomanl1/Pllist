@@ -147,14 +147,18 @@ if (!tpexist) {
           if(nchar(drr)){
             rrss=gconfirm(paste('Are You Sure you wanna move to',drr))
             if(rrss){
-              rslt=file.rename(fnx,paste(drr,'/',basename(fnx),sep=''))
-              if(!result){
-                galert('File Move NOT Successful')
-              }else{
-                galert('File Move was Successful')
-                .GlobalEnv$Passt=TRUE
-                dispose(w)
-              }
+              .GlobalEnv$svt=fnx
+              idx=which(fnames$fnx==.GlobalEnv$svt)
+              .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
+              .GlobalEnv$Passt=TRUE
+              .GlobalEnv$changed=TRUE
+              tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+              if(!is.na(tmpdf$DMComment))
+                tmpdf$Comment=tmpdf$DMComment
+              tmpx=tmpdf[,1:4]
+              tmpx$filename=paste(drr,'/',basename(fnx),sep='')
+              .GlobalEnv$fwind=tmpx
+              dispose(w)
             }
           }
         }else{
