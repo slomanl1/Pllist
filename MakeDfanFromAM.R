@@ -97,14 +97,15 @@ while(TRUE){
         unlink('~/dfan.RData') # deal with this in dfg merge code below
         save(dirpaths,file='dirpaths.RData')
         rebuild=TRUE
+        dirsx=dirs[basename(dirs) %in% dirpaths]
       }else{
         if(YesorNo=='')
           stop('Aborted')
         else
-          load('dirpaths.RData')
+          dirsx=dirs
       }
       galert('working')
-      dirsx=dirs[basename(dirs) %in% dirpaths]
+
       shell(paste('dir', 'D:\\PNMTALL',' /S/B/OD >  zz.txt'))
       shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
       zz1 = readLines('zz.txt')
@@ -193,7 +194,7 @@ while(TRUE){
       cmdd = "shell('getm D: >> allmetadata.txt',translate=TRUE)"
       fpp = normalizePath(file.path(substr(fmissing[i],1,2),
                                     substr(dirname(fmissing[i]),3,nchar(dirname(fmissing[i]))), basename(fmissing[i])),winslash = '/',mustWork=TRUE)
-      
+      print(paste('Parsing :',(len(fmissing)-i),fpp))
       cmdy=sub('getm D:', paste('echo','========', fmissing[i]),cmdd) # write filename to metadata
       (eval(parse(text = cmdy)))
       cmdx = sub('D:',paste('"',fpp,'"',sep=''),cmdd,fixed=TRUE)
