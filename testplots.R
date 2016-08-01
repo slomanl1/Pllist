@@ -141,28 +141,28 @@ if (!tpexist) {
         dispose(ew)
         dircoach=strsplit(basename(fnx),'-')[[1]][[1]]
         xx=c(dir('C:/pnmtall',full.names = TRUE),dir('d:/pnmtall',full.names = TRUE))
-        preselect=xx[which(grepl(dircoach,xx))]
-        if(len(preselect)){
-          drr=select.list(xx,graphics=TRUE,preselect = preselect)
-          if(nchar(drr)){
-            rrss=gconfirm(paste('Are You Sure you wanna move to',drr))
-            if(rrss){
-              .GlobalEnv$svt=fnx
-              idx=which(fnames$fnx==.GlobalEnv$svt)
-              .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
-              .GlobalEnv$Passt=TRUE
-              .GlobalEnv$changed=TRUE
-              tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
-              if(!is.na(tmpdf$DMComment))
-                tmpdf$Comment=tmpdf$DMComment
-              tmpx=tmpdf[,1:4]
-              tmpx$filename=paste(drr,'/',basename(fnx),sep='')
-              .GlobalEnv$fwind=tmpx
-              dispose(w)
-            }
+        xx=xx[order(basename(xx))]
+        preselect=xx[which(grepl(dircoach,xx,ignore.case = TRUE))]
+        if(len(preselect)!=1){
+          preselect=NULL
+        }
+        drr=select.list(xx,graphics=TRUE,preselect = preselect)
+        if(nchar(drr)){
+          rrss=gconfirm(paste('Are You Sure you wanna move to',drr))
+          if(rrss){
+            .GlobalEnv$svt=fnx
+            idx=which(fnames$fnx==.GlobalEnv$svt)
+            .GlobalEnv$mtme=file.mtime(fnames[idx,'fnx'])
+            .GlobalEnv$Passt=TRUE
+            .GlobalEnv$changed=TRUE
+            tmpdf=dfan[grepl(trim(fnames[idx,'fnx']),dfan[,'filename'],fixed=TRUE),]
+            if(!is.na(tmpdf$DMComment))
+              tmpdf$Comment=tmpdf$DMComment
+            tmpx=tmpdf[,1:4]
+            tmpx$filename=paste(drr,'/',basename(fnx),sep='')
+            .GlobalEnv$fwind=tmpx
+            dispose(w)
           }
-        }else{
-          galert('Cannot move RPDN clips')
         }
       })
       ewb=gbutton("METADATA",cont=gpp,handler=function(h,...) {
