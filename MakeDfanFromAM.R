@@ -350,6 +350,13 @@ while(TRUE){
       })
       getToolkitWidget(linerw)$move(0,0)
       
+      ALLButton=gbutton("ALL", container = ggp, handler = function(h,...) {
+        .GlobalEnv$nxflag=TRUE
+        dispose(linerw)
+        .GlobalEnv$liner='.'
+        gtkMainQuit()
+      })
+      
       ANDButton=gbutton("AND", container = ggp, handler = function(h,...) {
         .GlobalEnv$nxflag=TRUE
         .GlobalEnv$ANDflag = TRUE
