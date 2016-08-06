@@ -28,7 +28,9 @@ rebuild=FALSE
 ORflag=FALSE
 ANDflag=TRUE
 checked=FALSE
+destroyed=FALSE
 liner='.'
+vall='No'
 save(liner,ORflag,ANDflag,file='~/liner.RData')
 ###########################################
 procExtras=function() {
@@ -74,9 +76,7 @@ while(TRUE){
       vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
       print(paste('VNAME =',vname))
       sfname = '~/PNMTALL.RDATA'
-      if(!rebuild){
-        source('~/pllist.git/selecttt.R')
-      }else{
+      if(rebuild){
         rm(dfanNew)
         rm(dfan)
         rm(dfanx)
@@ -394,6 +394,14 @@ while(TRUE){
         gtkMainQuit()
       }) 
       font(RBButton) <- c(color="springgreen4", weight="bold") # initial 
+      SKButton=gbutton("SCRATCH", container = ggp, handler = function(h,...) {
+        .GlobalEnv$nxflag=TRUE
+        .GlobalEnv$rebuild=TRUE
+        .GlobalEnv$vall='YES'
+        .GlobalEnv$gxy='' #prevent searching for popup
+        .GlobalEnv$liner=NULL # prevent search
+        dispose(linerw)
+      })
       
       .GlobalEnv$eebutton=gbutton("EmptyTrash",cont=ggp,handler = function(h,...){
         if(gconfirm('Are You Sure?')  )
@@ -463,8 +471,6 @@ while(TRUE){
     }
     dfan=dfan[which(file.exists(dfan$filename)),]
     dfanNew=dfanNew[which(file.exists(dfanNew$filename)),]
-    #dfanNew$filename = normalizePath(dfanNew$filename,winslash = '/',mustWork=TRUE)
-    #dfan$filename = normalizePath(dfan$filename,winslash = '/',mustWork=TRUE)
     dfanx=dfan[dfan$filename %in% dfanNew$filename,]
     
     makeAN=function(dfanx){
