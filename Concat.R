@@ -31,7 +31,7 @@ if(len(flss)>1){
     of=normalizePath(ofx,winslash='/')
     unlink(ofx)
     if(len(svtt) & len(svtti)){
-      fls=paste("file '",fls,"'",sep='')
+      flss=paste("file '",flss,"'",sep='')
       writeLines(flss,'~/mylist.txt') 
       cmdd=paste('shell("ffmpeg.exe -f concat -i c:/users/Larry/Documents/mylist.txt -c copy',of,'",mustWork=NA,translate=TRUE)')
       print(cmdd)
