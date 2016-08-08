@@ -10,7 +10,8 @@ while(TRUE){
   cd()
   while(!is.na(idd)){
     print(paste('idd chosen=',idd))
-    fls=choose.files()
+    files=dir()
+    fls=select.list(files,graphics = TRUE,multiple = TRUE)
     
     if(!len(fls))
       break
