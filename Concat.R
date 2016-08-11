@@ -11,6 +11,7 @@ while(TRUE){
   while(!is.na(idd)){
     print(paste('idd chosen=',idd))
     files=dir()
+    files=files[order(file.mtime(files),decreasing = TRUE)]
     fls=select.list(files,graphics = TRUE,multiple = TRUE)
     
     if(!len(fls))
