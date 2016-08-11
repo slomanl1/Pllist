@@ -1,3 +1,12 @@
+dircoach='RealPlayerDownloads'
+xxd=c('C:/RealPlayerDownloads',dir('C:/pnmtall',full.names = TRUE),dir('d:/pnmtall',full.names = TRUE))
+xxd=xxd[order(basename(xxd))]
+preselect=xxd[which(grepl(dircoach,xxd,ignore.case = TRUE))]
+if(len(preselect)!=1){
+  preselect=NULL
+}
+#drr=select.list(xx,graphics=TRUE,preselect = preselect)
+
 tryCatch.W.E=function(expr) # from demo(error.catching)
 {
   W <- NULL
@@ -68,7 +77,7 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   .GlobalEnv$bOK=TRUE
   .GlobalEnv$ss=-1
   .GlobalEnv$ToEnd=FALSE
-  ww=gwindow(height=30,title=x) #,parent = alrt)
+  ww=gwindow(height=30,width=1000,title=x) #,parent = alrt)
   ggp=ggroup(cont=ww)
   getToolkitWidget(ww)$move(0,100)
   obj <- gedit(container=ggp, handler=function(h,...) 
@@ -83,9 +92,12 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
   else
     .GlobalEnv$odir=dirname(svt)
   
+  .GlobalEnv$xxd[which(grepl(odir,.GlobalEnv$xxd,ignore.case=TRUE))]=NA
+  .GlobalEnv$xxd[1]=odir
+  
   .GlobalEnv$chosen=FALSE
   if(!.GlobalEnv$Fdate){
-    gx=gedit(text=.GlobalEnv$odir, cont=ggp, handler=function(h,...){
+    gx=gtable(.GlobalEnv$xxd, cont=ggp, handler=function(h,...){
       if(!.GlobalEnv$chosen){
         .GlobalEnv$chosen=TRUE
         odirnew=choose.dir()
@@ -97,6 +109,8 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
       }
     })
   }
+  idxx=which(grepl(odir,xxd,ignore.case=TRUE))
+  svalue(gx,index=TRUE)=idxx
   
   addHandlerKeystroke(obj, handler = function(h,...){
     if(nchar(svalue(h$obj))==0){ 
