@@ -281,6 +281,7 @@ if (!tpexist) {
       .GlobalEnv$avail = TRUE
       .GlobalEnv$Passt=TRUE
       .GlobalEnv$srchF=TRUE
+      .GlobalEnv$checked=FALSE
       gtkMainQuit()
     }
   })
@@ -488,11 +489,11 @@ if (!tpexist) {
   #enabled(gg)=!checked
   
 }else{
-  tab[,]=fnames
+  tab[,]=fnames[rang,]
   linerd=liner
   if(!ANDflag)
     linerd=gsub(' ','|',liner)
-  svalue(w)=paste(linerd,nrow(fnames),'files',chula)
+  svalue(w)=paste(linerd,nrow(fnames[rang,]),'files',chula)
 }
 getToolkitWidget(w)$move(0,0)
 visible(w)=TRUE
