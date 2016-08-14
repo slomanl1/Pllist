@@ -56,7 +56,8 @@ if (!tpexist) {
   
   gf = function(h,...) {
     print(svalue(h$action))
-    dispose(.GlobalEnv$eww)
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     if ((length(.GlobalEnv$fnx) > 0) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$gdfopen=TRUE # block edit
       print('gdfopen set')
