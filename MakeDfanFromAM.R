@@ -32,6 +32,7 @@ checked=FALSE
 destroyed=FALSE
 liner='.'
 vall='No'
+EPasst=FALSE
 save(liner,ORflag,ANDflag,file='~/liner.RData')
 ###########################################
 procExtras=function() {
@@ -460,8 +461,9 @@ while(TRUE){
             dispose(w)
         tpexist=FALSE
       }
-    }else
-      Passt=FALSE
+    }else{
+      Passt=EPasst
+    }
     ################ REBUILD an from dfan ################
     if(!exists('dfanNew')){
       dfanNew=dfan
@@ -615,7 +617,6 @@ while(TRUE){
     source('~/pllist.git/testplots.R')
     if(changed | deleted | trimmed){
       dfix=which(grepl(svt,dfan[,'filename'],fixed=TRUE))
-      
       ofn=dfan[dfix,'filename']
       if(isExtant(w))
         dispose(w)
