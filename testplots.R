@@ -5,7 +5,7 @@ gdfopen=FALSE
 eww=NA
 metadata=''
 tt=as.numeric(proc.time())[3]
-Epasst=TRUE
+EPasst=FALSE
 rang=1:nrow(fnames)
 if(!checked)
   rang=which(!grepl('RPDNClips',fnames$fnx))
@@ -21,7 +21,6 @@ chula="Choose One or More Files or choose single file and Right Click to Edit Na
 if (!tpexist) {
   renamed = FALSE
   ssv = NULL
-  
   heit=min(100+(nrow(fnames)*30),750)
   linerd=liner
   if(ANDflag){
@@ -220,6 +219,7 @@ if (!tpexist) {
     .GlobalEnv$nxflag=TRUE
     .GlobalEnv$rebuild=TRUE
     .GlobalEnv$tpexist <- FALSE
+    .GlobalEnv$EPasst=TRUE
     .GlobalEnv$Passt=TRUE
     .GlobalEnv$liner=NULL
     if(isExtant(.GlobalEnv$eww))
