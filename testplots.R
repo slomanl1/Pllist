@@ -276,6 +276,19 @@ if (!tpexist) {
   })
   font(ORButton) <- c(color="blue", weight="bold") # initial 
   
+  ALLButton=gbutton("ALL", container = bg, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
+    .GlobalEnv$ORflag = TRUE
+    .GlobalEnv$ANDflag = FALSE
+    .GlobalEnv$avail = TRUE
+    .GlobalEnv$Passt=TRUE
+    .GlobalEnv$srchF=TRUE
+    .GlobalEnv$liner='.'
+    gtkMainQuit()
+  })
+  font(ALLButton) <- c(color="green", weight="bold") # initial 
+  
   xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
     if(enabled(ANDButton)){
       .GlobalEnv$ANDflag = TRUE
@@ -293,6 +306,7 @@ if (!tpexist) {
     if(nchar(svalue(h$obj))){
       enabled(ANDButton) = TRUE #
       enabled(ORButton) = TRUE #
+      enabled(ALLButton) = TRUE
       .GlobalEnv$liner=svalue(h$obj)
     }
   })
