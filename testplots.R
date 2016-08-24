@@ -539,6 +539,7 @@ a1$stop_timer()
 if(srchF){
   srchF=FALSE
   lnr=liner
+  svalue(xe)=lnr
   if(ORflag){
     lnr=gsub(' ',' | ',lnr)
   }else{
