@@ -95,15 +95,18 @@ StartMyGUI <- function() {
           svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
           file.rename(svtt,svtO) # replace svt has trimmed with start to end
           if(!.GlobalEnv$ToEnd){
-            wed=gwindow("Edit Filename",height=30,width=800)
+            wed=gwindow("Edit Filename (*.mp4)",height=30,width=800)
             ged=gedit(svtO,cont=wed,handler=function(h,...){
               nfn=svalue(h$obj)
               if(nfn !=svtO){
-                result=file.rename(svtO,nfn)
+                if(file_ext(nfn)!='.mp4'){
+                  nfn1=paste(file_path_sans_ext(nfn),'.mp4',sep='')
+                }
+                result=file.rename(svtO,nfn1)
                 if(!result){
                   galert('File Rename failed')
                 }else{
-                  svtO=nfn # for restore original Fdate
+                  svtO=nfn1 # for restore original Fdate
                   galert('File Rename Successful')
                 }
               }
