@@ -5,7 +5,7 @@ convH265 = function(fn, ttl,nfn=''){
   bname=paste("C:/Users/Larry/Documents/",basename(tempfile()),sep='')
   metaFile=paste(bname,'.RData',sep='')
   .GlobalEnv$of=paste(bname,'.mp4',sep='')
-  ddd=shell(paste('mediainfo "',fn,'"',sep=''),intern = TRUE)
+  ddd=shell(paste('medi.bat "',fn,'"',sep=''),intern = TRUE)
   save(ddd,file=metaFile)
   hevcFlag=any(grepl('HEVC',ddd))
   .GlobalEnv$aborted=FALSE
