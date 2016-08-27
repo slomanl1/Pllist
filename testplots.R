@@ -46,7 +46,7 @@ if (!tpexist) {
                     shell('"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
                   }else{
                     writeLines(ssv,'fns.m3u') # Write playlist
-                    shell('mpc-hc64.exe fns.m3u') 
+                    shell('"C:\\Program Files\\mpc-hc\\mpc-hc64.exe " fns.m3u') 
                   }
                   unlink('~/fns.m3u')
                   enabled(w)=TRUE
@@ -238,7 +238,7 @@ if (!tpexist) {
     enabled(mbutton)=FALSE # metadata button
     enabled(ebutton)=FALSE # edit button  
     enabled(xbutton)=FALSE # explore button 
-    shell('"c:/Program Files/R/R-3.2.5/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
+    shell('"c:/Program Files/R/R-3.3.1/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
     shell('nircmd.exe win close class "CabinetWClass"')
     if(exists('dbutton'))
       if(isExtant(dbutton)){
