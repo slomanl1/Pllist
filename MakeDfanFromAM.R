@@ -643,7 +643,7 @@ while(TRUE){
       if(!identical(trim(fwind[,1:4]),dfan[dfix,1:4]) | all(dfan[dfix,'DMComment'] != fwind[,'Comment'],na.rm=TRUE)){
         dfan[dfix,1:4]=trim(fwind[,1:4]) # replace dfan with new changes
         print(paste('DFAN CHANGED',dfan[dfix,'filename'])) # debug only may not need extra print here
-        if(nchar(trim(dfan[dfix,'Comment']))==0){ # indicates comment cleared by user edit
+        if(identical(nchar(trim(dfan[dfix,'Comment'])),0)){ # indicates comment cleared by user edit
           dfan[dfix,'Comment']=NA
           dfan[dfix,'DMComment']=NA
         }else{
