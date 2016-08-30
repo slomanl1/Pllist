@@ -1,3 +1,5 @@
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 cd('~/')
 shell('dir D:\\ /S/B > zz.txt')
 shell('dir c:\\PNMTALL /S/B >> zz.txt')

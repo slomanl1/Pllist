@@ -92,18 +92,23 @@ StartMyGUI <- function() {
         if(len(unlist(gregexpr(':',zzo[1])))>1){
           svt1=sub('TRIM','',svt)
           svt2=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') 
-          svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
+          .GlobalEnv$svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
           file.rename(svtt,svtO) # replace svt has trimmed with start to end
           if(!.GlobalEnv$ToEnd){
-            wed=gwindow("Edit Filename",height=30,width=800)
-            ged=gedit(svtO,cont=wed,handler=function(h,...){
+            wed=gwindow("Edit Filename (*.mp4)",height=30,width=800)
+            ged=gedit(.GlobalEnv$svtO,cont=wed,handler=function(h,...){
               nfn=svalue(h$obj)
-              if(nfn !=svtO){
-                result=file.rename(svtO,nfn)
+              if(nfn !=.GlobalEnv$svtO){
+                if(file_ext(nfn)!='.mp4'){
+                  nfn1=paste(file_path_sans_ext(nfn),'.mp4',sep='')
+                }else{
+                  nfn1=nfn
+                }
+                result=file.rename(.GlobalEnv$svtO,nfn1)
                 if(!result){
                   galert('File Rename failed')
                 }else{
-                  svtO=nfn # for restore original Fdate
+                  .GlobalEnv$svtO=nfn1 # for restore original Fdate
                   galert('File Rename Successful')
                 }
               }
@@ -125,7 +130,7 @@ StartMyGUI <- function() {
           
           dx=data.frame(dtn=NA,fn=NA,times=NA)
           dx$dtn=mtime+(7*3600) # add 7 hours to convert PDT to GMT
-          dx$fn=normalizePath(as.character(svtO),winslash = '/')
+          dx$fn=normalizePath(as.character(.GlobalEnv$svtO),winslash = '/')
           dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                          ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
           cmd=paste('shell(','"fdate',dx$fn,dx$times,'")')

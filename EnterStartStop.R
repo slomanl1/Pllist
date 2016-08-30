@@ -110,8 +110,8 @@ ALTGinput = function(x="Enter Start Time (secs) or (mm:ss)",allowEnter){
     })
   }
   idxx=which(grepl(odir,xxd,ignore.case=TRUE))
-  svalue(gx,index=TRUE)=idxx
-  
+  if (exists('gx'))
+    svalue(gx,index=TRUE)=idxx
   addHandlerKeystroke(obj, handler = function(h,...){
     if(nchar(svalue(h$obj))==0){ 
       .GlobalEnv$ss=NULL
@@ -201,8 +201,8 @@ EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FA
           .GlobalEnv$ss=as.character(xx$value)
           break # good date
         }
-      print('BAD DATE')
-      .GlobalEnv$Fdate=FALSE
+        print('BAD DATE')
+        .GlobalEnv$Fdate=FALSE
       }
       if(!is.na(as.integer(startt))){
         break # good integer
@@ -211,8 +211,10 @@ EnterStartStop = function(x="Enter Start Time (secs) or (mm:ss)\n",allowEnter=FA
         if(cpos>0){
           f1=as.integer(substr(startt,1,cpos-1))
           f2=as.integer(substr(startt,cpos+1,nchar(startt)))
-          if (f1>=0 & f1<60 & f2>=0 & f2<60){
-            break # good mm:ss
+          if(!(is.na(f1)| is.na(f2))){
+            if (f1>=0 & f1<60 & f2>=0 & f2<60){
+              break # good mm:ss
+            }
           }
         }else{
           if(allowEnter){

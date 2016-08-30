@@ -10,10 +10,18 @@ svv=function(filename,errorCode,printF=TRUE) {
     return()
   if(file.exists('~/bads.RData'))
     load('~/bads.RData')
-  badsa=data.frame(fname=filename,errorC=errorCode,md5s=md5sum(filename))
-  bads=rbind(bads,badsa)
-  if(printF)
-    print(paste(badsa$fname,badsa$errorC))
+  whh=which(toupper(filename)==toupper(bads$fname))
+  if(!len(whh)){
+    badsa=data.frame(fname=filename,errorC=errorCode,md5s=md5sum(filename))
+    bads=rbind(bads,badsa)
+    if(printF)
+      print(paste(badsa$fname,badsa$errorC))
+  }else{
+    bads[whh,'errorC']=errorCode
+    if(printF)
+      print(paste(filename,errorCode))
+  }
+  bads=bads[!duplicated(bads$fname),]
   save(bads,file='~/bads.RData')
 }
 
@@ -88,8 +96,11 @@ if(len(sll)>0){
       bads=data.frame(fname=NA,errorC=NA,md5s=NA)
     }
     
+    bdsa=subset(bads,errorC=='AVC')
     dfa7=dfa6[!duplicated(toupper(dfa6$fname)),]
     dfa8=dfa7[!toupper(dfa7$fname) %in% toupper(bads$fname),]
+    dfa9=dfa7[toupper(dfa7$fname) %in% toupper(bdsa$fname),]
+    dfa8=rbind(dfa8,dfa9)
     dfa=dfa8[order(dfa8$sz,decreasing=decreasing),]
 
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')

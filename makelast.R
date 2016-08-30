@@ -71,16 +71,10 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     mfnfo[(lastr-len(fn)+1):lastr,c(7,8,9)]=tod
     save(mfnfo,wpls,file='~/mfnfo.RData')
     setwd(paste(pldrive,'My Playlists',sep=""))
-    lss = unique(readLines('wa1.wpl'))
-    js="            <media src=\"c:\\PNMTALL\\RPDNClips\\%s\"/>"
-    adds=sprintf(js,fn)
-    lsx1=c(lss[1:(length(lss)-3)],adds,tail(lss,n=3))
-    m3uname <- paste(pldrive,'My Playlists/',sep='')
-    write(lsx1,paste(m3uname,'wa1.wpl',sep='')) # add new clips to wa1.wpl
-    lsx2=c(lss[1:(which(trim(lss)=='<seq>')[1])],adds,tail(lss,n=3))
-    write(lsx2,paste('C:/PNMTALL/','fns.wpl',sep=''))
-    shell('wmplayer "c:\\PNMTALL\\fns.wpl')
-    unlink('c:/PNMTALL/fns.wpl')
+    fn1=paste(drive,'PNMTALL/RPDNClips/',fn,sep='')
+    write(fn1,'~/fns.M3U')
+    shell('mpc-hc64.exe c:\\Users\\Larry\\Documents\\fns.m3u')
+
     
   }else print('No new files found')
 } else print('CANNOT OPEN FLK')

@@ -5,7 +5,7 @@ gdfopen=FALSE
 eww=NA
 metadata=''
 tt=as.numeric(proc.time())[3]
-Epasst=TRUE
+EPasst=FALSE
 rang=1:nrow(fnames)
 if(!checked)
   rang=which(!grepl('RPDNClips',fnames$fnx))
@@ -21,7 +21,6 @@ chula="Choose One or More Files or choose single file and Right Click to Edit Na
 if (!tpexist) {
   renamed = FALSE
   ssv = NULL
-  
   heit=min(100+(nrow(fnames)*30),750)
   linerd=liner
   if(ANDflag){
@@ -47,7 +46,7 @@ if (!tpexist) {
                     shell('"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
                   }else{
                     writeLines(ssv,'fns.m3u') # Write playlist
-                    shell('mpc-hc64.exe fns.m3u') 
+                    shell('"C:\\Program Files\\mpc-hc\\mpc-hc64.exe " fns.m3u') 
                   }
                   unlink('~/fns.m3u')
                   enabled(w)=TRUE
@@ -56,7 +55,8 @@ if (!tpexist) {
   
   gf = function(h,...) {
     print(svalue(h$action))
-    dispose(.GlobalEnv$eww)
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
     if ((length(.GlobalEnv$fnx) > 0) & !.GlobalEnv$gdfopen) {
       .GlobalEnv$gdfopen=TRUE # block edit
       print('gdfopen set')
@@ -219,6 +219,7 @@ if (!tpexist) {
     .GlobalEnv$nxflag=TRUE
     .GlobalEnv$rebuild=TRUE
     .GlobalEnv$tpexist <- FALSE
+    .GlobalEnv$EPasst=TRUE
     .GlobalEnv$Passt=TRUE
     .GlobalEnv$liner=NULL
     if(isExtant(.GlobalEnv$eww))
@@ -237,7 +238,7 @@ if (!tpexist) {
     enabled(mbutton)=FALSE # metadata button
     enabled(ebutton)=FALSE # edit button  
     enabled(xbutton)=FALSE # explore button 
-    shell('"c:/Program Files/R/R-3.2.5/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
+    shell('"c:/Program Files/R/R-3.3.1/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/makelast.R',translate = TRUE)
     shell('nircmd.exe win close class "CabinetWClass"')
     if(exists('dbutton'))
       if(isExtant(dbutton)){
@@ -275,12 +276,26 @@ if (!tpexist) {
   })
   font(ORButton) <- c(color="blue", weight="bold") # initial 
   
+  ALLButton=gbutton("ALL", container = bg, handler = function(h,...) {
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
+    .GlobalEnv$ORflag = TRUE
+    .GlobalEnv$ANDflag = FALSE
+    .GlobalEnv$avail = TRUE
+    .GlobalEnv$Passt=TRUE
+    .GlobalEnv$srchF=TRUE
+    .GlobalEnv$liner='.'
+    gtkMainQuit()
+  })
+  font(ALLButton) <- c(color="green", weight="bold") # initial 
+  
   xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
     if(enabled(ANDButton)){
       .GlobalEnv$ANDflag = TRUE
       .GlobalEnv$avail = TRUE
       .GlobalEnv$Passt=TRUE
       .GlobalEnv$srchF=TRUE
+      .GlobalEnv$checked=FALSE
       gtkMainQuit()
     }
   })
@@ -291,6 +306,7 @@ if (!tpexist) {
     if(nchar(svalue(h$obj))){
       enabled(ANDButton) = TRUE #
       enabled(ORButton) = TRUE #
+      enabled(ALLButton) = TRUE
       .GlobalEnv$liner=svalue(h$obj)
     }
   })
@@ -488,11 +504,11 @@ if (!tpexist) {
   #enabled(gg)=!checked
   
 }else{
-  tab[,]=fnames
+  tab[,]=fnames[rang,]
   linerd=liner
   if(!ANDflag)
     linerd=gsub(' ','|',liner)
-  svalue(w)=paste(linerd,nrow(fnames),'files',chula)
+  svalue(w)=paste(linerd,nrow(fnames[rang,]),'files',chula)
 }
 getToolkitWidget(w)$move(0,0)
 visible(w)=TRUE
@@ -523,6 +539,7 @@ a1$stop_timer()
 if(srchF){
   srchF=FALSE
   lnr=liner
+  svalue(xe)=lnr
   if(ORflag){
     lnr=gsub(' ',' | ',lnr)
   }else{

@@ -21,21 +21,21 @@ ffmpegProgressBar = function() {
     ix = which(grepl(toupper(x), toupper(y), fixed = TRUE))
     return(y[grepl(toupper(x), toupper(y), fixed = TRUE)])
   }
-  
+
   load(metaFile) # get metadata saved in reduceallmovies.R/StartMyGuiTrimmer.R
   unlink(metaFile)
-  dur=subset(ddd,grepl('Duration',ddd))[1]
+  dur=subset(ddd,grepl('Duration',ddd))[2]
   mns=substr(dur,unlist(gregexpr(':',dur))+2,nchar(dur)) # xxMN yyS
   m <- gregexpr('[0-9]+',mns)
   nms=as.integer(unlist(regmatches(mns,m)))
-  if(grepl('mn',mns)){
-    durx=nms[1]*60 + nms[2] # duration converted to seconds
+  if(grepl(':',mns)){
+    durx=nms[2]*60 + nms[3] # duration converted to seconds
   }else{
-    durx=nms[1]
+    durx=nms[1] ################# TEST SECONDS on SHORT CLIP ##############
   }
   Sys.sleep(1)
   if(file.exists(blockFile)){
-    timeout=3
+    timeout=4
     if(!is.na(durx) & !exists('pbx'))
       pb=winProgressBar('FFMPEG PROGRESS',max=durx*100000,label=svt,width=600) # tius is microseconds
     while(TRUE){
