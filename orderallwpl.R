@@ -1,50 +1,27 @@
-rm(list=ls())
-load('~/xxxx.RData')
-load('~/fnfo.RData')
+load('~/mfnfo.RData')
 source('~/Local.R') #get drive
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
-rn=rownames(fnfo)
-addfnfo=file.info(lsst[(!lsst %in% rn)])
-fnfo=rbind(fnfo,addfnfo)
-save(fnfo,file='~/fnfo.RData')
-#flist=lsst
 setwd(paste(pldrive,'My Playlists',sep=""))
-fns=dir(pattern='*.wpl')
-for (j in 1:length(fns)) {
-  print(fns[j])
-  fnn=readLines(fns[j])
+for (j in 1:length(wpls)) {
+  print(wpls[j])
+  fnn=readLines(wpls[j])
   strt=grep('media',fnn)[1]
   lss=fnn[strt:(length(fnn)-3)]
   lssx=''
   for(i in 1:length(lss)){
-    if (length(grep('mpg',lss[i])>0)) {
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('mpg',lss[i])[1]+2)
-      }
-    if (length(grep('wmv',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('wmv',lss[i])[1]+2)
-    }
-    if (length(grep('asf',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('asf',lss[i])[1]+2)
-    }
-    if (length(grep('flv',lss[i])>0)){
-      lssx[i]=substr(lss[i],regexpr('loads',lss[i])[1]+6,regexpr('flv',lss[i])[1]+2)
-    }
+    lssx[i]=substr(lss[i],regexpr('Clips',lss[i])[1]+6,regexpr('mpg|mp4|flv|asf|wmv',lss[i])[1]+2)
   }
-  setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
-  lssy=lssx[!duplicated(lssx) & file.exists(lssx)]
-  lss1=lss[!duplicated(lssx) & file.exists(lssx)]
+  setwd(paste(drive,'PNMTALL/RPDNClips',sep=""))
+  lssy=sub('_','',lssx)
+  dxx=data.frame(lsst=lssx,lss)
+  lssj=merge(dxx,mfnfo[,c('lsst','mtime')])
+  lssz=as.character(lssj[order(lssj$mtime),'lss'])
   fnnh=fnn[1:(strt-1)] #wpl header
   fnnt=fnn[(length(fnn)-2):length(fnn)] #wpl footer
-  fnfox=fnfo[rownames(fnfo) %in% lssy,]
-  fnfoy=file.info(lssy[!(lssy %in% rownames(fnfo))])
-  fnfoz=rbind(fnfox,fnfoy)
-  fnfoz$fname=rownames(fnfoz)
-  lssg=data.frame(fname=lssy,lss1)
-  lssj=merge(lssg,fnfoz,by='fname')
-  lssz=as.character(lssj[order(lssj$mtime),'lss1'])
-  fnno1=c(fnnh,lssz,fnnt)
-  fnno=sub('Y:','C:',fnno1)
+  fnno=c(fnnh,sub('..\\My','C:\\My',lssz,fixed = TRUE),fnnt)
   setwd(paste(pldrive,'My Playlists',sep=""))
-  writeLines(fnno,fns[j])
+  writeLines(unique(fnno),wpls[j])
 }
 
+save(mfnfo,wpls,file='~/mfnfo.RData') # update file mtime for chooser time test if mfnfo to date
+if(length(removers)>0)
+  print(paste('Removed -',removers))

@@ -1,31 +1,33 @@
-rm(list=ls())
-load('~/xxxx.RData')
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
+load('~/mfnfo.RData')
 
 source('~/Local.R') #get drive
 
-flist=lsst
-#rm(xx,lsst,wpls)
+lsst=as.character(mfnfo$lsst)
 k=0
-setwd(paste(drive,'My Videos/RealPlayer Downloads',sep=""))
-removers = ""
-for (i in 1:length(flist)) {
-  if (!file.exists(flist[i])) {
+setwd(paste(drive,'PNMTALL/RPDNClips',sep=""))
+removers = NULL
+for (i in 1:length(lsst)) {
+  if (!file.exists(lsst[i])) {
     k=k+1
-    removers[k] = flist[i]
-    print(c('removers',flist[i]))
+    removers[k] = lsst[i]
+    print(c('removers',lsst[i]))
   }
 }
 
 setwd(paste(pldrive,'My Playlists',sep=""))
-fns=dir(pattern='*.wpl')
-for (i in 1:length(fns)) {
-  lss=readLines(fns[i])
-  lns=lss
-  print(fns[i])
-  dups=lns[duplicated(lns[nchar(lns)>0])]
-  if(length(dups)>0)
-     print(dups)
+
+for (i in 1:length(wpls)) {
+  lss=readLines(wpls[i])
+  lns=sub('c:','C:',lss,fixed=TRUE)
+  print(wpls[i])
+  dupp=dups(toupper(lns)[nchar(lns)>0])
+  if(length(dupp)>0){
+    print(paste(length(dupp),'dups found in',wpls[i]))
+  }
   lnsu=unique(lns)
+  if(length(removers)>0)
   for (j in 1:length(removers)){
     if(nchar(removers[j])>0){
       lnsu[grep(removers[j],lnsu,fixed=TRUE)] <- NA
@@ -34,10 +36,12 @@ for (i in 1:length(fns)) {
       lsst=lsst[!is.na(lsst)]
     }
   }
- 
-  writeLines(lnsu,fns[i])
+  
+  writeLines(lnsu,wpls[i])
 }
 
 setwd("~/")
-save(xx,lsst,wpls,removers,file='xxxx.RData')
-removers
+mfnfo=mfnfo[mfnfo$lsst %in% lsst,]
+save(mfnfo,wpls,file='~/mfnfo.RData')
+
+

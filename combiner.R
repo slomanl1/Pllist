@@ -1,5 +1,5 @@
-rm(list=ls())
-load('~/xxxx.RData')
+scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source(scriptStatsRemoveAll) #clear bones
 print('Combiner')
 source('~/Local.R') #get drive
 setwd(paste(pldrive,'My Playlists',sep=""))
@@ -13,6 +13,7 @@ for (i in 1:lim){
   lss=readLines(gg[i,1])
   lss1=readLines(gg[i,2])
   lss2=c(lss[1:(length(lss)-3)],lss1[16:length(lss1)])
-  writeLines(lss2,gg[i,1])
+  writeLines(unique(lss2),gg[i,1])
 }
+
 
