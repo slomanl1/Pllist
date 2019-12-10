@@ -11,7 +11,7 @@ options("guiToolkit"="RGtk2")
 library(RGtk2)
 library(gWidgets2)
 ################################
-debugg=TRUE
+debugg=FALSE
 ##############################
 
 args <- commandArgs(TRUE)
