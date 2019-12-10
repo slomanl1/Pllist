@@ -1,9 +1,16 @@
-StartMyGUI <- function() {
+StartMyGUI <- function(skipper=FALSE) {
   mtime=file.mtime(svt)
   print(paste('Gui Started - NEW',mtime))
-  file.remove(dir(pattern = 'file'))
-  startt=EnterStartStop()
+  file.remove(dir(pattern = 'file')[!isLocked(dir(pattern = 'file'))&&
+                                      !grepl('Facebook_files',dir(pattern = 'file'))])
+  if(!skipper)
+    startt=EnterStartStop()
   if(.GlobalEnv$convert){
+    if(gg=='CANCEL'){
+      .GlobalEnv$ss=NULL
+      return()
+    }
+    
     .GlobalEnv$ss=NULL
     .GlobalEnv$convert=FALSE
     .GlobalEnv$tpexists=FALSE
@@ -11,7 +18,10 @@ StartMyGUI <- function() {
     if(exists('alrt'))
       if(isExtant(alrt))
         dispose(alrt)
-    of=convH265(svt,ttl=svt,svt)
+
+    if(gg=='H264')
+      hevcFlag=FALSE
+    of=convH265(svt,ttl=svt,svt,H264=(gg=='H264'),F720P=(gg=='F720P'))
     if(file.exists(of))
       if(file.size(of)<600){ #test here for premature abort with of deleted by galert handler
         print('Bad Size, failed to convert')
@@ -19,13 +29,13 @@ StartMyGUI <- function() {
         unlink(blockFile)
       }else{
         ofn=sub('REDUCE','',svt)
-        if(!file.rename(of,ofn)){
+        if(!file.copy(of,ofn,overwrite = TRUE)){
           print('file rename back to orig failed - REDUCE')
         }else{
           unlink(of)
           print('file renamed back to orig - REDUCE')
           dx=data.frame(dtn=NA,fn=NA,times=NA)
-          dx$dtn=mtime+(3600*7) # add 7hr for GMT to PDT
+          dx$dtn=mtime+(3600*6) # add 6hr for GMT to MDT
           dx$fn=normalizePath(as.character(ofn),winslash = '/')
           dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                          ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
@@ -40,6 +50,7 @@ StartMyGUI <- function() {
     if(.GlobalEnv$Fdate){
       source('~/pllist.git/dfxprocess.R')
       .GlobalEnv$Fdate=TRUE
+      .GlobalEnv$ss=NULL
     }
   }
   if(!.GlobalEnv$Fdate & !.GlobalEnv$Fmeta){  
@@ -82,6 +93,8 @@ StartMyGUI <- function() {
           timef=60
         if(attd=='hours')
           timef=3600
+        if(attd=='days')
+          timef=3600*24
         endttd=as.character(dd*timef)
         cmdd=paste('shell("ffmpeg.exe -ss',starttd,' -i c:/users/Larry/Documents/temppt.mp4 -t',endttd,'-c:v copy -c:a copy',svtt,'",mustWork=NA,translate=TRUE)')
         print(cmdd)
@@ -93,7 +106,13 @@ StartMyGUI <- function() {
           svt1=sub('TRIM','',svt)
           svt2=paste(file_path_sans_ext(svt1),'_cut.',file_ext(svt1),sep='') 
           .GlobalEnv$svtO=paste(odir,'\\',basename(svt2),sep='') # add output directory selected
-          file.rename(svtt,svtO) # replace svt has trimmed with start to end
+          if(file.exists(svtO)){
+            galert(paste(svtO,'already exists'))
+            .GlobalEnv$ss=NULL
+            return()
+          }else{
+            file.rename(svtt,svtO) # replace svt has trimmed with start to end
+          }
           if(!.GlobalEnv$ToEnd){
             wed=gwindow("Edit Filename (*.mp4)",height=30,width=800)
             ged=gedit(.GlobalEnv$svtO,cont=wed,handler=function(h,...){
@@ -110,6 +129,13 @@ StartMyGUI <- function() {
                 }else{
                   .GlobalEnv$svtO=nfn1 # for restore original Fdate
                   galert('File Rename Successful')
+                  load('~/ConvertLog.RData')
+                  nl=cnvLog[1,]
+                  nl$svt=svt
+                  nl$nfn=nfn1
+                  nl$md5s=md5sum(nfn1)
+                  cnvLog=rbind(cnvLog,nl)
+                  save(cnvLog,file='~/ConvertLog.RData')
                 }
               }
               dispose(wed)
@@ -129,7 +155,9 @@ StartMyGUI <- function() {
           }
           
           dx=data.frame(dtn=NA,fn=NA,times=NA)
-          dx$dtn=mtime+(7*3600) # add 7 hours to convert PDT to GMT
+          dx$dtn=mtime+(6*3600) # add 7 hours to convert MDT to GMT
+          if(!isDST())
+            dx$dtn=dx$dtn+3600 # Add one more hour for Standard Time (MST)
           dx$fn=normalizePath(as.character(.GlobalEnv$svtO),winslash = '/')
           dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                          ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
@@ -137,13 +165,19 @@ StartMyGUI <- function() {
           eval(parse(text=cmd))
           print('file mtime back to orig - REDUCE')
           print(file.mtime(svtO))
+          .GlobalEnv$ss=-1 #indicates trim successful
         }else{
           galert('trim failed')
           file.rename('~/temppt.mp4',svt) # keep original file
           file.remove(svtt)
+          .GlobalEnv$ss=NULL #indicates trim failure
         }
-      }else
-        print('Invalid start/end time')
+      }else{
+        galert('Invalid start/end time')
+        .GlobalEnv$cancelFlag=TRUE
+      }
+    }else{
+      .GlobalEnv$cancelFlag=TRUE
     }
     return()
   }

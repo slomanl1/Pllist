@@ -5,6 +5,8 @@ for (j in 1:length(wpls)) {
   print(wpls[j])
   fnn=readLines(wpls[j])
   strt=grep('media',fnn)[1]
+  if(is.na(strt))
+    next
   lss=fnn[strt:(length(fnn)-3)]
   lssx=''
   for(i in 1:length(lss)){

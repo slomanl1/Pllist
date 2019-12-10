@@ -1,6 +1,6 @@
 ### This program puts the mtime of the _new HEVC file back to the corresponding 
 ###       file mtime in the efnfo from old E: backup
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 load('~/efnfo.RData')
 load('~/dfan.RData')

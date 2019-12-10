@@ -1,5 +1,5 @@
 setwd('~/')
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 require(tools)
 len = function(x) length(x)

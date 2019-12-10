@@ -24,7 +24,7 @@ ffmpegProgressBar = function() {
 
   load(metaFile) # get metadata saved in reduceallmovies.R/StartMyGuiTrimmer.R
   unlink(metaFile)
-  dur=subset(ddd,grepl('Duration',ddd))[2]
+  .GlobalEnv$dur=subset(ddd,grepl('Duration',ddd))[2]
   mns=substr(dur,unlist(gregexpr(':',dur))+2,nchar(dur)) # xxMN yyS
   m <- gregexpr('[0-9]+',mns)
   nms=as.integer(unlist(regmatches(mns,m)))
@@ -64,7 +64,7 @@ ffmpegProgressBar = function() {
       }
       if(exists('ww'))
         if(isExtant(ww))
-          svalue(ww) = paste(svt,pbtxt,txl,'CLOSE to ABORT')
+          svalue(ww) = paste(svt,pbtxt,txl,'CLOSE to ABORT',gsub('   ','',dur))
     }
     
     if(!exists('pbx'))

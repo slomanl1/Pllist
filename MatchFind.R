@@ -1,4 +1,4 @@
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 source("~/Local.R")
 setwd('~/')

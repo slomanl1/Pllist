@@ -1,7 +1,10 @@
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 source("~/Local.R")
 setwd('~/')
+ppp=galert('BUILDING PLAYLISTS',delay=60,x=500)
+source('~/pllist.git/cleanwplsfn.R')
+source('~/pllist.git/EnterStartStop.R')
 load('~/mfnfo.RData') # load lsst, wpls and xx
 
 makeWpl=function(flist,slctor){
@@ -9,7 +12,7 @@ makeWpl=function(flist,slctor){
   load('~/headFoot.RData')
   header=sub('fns',file_path_sans_ext(slctor),header)
   header=sub('3611',len(flist),header)
-  js="            <media src=\"c:\\PNMTALL\\RPDNClips\\%s\"/>"
+  js="            <media src=\"D:\\PNMTALL\\RPDNClips\\%s\"/>"
   adds=unique(sprintf(js,basename(flist)))
   lsx1=c(header,adds,footer)
   m3uname <- paste(pldrive,'My Playlists/',sep='')
@@ -53,11 +56,21 @@ for( i in 2:len(sls)){
   slss[i]=capture.output(cat(tdf[tt[i-1]:(tt[i]-1),'selector']))
 }
 lsst=mfnfo$lsst
-ms=(lsst[!lsst %in% sls]) # missing
+ms=na.omit(lsst[!lsst %in% sls]) # missing
 if (file.exists('c:/my playlists/missing.M3U'))
   file.remove('c:/my playlists/missing.M3U')
-if(length(ms)>0)
-  writeLines(paste('C:/PNMTALL/RPDNClips/',ms,sep=''),'c:/my playlists/missing.M3U')
+
+if(len(ms)>0){
+  if(!is.na(ms)){
+    writeLines(paste('D:/PNMTALL/RPDNClips/',ms,sep=''),'c:/my playlists/missing.M3U')
+    ppkn=readLines('c:/my playlists/missing.M3U')
+    bits=1048575L
+    flist1 = paste('D:/PNMTALL/RPDNClips/',mfnfo$lsst[bitwAnd(mfnfo$xx,bits) == 0],sep='') # wa1.wpl and wa.wpl only to add to ppk
+    ppkn=unique(c(ppkn,flist1))
+    ppk=sapply(1:len(ppkn), function(x) paste(ppkn[x],' ',cleanwplsfn(ppkn[x])$fx,sep=''))
+    save(ppk,file='~/ppk.RData')
+  }
+}
 
 setwd(paste(drive,'PNMTALL/RPDNClips',sep=""))
 save(mfnfo,wpls,file='~/mfnfo.RData')
@@ -66,5 +79,7 @@ setwd(paste(pldrive,'My Playlists',sep=""))
 ###################### orderall ######################
 removers=NULL
 source('~/pllist.git/orderallwpl.R')
-
-
+if(exists('ppp')){
+  if(isExtant(ppp))
+    dispose(ppp)
+}

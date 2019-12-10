@@ -3,6 +3,8 @@ len=function(x) length(x)
 source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
 source('~/pllist.git/ProtoConvertH265Func.R')
+source('~/pllist.git/addStudioToDmfnfo.R') # wrteStudio, getwplsxx function source
+isDST=function() grepl('DST',Sys.time())
 
 ToEnd=FALSE
 .GlobalEnv$convert=FALSE
@@ -30,7 +32,7 @@ xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
 durx=paste(subset(xx,grepl('Format  ',xx))[2],subset(xx,grepl('Duration  ',xx))[1])
 dur=gsub('  ','',durx)
 print(paste('svt=',svt,dur))
-alrt=galert(paste(svt,dur),delay = 10000)	
+alrt=galert(paste(svt,dur,sep=' '),delay = 10000,y=200)	
 StartMyGUI()
 if(isExtant(alrt))
   dispose(alrt)

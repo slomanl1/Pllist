@@ -1,8 +1,8 @@
 ########## Changes date of clip files to random if filename info has more than 7 characters#############
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 source("~/Local.R")
-setwd('c:/PNMTALL/rpdnclips')
+setwd('D:/PNMTALL/rpdnclips')
 load('~/mfnfo.RData') # load fnfo, lsst, wpls and xx
 lsst=mfnfo$lsst
 lsstn=gsub('_REN','',lsst)
@@ -22,7 +22,7 @@ nx=nn[sample(order(nn$mtime)),c(2,7)]
 nx$lsst=nn$lsst
 mtime=nx$mtime
 svtO=nx$lsst
-dtn=mtime+(8*3600) #add 8 hours to make GMT
+dtn=mtime+(6*3600) #add 6 hours to make GMT
 fn=normalizePath(as.character(svtO),winslash = '/')
 dx=data.frame(dtn,fn,times=NA)
 

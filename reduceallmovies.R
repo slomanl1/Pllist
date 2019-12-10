@@ -1,9 +1,18 @@
 source('~/pllist.git/EnterStartStop.R') # galert in here
 source('~/pllist.git/FFMPEGProgressBar.R')
 source('~/pllist.git/ProtoConvertH265Func.R')
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+source('~/pllist.git/addStudioToDmfnfo.R') # writeStudio, getwplsxx function source
+source('~/pllist.git/WriteDate.R')
+source('~/pllist.git/getMetadata.R')
+source('~/pllist.git/rmmovname.R')
+
+library(gWidgets2)
+options(guiToolkit = "RGtk2")
+
+scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 tpexists=FALSE
+xx=NA
 
 svv=function(filename,errorCode,printF=TRUE) {
   if(len(filename)==0)
@@ -22,6 +31,7 @@ svv=function(filename,errorCode,printF=TRUE) {
       print(paste(filename,errorCode))
   }
   bads=bads[!duplicated(bads$fname),]
+  #print(paste('nrow bads=',nrow(bads)))
   save(bads,file='~/bads.RData')
 }
 
@@ -33,51 +43,64 @@ getDur = function(svtDur) {
     if(!is.na(durF[i])){
       durx=durF[i]
     }else{
-      xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
-                     svt[i],'" ' ,sep=''),translate = TRUE, intern = TRUE)
-      durx=paste(subset(xx,grepl('Format  ',xx))[2],subset(xx,grepl('Duration  ',xx))[1])
+      .GlobalEnv$xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
+                                svt[i],'" ' ,sep=''),translate = TRUE, intern = TRUE)
+      
+      # if(any(grepl('Movie name',xx)))
+      #   rmmovname(as.character(svt[i]),FALSE)
+      xxm=fi('XMP Toolkit',.GlobalEnv$xx)
+      studio=''
+      if(len(xxm)>0){
+        studio=trim(strsplit(xxm,':')[[1]][2])
+      }
+      zxx=subset(.GlobalEnv$xx,grepl('Image Size  ',.GlobalEnv$xx))
+      isize=''
+      if(len(zxx)>0)
+        isize=strsplit(zxx,':')[[1]][2]
+      durx=paste(subset(.GlobalEnv$xx,grepl('Format  ',.GlobalEnv$xx))[2],'  ',isize,
+                 '- ',studio,subset(.GlobalEnv$xx,grepl('Duration  ',.GlobalEnv$xx))[1])
     }
-    dur[i]=gsub('  ','',durx)
+    dur[i]=gsub('  |Image','',durx)
   }
   return(dur)
 }
 
-file.remove(dir(pattern = 'file'))
+file.remove(dir(pattern = 'file')[!isLocked(dir(pattern = 'file'))&&!grepl('Facebook_files',dir(pattern = 'file'))])
 cd('~/')
 fname=NULL
 dwnlds=NULL
 of=''
-choices=c('D:/PNMTALL','C:/PNMTALL','C:/PNMTALL/RPDNclips','C:/RealPlayerDownloads',
-          'c:/PNMTALL/NewDownloads', 'REDUCE only')
+choices=c('D:/PNMTALL','C:/PNMTALL','D:/PNMTALL/RPDNclips','C:/RealPlayerDownloads',
+          '*_mp4',' D:/PNMTALL/NewDownloads', 'Include 1080p')
 source('~/pllist.git/ChooseDIRS.R')
 if(len(sll)>0){
   slx=which(choices %in% sll)
-  if(1 %in% slx)
-    fname=c(fname,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
+  if(1 %in% slx){
+    fname=dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE)
+    fname=fname[!grepl('D:/PNMTALL/RPDNClips',fname)]}  
   if(2 %in% slx){
-    fname=c(fname,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
-    fname=fname[!grepl('c:/PNMTALL/NewDownloads',fname)]}
+    #fname=c(fname,dir('c:/PNMTALL',recursive = TRUE,full.names = TRUE))
+    fname=fname[!grepl('D:/PNMTALL/NewDownloads',fname)]}
   if(3 %in% slx)
-    fname=c(fname,dir('c:/PNMTALL/rpdnclips',recursive = TRUE,full.names = TRUE))
+    fname=c(fname,dir('D:/PNMTALL/rpdnclips',recursive = TRUE,full.names = TRUE))
   if(4 %in% slx)
     fname=c(fname,dir('C:/RealPlayerDownloads',recursive = TRUE,full.names = TRUE))
-  if(5 %in% slx)
-    dwnlds=dir('c:/PNMTALL/NewDownloads',recursive = TRUE,full.names = TRUE)
-  fname=c(fname,dwnlds)
+  if(5 %in% slx){
+    dwnlds=c(dwnlds,dir('D:/PNMTALL',recursive = TRUE,full.names = TRUE))
+    dwnlds=subset(dwnlds,grepl('_mp4',dwnlds))
+  }
   if(6 %in% slx)
-    fname=fname[grepl('REDUCE',fname) |grepl('RPDN',fname)]
+    dwnlds=dir('D:/PNMTALL/NewDownloads',recursive = TRUE,full.names = TRUE)
+  fname=c(fname,dwnlds)
+  f1920=FALSE
+  if(7 %in% slx)
+    f1920=TRUE
   
   fname=fname[which(!grepl('crdownload|.ini|_REN',fname,fixed=TRUE))]
+  fname=subset(fname,file_ext(fname) %in% c('asf','avi','flv','mov','mp4','MP4','wmv' ))
   fna=fname # all files (including _New's)
-  fname=fname[which(!grepl('_New',fname))]
+  fname=fname[which(!grepl('_New|.asf',fname))] # do not convert asf's to protect
   if(len(fname)>0){
-    cla=fna[which(grepl('_New',fna))]
-    dfn=data.frame(cla)
-    dfn$fname=sub('_New','',dfn$cla)
-    dfn$sz=file.size(dfn$fname)
-    dfn=dfn[order(dfn$sz),]
-    dfn=dfn[!is.na(dfn$sz),]
-    
     nfns=paste(file_path_sans_ext(fname),'_New.',file_ext(fname),sep='')
     dfa1=data.frame(fname,sz=file.size(fname),nfns,durF=NA,fdate=file.mtime(fname))
     dfa1$fsize=ptn(dfa1$sz)
@@ -95,14 +118,21 @@ if(len(sll)>0){
     }else{
       bads=data.frame(fname=NA,errorC=NA,md5s=NA)
     }
-    
+    bads$fname=as.character(bads$fname)
     bdsa=subset(bads,errorC=='AVC')
     dfa7=dfa6[!duplicated(toupper(dfa6$fname)),]
     dfa8=dfa7[!toupper(dfa7$fname) %in% toupper(bads$fname),]
     dfa9=dfa7[toupper(dfa7$fname) %in% toupper(bdsa$fname),]
-    dfa8=rbind(dfa8,dfa9)
-    dfa=dfa8[order(dfa8$sz,decreasing=decreasing),]
-
+    dfa10=rbind(dfa8,dfa9)
+    mm=getMetadata(dfa10$fname)
+    bds11=data.frame(fname=as.character(mm$fns),errorC=ifelse(!grepl('1920',mm$ImageSize) & mm$format=='hev1','HEVC',''),md5s=NA,stringsAsFactors = FALSE)
+    bads=rbind(bads,bds11[nchar(bds11$errorC)>0,])
+    dfa10g=merge(dfa10,mm,by.x='fname',by.y='fns')
+    dfa10h=subset(dfa10g,!grepl('TRIM|crdownload',dfa10g$fname))
+    dfa10i=subset(dfa10h,(f1920 & grepl('1920',ImageSize)) | !grepl('hev1',format))
+    dfa11=dfa10i[order(dfa10i$sz,decreasing=decreasing),]
+    dfa=rbind(subset(dfa11,grepl('RPDNC',fname,ignore.case = TRUE)),rbind(subset(dfa11,!grepl('RPDNC',fname,ignore.case = TRUE))))
+    dfa=dfa[!duplicated(dfa$fname),]
     ttl=paste(nrow(dfa),'Items',ptn(sum(dfa$sz)/1000),'KBytes')
     for(fn in dfa$fname)
     { 
@@ -113,16 +143,19 @@ if(len(sll)>0){
       svalue(ww)=txl
       print(txl)
       durt1=getDur(dfa[which(fn==dfa$fname),c('fname','durF')])
+      if(any(grepl('Movie name',xx))){
+        rmmovname(as.character(fn),FALSE)
+      }
       rng=which(fn==dfa$fname):len(dfa$fname) #range pre-calc
-      if(grepl('HEVC|VC-1',durt1)){
-        print('HEVC/VC-1 FOUND')
+      if(grepl('HEVC',durt1) & !grepl('1920',durt1)){
+        print('HEVC FOUND')
         svv(as.character(dfa[rng[which(grepl('HEVC',durt1))],'fname']),"Already HEVC")
         svv(as.character(dfa[rng[which(grepl('VC-1',durt1))],'fname']),"Bad Size")
         next
       }
-
-      durt=getDur(dfa[rng[1]:rng[min(len(rng),13)],c('fname','durF')])
-      dfa[rng[1:min(len(rng),13)],'durF']=durt[1:min(len(rng),13)]
+      
+      durt=getDur(dfa[rng[1]:rng[min(len(rng),17)],c('fname','durF')])
+      dfa[rng[1:min(len(rng),17)],'durF']=durt[1:min(len(rng),17)]
       nfn1=paste(file_path_sans_ext(fn),'_New.',file_ext(fn),sep='')
       nfn=sub('REDUCE','',nfn1)
       clflag=FALSE
@@ -132,12 +165,22 @@ if(len(sll)>0){
       }
       done=FALSE
       print(paste(fn,ptn(file.size(fn)),'nfn-',nfn))
-      of=convH265(fn,ttl=fn,nfn) # Conversion routine
+      of=convH265(fn,ttl=fn,nfn,F720P=grepl('1920|3840',dfa$durF[which(fn %in% dfa$fname)])) # Conversion routine
       if(aborted | done)
         break # aborted
+    }
+    
+    if(isExtant(ww))
+      dispose(ww)
   }
-  
-  if(isExtant(ww))
-    dispose(ww)
+  if(exists('bads')){
+    bads=bads[!grepl('_mp4',bads$fname),]
+    save(bads,file='~/bads.RData')
   }
+  source('~/pllist.git/Buildmfnfo.R')  
+}else{
+  print('User Aborted')
+  galert('User Aborted')
 }
+
+

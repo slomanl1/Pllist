@@ -1,12 +1,12 @@
-scriptStatsRemoveAll <- "~/Revolution/Stats/RemoveAllExceptFuncs.R"
+scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 source("~/Local.R")
 library(tools)
 setwd('~/')
-shell('dir "C:\\PNMTALL\\RPDNClips" /od/b > ddd.txt')
+shell('dir "D:\\PNMTALL\\RPDNClips" /od/b > ddd.txt')
 lns=readLines('ddd.txt')
 unlink('ddd.txt')
-setwd('C:/PNMTALL/RPDNClips')
+setwd('D:/PNMTALL/RPDNClips')
 fnfn=file.info(lns)
 fnfn$matcher=paste(fnfn$mtime,fnfn$size)
 fnfn$fname=rownames(fnfn)
