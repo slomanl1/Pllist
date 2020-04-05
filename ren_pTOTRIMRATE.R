@@ -64,8 +64,8 @@ if(len(dx)>0 | len(du)>0){
     })
     
     ofn=paths
-    ofnn=ofn[!ofn==nfn]
-    nfnn=nfn[!ofn==nfn]
+    ofnn=unique(ofn[!ofn==nfn])
+    nfnn=unique(nfn[!ofn==nfn])
     if(len(nfnn)>0) {
       shell('streams -nobanner -s -d')
       rss=file.rename(ofnn,nfnn)
