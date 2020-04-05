@@ -11,7 +11,8 @@ source('~/pllist.git/isVC1HEVC.R')
 source('~/pllist.git/EnterStartStop.R') # for galert()
 source('~/pllist.git/multipleRegEx.R')
 source('~/pllist.git/rmmovname.R')
-
+source('~/pllist.git/selList.R')
+TESTER=0
 mddold=0
 load('~/dirtbl.RData')
 blockg=FALSE
@@ -21,6 +22,7 @@ rchecked=TRUE
 playState=0
 .GlobalEnv$STOPPED=FALSE
 mwrit=FALSE
+.GlobalEnv$andexp='.'
 
 getFnx = function() {
   if(len(svalue(tab,index=TRUE))==1){
@@ -772,87 +774,149 @@ if (!tpexist) {
     }
   })
   
-  initMain <- function() {
-    ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = function(h,...) {
-      if(nchar(svalue(h$obj))==0)
-        return()
-      if(isExtant(.GlobalEnv$eww))
-        dispose(.GlobalEnv$eww)
-      if(!testRegex(svalue(h$obj))){
+  geHandler = function(h,...) {
+    # print('geHandler')
+    if(nchar(svalue(h$obj))==0)
+      return()
+    if(isExtant(.GlobalEnv$eww))
+      dispose(.GlobalEnv$eww)
+    if(!testRegex(svalue(h$obj))){
+      galert('BAD REGEXP')
+      return()
+    }
+    keep_above(w,FALSE)
+    svalue(ggp)=pchecked
+    enabled(btn)=TRUE
+    .GlobalEnv$andexp='.'
+    if(!blockr){
+      .GlobalEnv$blockr=TRUE # to block clear regexp button press
+      if(TESTER==9999){
+        load('~/aexp.RData')
+        idxx=as.numeric(svalue(h$obj))
+        .GlobalEnv$andexp[1]=as.character(aexp[idxx,1])
+        .GlobalEnv$andexp[2]=as.character(aexp[idxx,2])
+        .GlobalEnv$andexp[3]=as.character(aexp[idxx,3])
+        .GlobalEnv$andexp[4]=as.character(aexp[idxx,4])
+        svh=as.character(aexp[idxx,5])        
+        .GlobalEnv$TESTER=0
+      }else{
+        .GlobalEnv$andexp=unlist(getAndExp())
+        svh=svalue(h$obj)
+      }
+      if(!testRegex(andexp[1]) | !testRegex(andexp[2]) | !testRegex(andexp[3])){
         galert('BAD REGEXP')
         return()
       }
-      keep_above(w,FALSE)
-      svalue(ggp)=pchecked
-      enabled(btn)=TRUE
-      .GlobalEnv$andexp='.'
-      if(!blockr){
-        .GlobalEnv$blockr=TRUE # to block clear regexp button press
-        .GlobalEnv$andexp=unlist(getAndExp())
-        if(!testRegex(andexp[1]) | !testRegex(andexp[2]) | !testRegex(andexp[3])){
-          galert('BAD REGEXP')
-          return()
-        }
-      }else{
-        .GlobalEnv$blockr=FALSE
-        print('blocked by blockr')
-        return()
-      }
-      expp=paste(.GlobalEnv$fnames$fnx,.GlobalEnv$fnames$comments)
-      expp=sub('PNMTALL','',expp)
-      if(svalue(ggr) & svalue(ggp)){ # RPDN Clips only
-        rng=which(grepl(svalue(h$obj),expp,ignore.case = TRUE) & 
-                    grepl('RPDNClips',expp,ignore.case = TRUE) & 
+    }else{
+      .GlobalEnv$blockr=FALSE
+      print('blocked by blockr')
+      return()
+    }
+    expp=paste(.GlobalEnv$fnames$fnx,.GlobalEnv$fnames$comments)
+    expp=sub('PNMTALL','',expp)
+    if(svalue(ggr) & svalue(ggp)){ # RPDN Clips only
+      rng=which(grepl(svh,expp,ignore.case = TRUE) & 
+                  grepl('RPDNClips',expp,ignore.case = TRUE) & 
+                  ifelse(rep(as.logical(.GlobalEnv$andexp[4]),len(expp)),  
+                         grepl(andexp[1],expp,ignore.case = TRUE),
+                         !grepl(andexp[1],expp,ignore.case = TRUE))  & 
+                  grepl(andexp[2],expp,ignore.case = TRUE)   &
+                  grepl(andexp[3],expp,ignore.case = TRUE))
+    }else{
+      if(!svalue(ggr)){
+        rng=which(grepl(svh,expp,ignore.case = TRUE) & !grepl('RPDNClips',expp,ignore.case = TRUE) & 
                     ifelse(rep(as.logical(.GlobalEnv$andexp[4]),len(expp)),  
                            grepl(andexp[1],expp,ignore.case = TRUE),
                            !grepl(andexp[1],expp,ignore.case = TRUE))  & 
                     grepl(andexp[2],expp,ignore.case = TRUE)   &
                     grepl(andexp[3],expp,ignore.case = TRUE))
       }else{
-        if(!svalue(ggr)){
-          rng=which(grepl(svalue(h$obj),expp,ignore.case = TRUE) & !grepl('RPDNClips',expp,ignore.case = TRUE) & 
-                      ifelse(rep(as.logical(.GlobalEnv$andexp[4]),len(expp)),  
-                             grepl(andexp[1],expp,ignore.case = TRUE),
-                             !grepl(andexp[1],expp,ignore.case = TRUE))  & 
-                      grepl(andexp[2],expp,ignore.case = TRUE)   &
-                      grepl(andexp[3],expp,ignore.case = TRUE))
-        }else{
-          rng=which(grepl(svalue(h$obj),expp,ignore.case = TRUE) &
-                      ifelse(rep(as.logical(.GlobalEnv$andexp[4]),len(expp)), 
-                             grepl(andexp[1],expp,ignore.case = TRUE),
-                             !grepl(andexp[1],expp,ignore.case = TRUE))  & 
-                      grepl(andexp[2],expp,ignore.case = TRUE)   &
-                      grepl(andexp[3],expp,ignore.case = TRUE))       
-        }
+        rng=which(grepl(svh,expp,ignore.case = TRUE) &
+                    ifelse(rep(as.logical(.GlobalEnv$andexp[4]),len(expp)), 
+                           grepl(andexp[1],expp,ignore.case = TRUE),
+                           !grepl(andexp[1],expp,ignore.case = TRUE))  & 
+                    grepl(andexp[2],expp,ignore.case = TRUE)   &
+                    grepl(andexp[3],expp,ignore.case = TRUE))       
       }
-      svh=svalue(h$obj)
-      svalue(ge)=''
-      if(!len(rng)){
-        galert('NONE FOUND')
+    }
+    
+    svalue(ge)=''
+    if(!len(rng)){
+      galert('NONE FOUND')
+    }else{
+      aexpadd=data.frame(andexp[1],andexp[2],andexp[3],andexp[4],svh)      
+      if(!file.exists('~/aexp.RData')){
+        aexp=aexpadd
       }else{
-        tryCatch.W.E({
-          visible(gp)=FALSE
-          tab[,]=.GlobalEnv$fnames[rng,]
-          fxxt=which(fnames[rng,'fnx'] %in% Batch$filename)
-          if(len(fxxt))
-            tab[fxxt,'sell'] = 'Batch'
-          .GlobalEnv$rang=rng
-          enabled(btns)=TRUE
-          anders=''
-          if(len(andexp)>1)
-            anders = capture.output(cat(andexp[1:(len(andexp)-1)],sep=' & '))
-          #svalue(w)=paste('REGEXP FILTER ',svh,' & ',ifelse(tail(andexp,1),'','!'),anders,' ',len(rng),' files ',chula,sep='')
-          svalue(w)=gsub('& . ','',paste('REGEXP FILTER ',svh,' & ',
-                                         ifelse(tail(andexp,1),'','!'),anders,' ',len(rng),' files ',chula,sep=''),fixed=TRUE)
-          .GlobalEnv$regexfilt=svalue(h$obj)
-          visible(gp)=TRUE
-          focus(ge)=TRUE
-          .GlobalEnv$blockr=FALSE
-        })
+        load('~/aexp.RData')
+        aexp=unique(rbind(aexp,aexpadd))
+      }
+      save(aexp,file='~/aexp.RData')
+      tryCatch.W.E({
+        visible(gp)=FALSE
+        tab[,]=.GlobalEnv$fnames[rng,]
+        fxxt=which(fnames[rng,'fnx'] %in% Batch$filename)
+        if(len(fxxt))
+          tab[fxxt,'sell'] = 'Batch'
+        .GlobalEnv$rang=rng
+        enabled(btns)=TRUE
+        anders=''
+        if(len(andexp)>1)
+          anders = capture.output(cat(as.character(andexp[1:(len(andexp)-1)]),sep=' & '))
+        svalue(w)=gsub('& . ','',paste('REGEXP FILTER ',svh,' & ',
+                                       ifelse(tail(andexp,1),'','!'),anders,' ',len(rng),' files ',chula,sep=''),fixed=TRUE)
+        .GlobalEnv$regexfilt=svh
+        visible(gp)=TRUE
+        focus(ge)=TRUE
+        .GlobalEnv$blockr=FALSE
+      })
+    }
+  }
+  
+  initMain <- function() {
+    .GlobalEnv$ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = geHandler)
+    
+    addHandlerKeystroke(ge, handler = function(h, ...) {
+      print('Keystroke Handler ge')
+      if(h$key=='\033'){
+        load('~/aexp.RData')
+        choices=''
+        for(i in 1:nrow(aexp)){
+          andexp[1]=as.character(aexp$andexp.1.[i])
+          andexp[2]=as.character(aexp$andexp.2.[i])
+          andexp[3]=as.character(aexp$andexp.3.[i])
+          andexp[4]=as.character(aexp$andexp.4.[i])          
+          svh=as.character(aexp$svh[i])
+          anders = capture.output(cat(as.character(andexp[1:(len(andexp)-1)]),sep=' & '))
+          choices[i]=paste('REGEXP FILTER: ',svh,' & ', ifelse(as.logical(andexp[4]),'','!'),anders,' ')
+        }
+        keep_above(w,FALSE)
+        rvv=selList(choices)
+        if(len(rvv)>0){
+          svvd=rvv$saved
+        }else{
+          svvd=FALSE
+        }
+        if(svvd){
+          aexp=aexp[choices %in% rvv$gt,]
+          save(aexp,file='~/aexp.RData')
+        }else{
+          
+        }
+        idxx=which(rvv$rv==choices)
+        print(aexp[idxx,])
+        if(len(idxx)>0){
+          .GlobalEnv$TESTER=9999
+          andexp[1]=as.character(aexp$andexp.1.[idxx])
+          andexp[2]=as.character(aexp$andexp.2.[idxx])
+          andexp[3]=as.character(aexp$andexp.3.[idxx])
+          andexp[4]=as.logical(as.character(aexp$andexp.4.[idxx]))
+          svalue(h$obj)=as.character(idxx)
+        }
       }
     })
     
-    btn=gbutton("Clr RegEx",cont=bg)
+    .GlobalEnv$btn=gbutton("Clr RegEx",cont=bg)
     enabled(btn)=FALSE
     list(
       run = function(partner) {
@@ -890,7 +954,6 @@ if (!tpexist) {
       ge = ge
     )
   }
-  
   xw=initMain()
   xw$run(xw)
   btns=gbutton("PlayALL",cont=bg,handler = function(h, ...) {
@@ -908,15 +971,6 @@ if (!tpexist) {
     writeLines(gsub('/','\\\\',fn),'fns.m3u') # Write playlist
     shell('"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
   })
-  
-  # xbutton=gbutton("Explore", container = bg, handler = function(h,...) {
-  #   if(isExtant(.GlobalEnv$eww))
-  #     dispose(.GlobalEnv$eww)
-  #   fn=getFnx()
-  #   shell(paste('c:/Users/Larry/Documents/hexDump/bin/explorerselect.bat "',fn,'" ',',' ,sep=''),translate = TRUE, 
-  #         intern = TRUE)
-  #   enabled(MLButton) = TRUE
-  # })
   
   ebutton=gbutton("MOVE", container = bg, handler = moveHandler)
   
