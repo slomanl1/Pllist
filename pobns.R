@@ -3,7 +3,7 @@ cd("D:/PNMTALL/RPDNClips")
 www=gwindow(height=30)
 keep_above(www,TRUE)
 shell('start /HIGH /B c:/users/Larry/Documents/getobns.bat')
-lndir=len(dir())
+lndir=len(dir(pattern='*.wmv'))
 mm=c(0,0,0)
 while(TRUE){
   mm=shell('grep -c \\.wmv d://obns.txt',intern = TRUE)
