@@ -1,6 +1,6 @@
 source('~/.RProfile') # required for standalone version
 cd('~/')
-shell('curl -X POST http://192.168.0.77:8123/api/webhook/3312541')
+shell('curl -X POST http://192.168.4.52:8123/api/webhook/3312541')
 scriptStatsRemoveAll <- "~/Pllist.git/RemoveAllExceptFuncs.R"
 source(scriptStatsRemoveAll) #clear bones
 options("guiToolkit"="RGtk2")
@@ -44,7 +44,7 @@ if(len(yy)){
   unlink('yy.txt')
   copyl1 = zz[!(substr(zz,2,100) %in% substr(yy,2,100))]
   copyl=copyl1[!grepl('RECYCLE|crdownload|RPDNClips|OneDrive|dsvsasa',copyl1) 
-               & !file_ext(copyl1) %in% c('exe','msi',"rar","bin","lnk","part","")] # remove recycle bin entried
+               & !file_ext(copyl1) %in% c('exe','msi',"mp3","rar","bin","lnk","part","")] # remove recycle bin entried
   reml = yy[!(substr(yy,2,100) %in% substr(zz,2,100))]
   unlink(reml,recursive = TRUE)
   ccdirs = sub('D:','E:',na.omit(copyl[file.info(copyl)[,'isdir']]),ignore.case = TRUE)
@@ -121,7 +121,6 @@ if(len(yy)){
   file.copy('C:\\Users\\Larry\\Documents\\PNMTALL.RDATA','E:\\PNMTALL.RData',overwrite=TRUE)
   cd('~/')
   shell('bkk.bat')
-  print('Done')
   ee=dir('E:/PNMTALL/RPDNClips')
   cc=dir('D:/PNMTALL/RPDNClips')
   mm=ee[which(!ee%in% cc)]
@@ -134,7 +133,7 @@ if(len(yy)){
   print('Backk DONE')
   cd('~/')
   tryCatch.W.E(shell('mountvol E: /p'))
-  shell('curl -X POST http://192.168.0.77:8123/api/webhook/3312542') # disk backup power OFF
+  shell('curl -X POST http://192.168.4.52:8123/api/webhook/3312542') # disk backup power OFF
 }else{
   print('E: Drive not present Backup Aborted')
 }
