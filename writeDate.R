@@ -1,4 +1,4 @@
-isDST=function() grepl('DST',Sys.time())
+isDST=function() grepl('MDT',Sys.time())
 WriteDate=function(filename,ss){
   #print(paste('ss=',ss,filename))
   dx=data.frame(dtn=NA,fn=NA,times=NA)
