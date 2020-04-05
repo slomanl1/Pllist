@@ -88,8 +88,6 @@ if(len(args)>0){
       if(file.exists(paste('c:/RealPlayerDownloads/',fn,pfx,'.mp4',sep=''))){
         print('file already exists in c:/RealPlayerDownloads')
       }else{
-        if(debugg)
-          browser()
         cmm=unlist(strsplit(svalue(zz),' '))
         cmx=cmm[2:len(cmm)]
         cmt=capture.output(cat(cmx))
@@ -115,6 +113,7 @@ if(len(args)>0){
         if(pos>1){
           ttll=substr(title,1,pos-1)
         }
+        cmt=sub('C UHB','CUHB',cmt)
         wrStud(svt,Title=ttll,studio = NA,dmComment = cmt)
         file.copy(svt,paste('c:/RealPlayerDownloads/',fn,pfx,'.mp4',sep=''))
         cd('c:/RealPlayerDownloads/')
