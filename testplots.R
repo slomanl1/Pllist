@@ -572,6 +572,7 @@ if (!tpexist) {
   
   
   addHandlerDestroy(w, handler = function(h,...) {
+    print('handler destroy w')
     if(isExtant(.GlobalEnv$eww))
       dispose(.GlobalEnv$eww)
     .GlobalEnv$tpexist <- FALSE
@@ -755,8 +756,10 @@ if (!tpexist) {
   font(ALLButton) <- c(color="green", weight="bold") # initial 
   
   xe=gedit(container=bg, initial.msg='Enter Search Criteria', handler = function(h,...) {
+    print('xe handler - enter search crit')
     .GlobalEnv$avail = TRUE
     .GlobalEnv$Passt=TRUE
+    .GlobalEnv$EPasst=TRUE
     .GlobalEnv$srchF=TRUE
     .GlobalEnv$rchecked=FALSE
     .GlobalEnv$pchecked=FALSE
@@ -775,9 +778,11 @@ if (!tpexist) {
   })
   
   geHandler = function(h,...) {
-    # print('geHandler')
-    if(nchar(svalue(h$obj))==0)
+    print('geHandler')
+    if(nchar(svalue(h$obj))==0){
+      print('gehandler returned h$obj is zero')
       return()
+    }
     if(isExtant(.GlobalEnv$eww))
       dispose(.GlobalEnv$eww)
     if(!testRegex(svalue(h$obj))){
@@ -800,6 +805,8 @@ if (!tpexist) {
         svh=as.character(aexp[idxx,5])        
         .GlobalEnv$TESTER=0
       }else{
+        print('Calling getAndExp()')
+        .GlobalEnv$TESTER=0
         .GlobalEnv$andexp=unlist(getAndExp())
         svh=svalue(h$obj)
       }
@@ -871,13 +878,16 @@ if (!tpexist) {
         .GlobalEnv$blockr=FALSE
       })
     }
+    gtkMain()
+    print('gtkmain first exited')
+    gtkMainQuit()
   }
-  
+  print('Hello')
   initMain <- function() {
     .GlobalEnv$ge=gedit(container=bg, initial.msg='Enter Search RegExp Filter', handler = geHandler)
     
     addHandlerKeystroke(ge, handler = function(h, ...) {
-      print('Keystroke Handler ge')
+      #print('Keystroke Handler ge')
       if(h$key=='\033'){
         load('~/aexp.RData')
         choices=''
@@ -1115,6 +1125,7 @@ FUN1 <- function(data) {
 a1 <- gtimer(250, FUN1)
 focus(w)=TRUE
 gtkMain()
+print('gtkmain END exited')
 a1$stop_timer()
 svalue(rbt)=.GlobalEnv$onTop
 if(isExtant(w)){
