@@ -17,6 +17,7 @@ remDr <- rD[["client"]]
 
 #// Start Login
 while(TRUE){
+  print('LOGGING INTO SIMPLISAFE')
   remDr$navigate('https://webapp.simplisafe.com/#/login/')
   Sys.sleep(1)
   err=list(value=0,warning=0)
@@ -30,7 +31,7 @@ while(TRUE){
   evinfo[[1]]$sendKeysToElement(list(pass))
   evinfo=remDr$findElement(using = "class", "ss-standard-button") 
   evinfo$clickElement()
-  Sys.sleep(2)
+  Sys.sleep(3)
   evinfo=remDr$findElement(using = "class", "ss-inline-text-action")
   rsp=evinfo$getElementText()
   if(grepl("Resend E-mail",rsp)){
@@ -56,18 +57,23 @@ while(TRUE){
   }else{
     break
   }
+  Sys.sleep(4)
 }
 print('SimpliSafe Login Successful')
+while(TRUE){
 remDr$navigate('https://webapp.simplisafe.com/new/#/timeline')
-Sys.sleep(3)
+Sys.sleep(4)
 evtxts=remDr$findElements(using = 'class', "event-text")
 evinfo=remDr$findElements(using = 'class', "event-info")
-for(jj in 1:50)
+for(jj in 1:5){
   print(evinfo[[jj]]$getElementText())
-
+}
+print(Sys.time())
+Sys.sleep(30)
+}
 remDr$close()
+remDr$closeServer()
 rD[["server"]]$stop()
-system("taskkill /im java.exe /f > nul 2>&1", intern = FALSE, ignore.stdout=TRUE, ignore.stderr=TRUE)
 rm(rD)
 gc()
 
