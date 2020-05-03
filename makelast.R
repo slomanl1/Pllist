@@ -284,12 +284,12 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     load('c:/Users/Larry/Google Drive/cc.RData')
     vv=cc[0,] # append place holder
     vv[1:nrow(addfnfo),]=NA
-    vv$fn=addfnfo$lsst
-    vv$mtime=file.mtime(vv$fn)
-    vv$bn=beaner(vv$fn)
+    vv$lsst=addfnfo$lsst
+    vv$mtime=file.mtime(vv$lsst)
+    vv$bn=beaner(vv$lsst)
     vv$Obn=vv$bn
     cc=rbind(cc,vv)
-    save(cc,ss,file='c:/Users/Larry/Google Drive/cc.RData')
+    save(cc,file='c:/Users/Larry/Google Drive/cc.RData')
     setwd(paste(pldrive,'My Playlists',sep=""))
     fn1=paste(drive,'PNMTALL/RPDNClips/',fn,sep='')
     writeLines(gsub('/','\\\\',fn1),'fns.m3u') # Write playlist
