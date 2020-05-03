@@ -9,7 +9,7 @@ library(httr)
 ######################
 
 ## This block will open the Chrome browser, which is linked to R
-rD <- rsDriver(browser = 'chrome')
+rD <-rsDriver(chromever = "81.0.4044.69")
 remDr <- rD[["client"]]
 remDr$navigate('https://my.uclahealth.org/MyChart/')
 
@@ -42,4 +42,6 @@ xx=remDr$findElement('css selector','*')
 xz=xx$getElementText()[[1]]
 writeLines(xz,'~/xx.txt')
 rD[["server"]]$stop()
+
+
 
