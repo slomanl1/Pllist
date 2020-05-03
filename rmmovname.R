@@ -38,7 +38,7 @@ rmmovname = function(ifile='',warn=FALSE,ofile=ifile){
         eval(parse(text=cmdd))
         zzy=getMetadata('temp.mp4',FALSE)
         #if(file.size('temp.mp4')==file.size(ofile)){
-        if(zzx$format[1]==zzy$format[1] & zzx$ImageSize==zzy$ImageSize){
+        if(zzx$format[1]==zzy$format[1] & zzx$ImageSize[1]==zzy$ImageSize[1]){
           suppressWarnings(file.remove(ofile))
           file.copy('temp.mp4',ofile)
         }else{
