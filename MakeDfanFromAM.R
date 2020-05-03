@@ -690,7 +690,7 @@ while(TRUE){
     fnames=fnames[order(paste(fnames$sell,fnames$Date),decreasing = unsorted),]
     
     tryCatch.W.E( source('~/pllist.git/testplots.R')) ############ TESTPLOTS CALLED HERE ########
-    print('Testplots existed')
+    print('Testplots exited')
     fnsave=ssv
     bidx=0
     if(batchFlag){
