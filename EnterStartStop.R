@@ -50,6 +50,14 @@ editMeta=function() {
   zm=harvestMeta(svt)
   jj=zm[[1]]
   mg=zm[[2]]
+  jj$X2=gsub("'","",jj$X2) # remove single quote marks
+  mg$X2=gsub("'","",mg$X2) # remove single quote marksSS
+  jj$X1=sub('GPS Latitude','Obn',jj$X1)
+  jj$X2=sub('deg 0 0.00" N','',jj$X2)
+  if(substr(jj$X2[2],nchar(jj$X2[2]),nchar(jj$X2[2])+1)==','){
+    jj$X2[2]=substr(jj$X2[2],1,nchar(jj$X2[2])-1) # remove trailing comma
+  }
+
   .GlobalEnv$eww=gwindow('Action',width=30,height=400,visible=FALSE,parent = c(0,0))
   ew=.GlobalEnv$eww
   getToolkitWidget(.GlobalEnv$eww)$move(400,100)
@@ -82,7 +90,7 @@ editMeta=function() {
     Comment=jj[which(trim(jj[,1])=='DM Comment'),2];if(len(Comment)==0) Comment=NA  # Comment
     SubTitle=jj[which(trim(jj[,1])=='Subtitle'),2];if(len(SubTitle)==0) SubTitle=NA # Sub Title
     studio= jj[which(trim(jj[,1])=='XMP Toolkit'),2];if(len(studio)==0) studio=NA   # studio
-    Obn   = jj[which(trim(jj[,1])=='GPS Latitude'),2];if(len(Obn)==0)   Obn= NA     # Obn
+    Obn   = jj[which(trim(jj[,1])=='Obn'),2];if(len(Obn)==0)   Obn= NA     # Obn
     tmpx=trim(data.frame(filename=filename,Title=Title,Comment=Comment,SubTitle=SubTitle,
                          studio=studio,Obn=Obn,stringsAsFactors = FALSE ))
     dfyy=gdfd(tmpx)
@@ -98,7 +106,7 @@ editMeta=function() {
   
   gbutton('dismiss', container=bgm, handler = function(h,...) {
     if(isExtant(eww))
-      dispose(eww)
+      # dispose(eww)
     dispose(wm)
     gtkMainQuit()
   })  
