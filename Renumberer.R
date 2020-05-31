@@ -69,6 +69,16 @@ if(answ){
       bads=mgg[,names(bads)[1:3]]
       save(bads,file='~/bads.RData')
       source('~/pllist.git/fixnew.R')
+      cd('D:/PNMTALL/rpdnclips')      
+      load('~/namer.RData')
+      namer$rtime=file.mtime(namer$lsst)
+      xxx=namer[which(namer$mtime!=namer$rtime),c('lsst','rtime','mtime')]
+      for(x in 1:nrow(xxx)){
+        WriteDate(xxx$lsst[x],xxx$mtime[x])
+      }
+      source('~/Pllist.Git/Buildmfnfo.R')
+      cc=mfnfo[,c('lsst','mtime','bn','Obn')]
+      save(cc,file='c:/Users/Larry/Google Drive/cc.RData')
     }
   }
 }else{
