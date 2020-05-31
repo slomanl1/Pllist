@@ -4,7 +4,7 @@ source('~/pllist.git/EnterStartStop.R')
 source('~/pllist.git/StartMyGuiTrimmer.R')
 source('~/pllist.git/ProtoConvertH265Func.R')
 source('~/pllist.git/addStudioToDmfnfo.R') # wrteStudio, getwplsxx function source
-isDST=function() grepl('MDT',Sys.time())
+library(lubridate)
 
 ToEnd=FALSE
 .GlobalEnv$convert=FALSE
