@@ -6,6 +6,7 @@ source('~/pllist.git/ProtoConvertH265Func.R')
 source('~/pllist.git/addStudioToDmfnfo.R') # wrteStudio, getwplsxx function source
 source('~/pllist.git/rmmovname.R')
 load('~/dirtbl.RData')
+library(lubridate)
 
 ToEnd=FALSE
 .GlobalEnv$convert=FALSE
