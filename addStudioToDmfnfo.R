@@ -1,5 +1,6 @@
 source('~/pllist.git/EnterStartStop.R') # for galert()
 source('~/Pllist.git/writeDate.R')
+library(lubridate)
 writeStudio = function(mx,doPb=TRUE){
   print(paste('************* writeStudio,mx',mx[1:10,]))
   if(doPb){
@@ -23,7 +24,7 @@ writeStudio = function(mx,doPb=TRUE){
       svalue(pb)=100*(i/nrow(mx)) 
     }
     dtt=file.mtime(mx[i,'lsst']) -7200 # Subtract 2 hours to make MDT
-    if(!isDST())
+    if(!dst(dtt))
       dtt=dtt+3600 # Add one more hour for Standard Time (MST)
     print(paste('DTT READ:',mx[i,'lsst'],dtt))
     fnc=mx[i,'lsst']
