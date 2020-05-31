@@ -1,12 +1,16 @@
 source('~/pllist.git/addStudioToDmfnfo.R') # wrStud
 source('~/pllist.git/rmmovname.R')
+
+library(gWidgets2)
+options(guiToolkit = "RGtk2")
+
 dd = readLines('~/fns.m3u')
 load('~/dfan.rdata')
 ee = subset(dfan, dfan$filename %in% normalizePath(dd, winslash = '/'))
 if (exists('w'))
   if (isExtant(w))
     dispose(w)
-field = select.list(names(ee)[c(2,4,5)], graphics = TRUE)
+field = menu(names(ee)[c(2,4,5)], graphics = TRUE)
 if (nchar(field) > 0) {
   w <- gwindow(field, visible = FALSE,title = 'Close to ABORT')
   g <- gvbox(container = w)
