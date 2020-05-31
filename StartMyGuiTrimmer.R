@@ -156,7 +156,7 @@ StartMyGUI <- function(skipper=FALSE) {
           
           dx=data.frame(dtn=NA,fn=NA,times=NA)
           dx$dtn=mtime+(6*3600) # add 7 hours to convert MDT to GMT
-          if(!isDST())
+          if(!dst(dx$dtn))
             dx$dtn=dx$dtn+3600 # Add one more hour for Standard Time (MST)
           dx$fn=normalizePath(as.character(.GlobalEnv$svtO),winslash = '/')
           dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
