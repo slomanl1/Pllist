@@ -163,7 +163,7 @@ convH265 = function(fn, ttl,nfn='',H264=FALSE,F720P=FALSE){
             if(file.copy(.GlobalEnv$of,nfn)){
               unlink(.GlobalEnv$of)
               dx=data.frame(dtn=NA,fn=NA,times=NA)
-              dx$dtn=mtime
+              dx$dtn=mtime+(3600*6) ########## ADJUST for DST HERE *******************
               dx$fn=normalizePath(as.character(fn),winslash = '/')
               dx$times=paste('Y:',getYear(dx$dtn),' M:',getMonth(dx$dtn),' D:',getDay(dx$dtn),' H:',as.POSIXlt(dx$dtn)$hour,
                              ' I:',as.POSIXlt(dx$dtn)$min,' S:' ,as.POSIXlt(dx$dtn)$sec,sep='')
