@@ -45,9 +45,7 @@ getDur = function(svtDur) {
     }else{
       .GlobalEnv$xx=shell(paste('c:/Users/Larry/Documents/hexDump/bin/medi.bat "',
                                 svt[i],'" ' ,sep=''),translate = TRUE, intern = TRUE)
-      
-      # if(any(grepl('Movie name',xx)))
-      #   rmmovname(as.character(svt[i]),FALSE)
+
       xxm=fi('XMP Toolkit',.GlobalEnv$xx)
       studio=''
       if(len(xxm)>0){
@@ -143,7 +141,7 @@ if(len(sll)>0){
       svalue(ww)=txl
       print(txl)
       durt1=getDur(dfa[which(fn==dfa$fname),c('fname','durF')])
-      if(any(grepl('Movie name',xx))){
+      if(any(grepl('Movie name',xx)) & grepl('RPDNClips',xx[15])){
         rmmovname(as.character(fn),FALSE)
       }
       rng=which(fn==dfa$fname):len(dfa$fname) #range pre-calc
