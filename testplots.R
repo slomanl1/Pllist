@@ -89,6 +89,7 @@ if (!tpexist) {
   
   tab <- gtable(fnames[rang,], container = gp, expand = TRUE,multiple = TRUE,
                 handler = function(h,...) {
+                  print('GTABLE HANDLER')
                   sctimer$stop_timer()
                   .GlobalEnv$SelectChanged=FALSE
                   if(isExtant(.GlobalEnv$eww))
