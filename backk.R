@@ -26,7 +26,6 @@ while(TRUE) {
 zzz=galert('drive E Connected',10,x=600,y=500)
 cd('~/')
 shell('dir D:\\ /S/B > zz.txt')
-shell('dir c:\\PNMTALL /S/B >> zz.txt')
 shell('dir E:\\PNMTALL /S/B > yy.txt')
 zz = readLines('zz.txt')
 zz=zz[!grepl('zip|txt',zz)]
