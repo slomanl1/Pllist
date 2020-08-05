@@ -2,7 +2,12 @@ getMetadata=function(lsst, saveResult=TRUE){
   lsst=as.character(lsst)
   ll=lsst
   print(paste('Getting metadata',len(lsst),'files'))
-  load('~/mmeta.RData')
+  if (file.exists('~/mmeta.RData')){
+    load('~/mmeta.RData')
+  }else{
+    mm=data.frame(fns='',mtime=NA) 
+  }
+
   mm=mm[file.exists(mm$fns),]
   lsst1=lsst[!lsst %in% mm$fns]
   lsst=unique(c(lsst1,lsst[!file.mtime(as.character(lsst)) %in% mm[mm$fns %in% lsst,'mtime']]))
