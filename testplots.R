@@ -108,7 +108,7 @@ if (!tpexist) {
                   # if(any(grepl('.flv|.asf',ssv)))
                   # {
                   writeLines(gsub('/','\\\\',ssv),'fns.m3u') # Write playlist
-                  shell('"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
+                  shell('"C:\\Program Files\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
                   # }else{
                   #   writeLines(ssv,'fns.m3u') # Write playlist
                   #   shell('fns.m3u')
@@ -553,12 +553,6 @@ if (!tpexist) {
       if(isExtant(.GlobalEnv$gpp))
         mvb=gbutton("MOVE",cont=.GlobalEnv$gpp,handler=moveHandler)
       
-      # if(isExtant(.GlobalEnv$gpp))
-      #   ewb=gbutton("METADATA",cont=.GlobalEnv$gpp,handler=function(h,...) {
-      #     dispose(ew)
-      #     editMeta()
-      #   })
-      
       gf(h)
       .GlobalEnv$SelectChanged=FALSE
       
@@ -891,6 +885,11 @@ if (!tpexist) {
       #print('Keystroke Handler ge')
       if(h$key=='\033'){
         load('~/aexp.RData')
+        if(nrow(aexp)==0){
+          galert('None Found')
+          return()
+        }
+        .GlobalEnv$aexp=aexp
         choices=''
         for(i in 1:nrow(aexp)){
           andexp[1]=as.character(aexp$andexp.1.[i])
@@ -899,22 +898,32 @@ if (!tpexist) {
           andexp[4]=as.character(aexp$andexp.4.[i])          
           svh=as.character(aexp$svh[i])
           anders = capture.output(cat(as.character(andexp[1:(len(andexp)-1)]),sep=' & '))
-          choices[i]=paste('REGEXP FILTER: ',svh,' & ', ifelse(as.logical(andexp[4]),'','!'),anders,' ')
+          choices[i]=paste('REGEXP FILTER: ',svh,' & ', ifelse(as.logical(andexp[4]),'','!'),anders,' ',sep='')
         }
         keep_above(w,FALSE)
-        rvv=selList(choices)
+        rvv=NULL
+        while(is.null(rvv)){
+          rvv=selList(choices)
+        }
+        idxx=NULL
         if(len(rvv)>0){
           svvd=rvv$saved
         }else{
-          svvd=FALSE
+          svvd=0
         }
-        if(svvd){
-          aexp=aexp[choices %in% rvv$gt,]
+        if(svvd==2){ #save EDIT
+          idxx=which(!rvv$gt %in% choices)
+          aexp[idxx,]=rvv$aexpadd
           save(aexp,file='~/aexp.RData')
         }else{
-          
+          if(svvd==1){ # save SAVE
+            aexp=.GlobalEnv$aexp
+            save(aexp,file='~/aexp.RData')
+          }else{ #no SAVE
+            idxx=which(rvv$rv==choices)
+          }
         }
-        idxx=which(rvv$rv==choices)
+
         print(aexp[idxx,])
         if(len(idxx)>0){
           .GlobalEnv$TESTER=9999
@@ -980,7 +989,7 @@ if (!tpexist) {
       keep_above(w,FALSE)
     }
     writeLines(gsub('/','\\\\',fn),'fns.m3u') # Write playlist
-    shell('"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
+    shell('"C:\\Program Files\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
   })
   
   ebutton=gbutton("MOVE", container = bg, handler = moveHandler)
@@ -1037,7 +1046,7 @@ if(exists('gxy'))
     dispose(gxy)
 srchF=FALSE
 focus(xe)=TRUE
-#focus(ge)=TRUE
+focus(ge)=TRUE
 focus(tab)=TRUE # refresh initial message
 keep_above(w,TRUE)
 .GlobalEnv$onTop=TRUE
