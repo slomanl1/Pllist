@@ -6,7 +6,7 @@ if(file.exists('~/writeErrorLog.txt')){
   dirs=subset(dirs,!grepl('lnk',dirs))
   dirsx=dirs
   shell(paste('dir', 'D:\\PNMTALL',' /S/B/OD >  zz.txt'))
-  shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
+#  shell(paste('dir', 'C:\\PNMTALL',' /S/B/OD >> zz.txt'))
   zz1 = readLines('zz.txt')
   unlink('zz.txt')
   zz2 = zz1[which(grepl('.',zz1,fixed = TRUE) &
