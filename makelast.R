@@ -293,7 +293,7 @@ if (file.exists(paste(pldrive,'My Playlists/wa.wpl',sep=""))) {
     setwd(paste(pldrive,'My Playlists',sep=""))
     fn1=paste(drive,'PNMTALL/RPDNClips/',fn,sep='')
     writeLines(gsub('/','\\\\',fn1),'fns.m3u') # Write playlist
-    shell('"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
+    shell('"C:\\Program Files\\VideoLAN\\VLC\\vlc.exe " fns.m3u')
     
   }else print('No new files found')
 } else print('CANNOT OPEN FLK')
