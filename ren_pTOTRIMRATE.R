@@ -8,6 +8,7 @@ library(gWidgets2)
 options(guiToolkit = "RGtk2")
 
 cd('D:/pnmtall/newdownloads')
+#cd('C:/users/larry/downloads')
 dd=dir()
 vlist=NULL
 du=fi('.rar',dd)
