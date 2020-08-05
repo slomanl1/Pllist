@@ -6,8 +6,10 @@ selList = function(items) {
   gt=gtable(items=items, cont=ph,multiple = FALSE)
   pg <- ggroup(cont=g); 
   rr=gbutton("Remove", cont=pg,handler=function(h,...){
-    #print('Remove Handler')
+    print('Remove Handler')
     ix=svalue(gt,index = TRUE)
+    if(nrow(aexp)>0)
+      .GlobalEnv$aexp=aexp[-1*ix,] # remove row ix
     xx=c(gt[1:ix-1,],gt[(ix+1):nrow(gt),])
     gt[1:len(xx),1]=xx
     gt[nrow(gt),1]=''
@@ -16,25 +18,31 @@ selList = function(items) {
   }); 
   cc=gbutton("Clear All", cont=pg,handler=function(h,...){
     gt[,]=gt[0,]
+    .GlobalEnv$aexp=.GlobalEnv$aexp[0,]
     enabled(uu)=TRUE
     enabled(ss)=TRUE    
+    enabled(ee)=FALSE # EDIT
+    enabled(rr)=FALSE # REMOVE
+    enabled(kk)=FALSE # OK
   }); 
   kk=gbutton("OK", cont=pg,handler=function(h,...){
-    .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=FALSE)
+    .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=0,aexpadd=NULL)
     dispose(w)
     gtkMainQuit()
   }); 
   nn=gbutton("Cancel", cont=pg,handler=function(h,...){
     getAndExp(disposer=TRUE)
+    .GlobalEnv$retval=1
     dispose(w)
     gtkMainQuit()
   })
   ss=gbutton("SAVE", cont=pg,handler=function(h,...){
-    .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=TRUE)
+    .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=1,aexpadd=NULL)
     dispose(w)
     gtkMainQuit()
   }) 
   uu=gbutton("UNDO", cont=pg,handler=function(h,...){
+    .GlobalEnv$retval=NULL # indicate UNDO
     dispose(w)
     gtkMainQuit()
   })  
@@ -45,11 +53,29 @@ selList = function(items) {
     enabled(cc)=FALSE
     enabled(kk)=FALSE
     enabled(ee)=FALSE
-    andexp=items[svalue(gt,index=TRUE)]
-    andexp=substr(andexp,17,nchar(andexp)) # remove REGEXP FILTER:
-    andexp=unlist(strsplit(andexp,'&')) # restore AND array
-    aexp=unlist(getAndExp(andexp[1],andexp[2],andexp[3]))
-    .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=FALSE)
+    #browser()
+    idxx=svalue(gt,index=TRUE)
+    andexp1=items[idxx]
+    andexp2=substr(andexp1,15,nchar(andexp1)) # remove REGEXP FILTER:
+    andexp3=unlist(strsplit(andexp2,'&')) # restore AND array
+    andexp3=substr(andexp3,2,nchar(andexp3)-1) # remove 1 leading and trailing space
+    bgx=gwindow(height=40)
+    gex=gedit(andexp3[1],container=bgx, handler=function(h,...){
+      svh=svalue(gex)
+      #browser()
+      andexp4=unlist(getAndExp(andexp3[2],andexp3[3],andexp3[4]))
+      andexp=trim(andexp4)
+      print('andexp=')
+      print(andexp)
+      anders = capture.output(cat(as.character(andexp[1:(len(andexp)-1)]),sep=' & '))
+      gt[idxx,1]=paste('REGEXP FILTER: ',svh,' & ', ifelse(as.logical(andexp[4]),'','!'),anders,' ',sep='')
+      aexpadd=data.frame(andexp[1],andexp[2],andexp[3],andexp[4],svh)
+      .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=2,aexpadd=aexpadd)
+      dispose(bgx)
+      gtkMainQuit()
+    })
+    focus(gex)=TRUE
+    gtkMain()
     dispose(w)
     gtkMainQuit()
   })  
@@ -59,7 +85,7 @@ selList = function(items) {
   })  
   addHandlerDoubleclick(gt,handler=function(h,...){
     #print('Double Click Handler')
-    .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=FALSE)
+    .GlobalEnv$retval=list(rv=svalue(gt),gt=data.frame(gt[,],stringsAsFactors = FALSE)[nchar(gt[,])>0,],saved=FALSE,aexpadd=NULL)
     dispose(w)
     gtkMainQuit()
   })
@@ -67,31 +93,16 @@ selList = function(items) {
     #print('Select Chg Handler')
     #print(svalue(gt,index=TRUE))
     enabled(rr)=TRUE
-    })
+  })
   size(gt)=c(400,400)
   enabled(uu)=FALSE
   enabled(ss)=FALSE
   enabled(rr)=FALSE
   keep_above(w,TRUE)
+  #  focus('kk')=TRUE
   visible(w)=TRUE
   gtkMain()
   return(.GlobalEnv$retval)
 }
-# 
-# library(gWidgets2)
-# options(guiToolkit = "RGtk2")
-# load('~/aexp.RData')
-# choices=''
-# andexp=''
-# for(i in 1:nrow(aexp)){
-#   andexp[1]=as.character(aexp$andexp.1.[i])
-#   andexp[2]=as.character(aexp$andexp.2.[i])
-#   andexp[3]=as.character(aexp$andexp.3.[i])
-#   andexp[4]=as.character(aexp$andexp.4.[i])
-#   svh=as.character(aexp$svh[i])
-#   anders = capture.output(cat(as.character(andexp[1:(len(andexp)-1)]),sep=' & '))
-#   choices[i]=gsub('& . ','',paste('REGEXP FILTER ',svh,' & ', ifelse(as.logical(andexp[4]),'','!'),anders,' '))
-# }
-# rval=selList(choices)
-# print(rval)
+
 
