@@ -61,7 +61,7 @@ while(TRUE){
             }
             fname=paste('fns',fname,'.m3u',sep='')
             writeLines(gsub('/','\\\\',flist),fname) # Write playlist
-            zz='"C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe" %s'
+            zz='"C:\\Program Files\\VideoLAN\\VLC\\vlc.exe" %s'
             shell(sprintf(zz,fname))
           }
         }else{
