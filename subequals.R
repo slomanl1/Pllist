@@ -12,6 +12,7 @@ if (exists('w'))
     dispose(w)
 field = menu(names(ee)[c(2,4,5)], graphics = TRUE)
 if (nchar(field) > 0) {
+  field=names(ee)[c(2,4,5)][field]
   w <- gwindow(field, visible = FALSE,title = 'Close to ABORT')
   g <- gvbox(container = w)
   l3 <- gedit("From Text",

@@ -547,7 +547,7 @@ if (!tpexist) {
       if(isExtant(.GlobalEnv$gpp))
         ewb4=gbutton("EXPLORE",cont=.GlobalEnv$gpp,handler=function(h,...) {
           dispose(ew)
-          shell(paste(normalizePath('~/',winslash = '/'),'hexDump/bin/explorerselect.bat "',fnx,'" ',',' ,sep=''),translate = TRUE, 
+          shell(paste(normalizePath('~/',winslash = '/'),'/hexDump/bin/explorerselect.bat "',fnx,'" ',',' ,sep=''),translate = TRUE, 
                 intern = TRUE)
         })
       if(isExtant(.GlobalEnv$gpp))
@@ -701,7 +701,7 @@ if (!tpexist) {
     enabled(rbb) = FALSE   # rebuild button
     enabled(MLButton) = FALSE
     enabled(BKButton) = TRUE
-    shell('"c:/Program Files/R/R-3.5.0/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/Backk.R',translate = TRUE)
+    shell('"c:/Program Files/R/R-4.0.2/bin/rscript.exe" c:/Users/Larry/Documents/Pllist.git/Backk.R',translate = TRUE)
     shell('nircmd.exe win close class "CabinetWClass"')
     if(exists('dbutton'))
       if(isExtant(dbutton)){

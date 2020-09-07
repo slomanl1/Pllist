@@ -11,6 +11,7 @@ setwd('~/')
 if(exists('w'))
   if(isExtant(w))
     dispose(w)
+
 if(exists('obj'))
   if(isExtant(obj))
     dispose(obj)
@@ -95,7 +96,7 @@ while(TRUE){
     unlink('volz.txt')
     if (grepl('Volume',volz[1]) & !grepl('RPDN',volz[1]))
     {
-      vname = paste('C:\\',substr(volz[1],23,100),'.txt',sep = '')
+      vname = paste('D:\\',substr(volz[1],23,100),'.txt',sep = '')
       print(paste('VNAME =',vname))
       sfname = '~/PNMTALL.RDATA'
       if(rebuild){

@@ -93,7 +93,7 @@ if(len(sll)>0){
   f1920=FALSE
   if(7 %in% slx)
     f1920=TRUE
-  
+  #fname=normalizePath(readLines('~/fns.m3u'),winslash='/') ################## DEBUG #########
   fname=fname[which(!grepl('crdownload|.ini|_REN',fname,fixed=TRUE))]
   fname=subset(fname,file_ext(fname) %in% c('asf','avi','flv','mov','mp4','MP4','wmv' ))
   fna=fname # all files (including _New's)
@@ -104,6 +104,7 @@ if(len(sll)>0){
     dfa1$fsize=ptn(dfa1$sz)
     
     dfa2=subset(dfa1,!file.exists(as.character(dfa1$nfns))) # remove already converted to _New
+   #dfa2=dfa1 ######################### DEBUG###########
     dfa3=dfa2[order(dfa2$sz,decreasing=decreasing),]
     nfns=paste(file_path_sans_ext(fname),'_New.',file_ext(fname),sep='')
     dfa4=data.frame(fname,sz=file.size(fname),nfns,durF=NA,fdate=file.mtime(fname))
